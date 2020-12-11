@@ -12,6 +12,17 @@ admin.initializeApp({
     databaseURL: "https://zal1000.firebaseio.com"
   });
 
+
+  var db = admin.database();
+  var ref = db.ref("bots/reggeltbot/token");
+  ref.once("value", function(snapshot) {
+      bot.login(snapshot.val())
+    console.debug(snapshot.val());
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  });
+  
+
 bot.on("ready", async() => {
       console.log(`${bot.user.username} has started`)
         
@@ -50,13 +61,3 @@ bot.on("message", async message => {
         }
     }
 })
-
-
-var db = admin.database();
-var ref = db.ref("bots/reggeltbot/token");
-ref.on("value", function(snapshot) {
-    bot.login(snapshot.val())
-  console.debug(snapshot.val());
-}, function (errorObject) {
-  console.log("The read failed: " + errorObject.code);
-});
