@@ -43,14 +43,82 @@ bot.on("ready", async() => {
 
 bot.on("message", async message => {
     if(message.author.bot) {return}
-    if(message.channel.name === "reggelt"){
-        if(message.content === "reggelt"){
-            console.log(message.author.id)
-        } else {
-            console.log("nope")
-            message.delete[1]
-        }
-    }
+    if(message.channel.name === 'reggelt') {
+        
+      if(cmd.toLowerCase() === 'reggelt'){
+async function reggeltupdateall() {
+
+ var db = admin.firestore();
+ // Add a new document in collection "cities" with ID 'LA'
+ const res = await db.collection('dcusers').doc('all').update({
+   reggeltcount: admin.firestore.FieldValue.increment(1)
+ });
+ 
+}
+reggeltupdateall();
+
+async function reggeltupdatefs() {
+ var db = admin.firestore();
+const reggeltRef = db.collection('dcusers').doc(message.author.id);
+const doc = await reggeltRef.get();
+if (!doc.exists) {
+ reggeltRef.set({
+   reggeltcount: 1,
+   pp: message.author.avatarURL,
+   tag: message.author.tag,
+   username: message.author.username
+ });
+} else {
+ reggeltRef.update({
+   reggeltcount: admin.firestore.FieldValue.increment(1),
+   pp: message.author.avatarURL,
+   tag: message.author.tag,
+   username: message.author.username
+ });
+}}
+reggeltupdatefs()
+       console.log('\x1b[32m%s\x1b[0m' ,`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`)
+       message.react('☕');     
+       }
+   
+       else {
+           
+           message.delete(1)
+           .then(console.log('\x1b[31m%s\x1b[0m' ,`message deleted in "${message.guild} (id: "${message.guild.id}")"(HUN)`))
+           .catch(function(error) {
+               message.reply("Error: " + error.message)
+             console.log('Error:', error);
+           })
+           message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
+           .then(console.log('\x1b[33m%s\x1b[0m' ,`warning sent to: "${message.author.username} (id: "${message.author.id}")"(HUN)`))
+           .catch(function(error) {
+               message.reply("Error: " + error)
+             console.log('Error:', error);
+           })
+
+           async function reggeltupdatefs2() {
+             var db = admin.firestore();
+           const reggeltRef = db.collection('dcusers').doc(message.author.id);
+           const doc = await reggeltRef.get();
+           if (!doc.exists) {
+             reggeltRef.set({
+               reggeltcount: -1,
+               pp: message.author.avatarURL,
+               tag: message.author.tag,
+               username: message.author.username
+             });
+           } else {
+             reggeltRef.update({
+               reggeltcount: admin.firestore.FieldValue.increment(-1),
+               pp: message.author.avatarURL,
+               tag: message.author.tag,
+               username: message.author.username
+             });
+           }}
+           reggeltupdatefs2()
+         }
+      
+   }
 })
 
 var db = admin.database();
