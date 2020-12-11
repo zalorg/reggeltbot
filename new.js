@@ -51,3 +51,13 @@ bot.on("message", async message => {
         }
     }
 })
+
+
+var db = admin.database();
+var ref = db.ref("bots/reggeltbot/token");
+ref.on("value", function(snapshot) {
+    bot.login(snapshot.val())
+  console.log(snapshot.val());
+}, function (errorObject) {
+  console.log("The read failed: " + errorObject.code);
+});
