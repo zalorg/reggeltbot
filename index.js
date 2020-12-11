@@ -48,6 +48,53 @@ bot.on("message", async message => {
   let args = messageArray.slice(1);
 
     if(message.author.bot) {return}
+
+  // help
+  if(message.content === `${prefix}help`){
+    let upmbed = new Discord.RichEmbed()
+    .setTitle(message.author.username)
+    .setColor("#FFCB2B")
+    .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${message.author.id}) is megnézheted)`)
+    .addField(`${prefix}invite`, `Bot meghívása`)
+    .addField(`Reggelt csatorna beállítása`, `Nevezz el egy csatornát **reggelt**-nek és kész`)
+    .addField(`top.gg`, `Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala`)
+    .addField(`Probléma jelentése`, `Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni`)
+    .addBlankField()
+    .addField(`Bot ping`, `${bot.ping}ms`)
+    .addField(`Uptime`, `${ms(bot.uptime)}`)
+    .setFooter(message.author.username)
+    .setThumbnail(bot.user.avatarURL)
+    .setTimestamp(message.createdAt)
+ 
+    message.channel.send(upmbed);
+}
+
+//count 
+if(message.content === `${prefix}count`){
+  async function getCountForUser() {
+    var db = admin.firestore();
+    var dcid = message.author.id;
+    const cityRef = db.collection('dcusers').doc(dcid);
+const doc = await cityRef.get();
+if (!doc.exists) {
+console.log('No such document!');
+message.reply("Error reading document!")
+} else {
+let upmbed = new Discord.RichEmbed()
+.setTitle(`${message.author.username}`)
+.setColor("#FFCB5C")
+.addField(`Ennyiszer köszöntél be a #reggelt csatornába`, `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
+.setFooter(message.author.username)
+.setThumbnail(message.author.avatarURL)
+.setTimestamp(message.createdAt)
+
+message.channel.send(upmbed);
+}
+}
+  getCountForUser();
+}
+
+  // reggelt
     if(message.channel.name === 'reggelt') {
         
       if(cmd.toLowerCase() === 'reggelt'){
