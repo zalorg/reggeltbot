@@ -12,4 +12,4 @@ RUN npm install
 COPY . /usr/src/bot
 
 # Start me!
-CMD ["node", "new.js"]
+CMD ["node", "index.js"]
