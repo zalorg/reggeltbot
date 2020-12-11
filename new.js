@@ -1,12 +1,11 @@
 const Discord = require("discord.js");
-const bot = new Discord.Client({disableEveryone : false});
+const bot = new Discord.Client();
 const fs = require('fs')
 //const DBL = require("dblapi.js");
 var ms = require("ms");
 const emote = require("./emoji.json");
 //const dbl = new DBL(process.env.DBL, bot);
 var admin = require("firebase-admin");
-var request = require('request');
 
 admin.initializeApp({
     credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS),
@@ -57,7 +56,7 @@ var db = admin.database();
 var ref = db.ref("bots/reggeltbot/token");
 ref.on("value", function(snapshot) {
     bot.login(snapshot.val())
-  console.log(snapshot.val());
+  console.debug(snapshot.val());
 }, function (errorObject) {
   console.log("The read failed: " + errorObject.code);
 });
