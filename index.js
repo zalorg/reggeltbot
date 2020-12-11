@@ -42,6 +42,11 @@ bot.on("ready", async() => {
 
 
 bot.on("message", async message => {
+//  let prefix = process.env.PREFIX; 
+  let messageArray = message.content.split(" ");
+  let cmd = messageArray[0];
+  let args = messageArray.slice(1);
+
     if(message.author.bot) {return}
     if(message.channel.name === 'reggelt') {
         
