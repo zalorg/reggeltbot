@@ -8,9 +8,9 @@ const emote = require("./emoji.json");
 var admin = require("firebase-admin");
 
 admin.initializeApp({
-    credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS),
-    databaseURL: "https://zal1000.firebaseio.com"
-  });
+  credential: admin.credential.applicationDefault(),
+});
+
   
 
 bot.on("ready", async() => {
