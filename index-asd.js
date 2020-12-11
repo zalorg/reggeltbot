@@ -607,7 +607,7 @@ request(`https://firebasestorage.googleapis.com/v0/b/zal1000.appspot.com/o/servi
         })
         
         
-        bot.login("NzQ5MDM3Mjg1NjIxNjI4OTUw.X0mJVQ.28YXFeT4ZGYrxfXvvoQYE5FrKQ8");
+        bot.login("NOPE");
 
 /////////////////////////////////////////////////// BOT END  ////////////////////////////////////////////////
 
