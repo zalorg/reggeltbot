@@ -2,3 +2,4 @@ node_modules
 nodejs-email/package.json
 .bat
 SAC.json
+firebase-key.yaml

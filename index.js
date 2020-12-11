@@ -9,6 +9,7 @@ var admin = require("firebase-admin");
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
+  databaseURL: 'https://zal1000.firebaseio.com'
 });
 
   
