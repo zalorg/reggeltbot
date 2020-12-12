@@ -1,28 +1,29 @@
 const Discord = require("discord.js");
 const bot = new Discord.Client();
 const fs = require('fs')
-//const DBL = require("dblapi.js");
+const DBL = require("dblapi.js");
 var ms = require("ms");
 const emote = require("./emoji.json");
-//const dbl = new DBL(process.env.DBL, bot);
 var admin = require("firebase-admin");
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
   databaseURL: 'https://zal1000.firebaseio.com'
 });
+var rdb = admin.database();
+
+
+const dbl = new DBL(process.env.DBL, bot);
 
   
 
 bot.on("ready", async() => {
       console.log(`${bot.user.username} has started`)
         
-      var db = admin.database();
+  var db = admin.database();
   const doc = admin.firestore().collection('dcusers').doc('all');
   const observer = doc.onSnapshot(docSnapshot => {
-    //console.log(`Received doc snapshot: ${docSnapshot.data().reggeltcount}`);
     bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"})
-    // ...
   }, err => {
     console.log(`Encountered error: ${err}`);
     bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"})
@@ -37,16 +38,25 @@ bot.on("ready", async() => {
   console.log("The read failed: " + errorObject.code);
   }); 
 
-
   })
 
   bot.on('messageUpdate', (oldMsg, newMsg) => {
     if(newMsg.author.bot) return;
+    if(newMsg.channel.name === 'reggelt'){
     if(oldMsg.content.toLowerCase().includes("reggelt") && !newMsg.content.toLowerCase().includes("reggelt")) {
+      async function reggeltupdateall() {
+
+        var db = admin.firestore();
+        const res = await db.collection('dcusers').doc('all').update({
+          reggeltcount: admin.firestore.FieldValue.increment(1)
+        });
+        
+       }
         channel = newMsg.channel;
         newMsg.delete();
         channel.author.send('Ebben a formában nem modósíthadod az üzenetedet.');
     }
+  }
 });
 
 
@@ -110,7 +120,6 @@ message.channel.send(upmbed);
 async function reggeltupdateall() {
 
  var db = admin.firestore();
- // Add a new document in collection "cities" with ID 'LA'
  const res = await db.collection('dcusers').doc('all').update({
    reggeltcount: admin.firestore.FieldValue.increment(1)
  });
@@ -182,8 +191,7 @@ reggeltupdatefs()
    }
 })
 
-var db = admin.database();
-var ref = db.ref("bots/reggeltbot/token");
+var ref = rdb.ref("bots/reggeltbot/token");
 ref.once("value", function(snapshot) {
     bot.login(snapshot.val())
   console.debug(snapshot.val());
