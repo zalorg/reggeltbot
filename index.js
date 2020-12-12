@@ -57,9 +57,8 @@ bot.on("ready", async() => {
         });
         
        }
-        channel = newMsg.channel;
         newMsg.delete();
-        channel.author.send('Ebben a formában nem modósíthadod az üzenetedet.');
+        newMsg.author.send('Ebben a formában nem modósíthadod az üzenetedet.');
     }
   }
 });
