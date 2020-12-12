@@ -12,6 +12,13 @@ admin.initializeApp({
 });
 var rdb = admin.database();
 
+var ref = rdb.ref("bots/reggeltbot/dblToken");
+ref.once("value", function(snapshot) {
+  const dbl = new DBL(snapshot.val(), bot);
+  console.debug(snapshot.val());
+}, function (errorObject) {
+  console.log("The read failed: " + errorObject.code);
+});
 
 const dbl = new DBL(process.env.DBL, bot);
 
@@ -147,20 +154,20 @@ if (!doc.exists) {
  });
 }}
 reggeltupdatefs()
-       console.log('\x1b[32m%s\x1b[0m' ,`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`)
+       console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`)
        message.react('☕');     
        }
    
        else {
            
            message.delete(1)
-           .then(console.log('\x1b[31m%s\x1b[0m' ,`message deleted in "${message.guild} (id: "${message.guild.id}")"(HUN)`))
+           .then(console.log(`message deleted in "${message.guild} (id: "${message.guild.id}")"(HUN)`))
            .catch(function(error) {
                message.reply("Error: " + error.message)
              console.log('Error:', error);
            })
            message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
-           .then(console.log('\x1b[33m%s\x1b[0m' ,`warning sent to: "${message.author.username} (id: "${message.author.id}")"(HUN)`))
+           .then(console.log(`warning sent to: "${message.author.username} (id: "${message.author.id}")"(HUN)`))
            .catch(function(error) {
                message.reply("Error: " + error)
              console.log('Error:', error);
