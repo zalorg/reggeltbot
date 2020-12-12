@@ -45,7 +45,7 @@ bot.on("ready", async() => {
     if(oldMsg.content.toLowerCase().includes("reggelt") && !newMsg.content.toLowerCase().includes("reggelt")) {
         channel = newMsg.channel;
         newMsg.delete();
-        channel.send('Ebben a formában nem modósíthadod az üzenetedet.');
+        channel.author.send('Ebben a formában nem modósíthadod az üzenetedet.');
     }
 });
 
