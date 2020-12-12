@@ -20,8 +20,6 @@ ref.once("value", function(snapshot) {
   console.log("The read failed: " + errorObject.code);
 });
 
-const dbl = new DBL(process.env.DBL, bot);
-
   
 
 bot.on("ready", async() => {
