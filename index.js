@@ -40,6 +40,15 @@ bot.on("ready", async() => {
 
   })
 
+  bot.on('messageUpdate', (oldMsg, newMsg) => {
+    if(newMsg.author.bot) return;
+    if(oldMsg.content.toLowerCase().includes("reggelt") && !newMsg.content.toLowerCase().includes("reggelt")) {
+        channel = newMsg.channel;
+        newMsg.delete();
+        channel.send('Ebben a formában nem modósíthadod az üzenetedet.');
+    }
+});
+
 
 bot.on("message", async message => {
   let prefix = 'r!'; 
