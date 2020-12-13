@@ -15,9 +15,6 @@
         "semi": [
             "error", "always"
         ],
-        "no-var": [
-            "error"
-        ],
         "quotes": [
             "error",
             "double"
