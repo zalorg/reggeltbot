@@ -32,7 +32,7 @@ This bot is not created for self-hosting, but if you want to, here's a little tu
  When the bot deploy as a workload, set `GOOGLE_APPLICATION_CREDENTIALS` enviorment variable to: `/var/secrets/google/key.json`
 
 !!! DO NOT DELETE ENY EXISTING DATA, JUST ADD IT TO THE VALUES TO THE YAML FILE !!!
-```
+```yaml
 spec:
   template:
     spec:
