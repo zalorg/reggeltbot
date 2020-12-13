@@ -48,7 +48,7 @@ bot.on("messageUpdate", (oldMsg, newMsg) => {
 
     if(newMsg.channel.name === "reggelt"){
         if( newMsg.content.toLowerCase() !== "reggelt" ) {
-            reggeltUpdateEdit(newMsg);
+            await reggeltUpdateEdit(newMsg);
             if(newMsg.deletable){
                 newMsg.delete(1);
                 newMsg.author.send("Ebben a formában nem modósíthadod az üzenetedet.");
@@ -86,7 +86,7 @@ bot.on("message", async message => {
 
     //count 
     else if(message.content === `${prefix}count`){
-        getCountForUser(message);
+        await getCountForUser(message);
     }
 
     // reggelt
@@ -94,8 +94,8 @@ bot.on("message", async message => {
         
         if(cmd.toLowerCase() === "reggelt"){
             
-            reggeltupdateall();
-            reggeltupdatefs(message);
+            await reggeltupdateall();
+            await reggeltupdatefs(message);
 
             console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`);
             message.react("☕");     
