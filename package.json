@@ -37,5 +37,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "zal1000",
-  "license": "ISC"
+  "license": "Apache-2.0"
 }
