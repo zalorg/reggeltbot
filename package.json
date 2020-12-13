@@ -32,10 +32,12 @@
     "sqlite3": "^4.1.0",
     "yaml": "^2.0.0-1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "7.15.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "zal1000",
-  "license": "ISC"
+  "license": "Apache-2.0"
 }
