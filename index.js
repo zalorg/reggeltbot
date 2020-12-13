@@ -1,9 +1,8 @@
+/* eslint-disable no-undef */
 const Discord = require("discord.js");
 const bot = new Discord.Client();
-const fs = require("fs");
 const DBL = require("dblapi.js");
 let ms = require("ms");
-const emote = require("./emoji.json");
 let admin = require("firebase-admin");
 
 admin.initializeApp({
@@ -14,7 +13,7 @@ let rdb = admin.database();
 
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
 dblRef.once("value", function(snapshot) {
-    const dbl = new DBL(snapshot.val(), bot);
+    new DBL(snapshot.val(), bot);
     console.debug(snapshot.val());
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
@@ -25,7 +24,7 @@ bot.on("ready", async() => {
         
     const db = admin.database();
     const doc = admin.firestore().collection("dcusers").doc("all");
-    const observer = doc.onSnapshot(docSnapshot => {
+    doc.onSnapshot(docSnapshot => {
         bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
     }, err => {
         console.log(`Encountered error: ${err}`);
@@ -35,8 +34,13 @@ bot.on("ready", async() => {
   
     const refS = db.ref("bots/status/reggeltbotS");
     refS.on("value", function(snapshot) {
-        bot.user.setStatus(snapshot.val());
-        console.log(snapshot.val());
+        if(process.env.PROD === "false"){
+            bot.user.setStatus("dnd");
+            console.log("bot started in test mode");
+        } else {
+            bot.user.setStatus(snapshot.val());
+            console.log(snapshot.val());
+        }
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
     }); 
@@ -47,7 +51,7 @@ bot.on("messageUpdate", async (_, newMsg) => {
     if(newMsg.author.bot) return;
 
     if(newMsg.channel.name === "reggelt"){
-        if( newMsg.content.toLowerCase() !== "reggelt" ) {
+        if( newMsg.content.toLowerCase().includes() !== "reggelt" ) {
             await reggeltUpdateEdit(newMsg);
             if(newMsg.deletable){
                 newMsg.delete(1);
@@ -59,16 +63,15 @@ bot.on("messageUpdate", async (_, newMsg) => {
 
 bot.on("message", async message => {
     if(message.author.bot) return;
-    
     let prefix = "r!"; 
-    let messageArray = message.content.split(" ");
-    let cmd = messageArray[0];
-    let args = messageArray.slice(1);
+    //let messageArray = message.content.split(" ");
+    //let cmd = messageArray[0];
+    //let args = messageArray.slice(1);
 
     // reggelt
     if(message.channel.name === "reggelt") {
         
-        if(cmd.toLowerCase() === "reggelt"){
+        if(message.content.toLowerCase().includes() === "reggelt"){
             
             await reggeltupdateall();
             await reggeltupdatefs(message);
@@ -121,7 +124,7 @@ bot.on("message", async message => {
 
 async function reggeltupdateall() {
     let db = admin.firestore();
-    const res = await db.collection("dcusers").doc("all").update({
+    await db.collection("dcusers").doc("all").update({
         reggeltcount: admin.firestore.FieldValue.increment(1)
     });
 }
@@ -177,11 +180,20 @@ async function getCountForUser(message) {
         message.channel.send(upmbed);
     }
 }
-
-let tokenRef = rdb.ref("bots/reggeltbot/token");
-tokenRef.once("value", function(snapshot) {
-    bot.login(snapshot.val());
-    console.debug(snapshot.val());
-}, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
-});
+console.log(process.env.PROD);
+// eslint-disable-next-line no-undef
+if(process.env.PROD === "false"){
+    let tokenRef = rdb.ref("bots/reggeltbot/testtoken");
+    tokenRef.once("value", function(snapshot) {
+        bot.login(snapshot.val());
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
+} else {
+    let tokenRef = rdb.ref("bots/reggeltbot/token");
+    tokenRef.once("value", function(snapshot) {
+        bot.login(snapshot.val());
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
+}
