@@ -48,20 +48,9 @@ bot.on("messageUpdate", (oldMsg, newMsg) => {
 
     if(newMsg.channel.name === "reggelt"){
         if( newMsg.content.toLowerCase() !== "reggelt" ) {
-            async function reggeltUpdateEdit() {
-
-                let db = admin.firestore();
-                await db.collection("dcusers").doc("all").update({
-                    reggeltcount: admin.firestore.FieldValue.increment(-1)
-                });
-                await db.collection("dcusers").doc(newMsg.author.id).update({
-                    reggeltcount: admin.firestore.FieldValue.increment(-1)
-                });
-        
-            }
-            reggeltUpdateEdit();
+            reggeltUpdateEdit(newMsg);
             if(newMsg.deletable){
-                newMsg.delete[1];
+                newMsg.delete(1);
                 newMsg.author.send("Ebben a formában nem modósíthadod az üzenetedet.");
             }
         }
@@ -97,63 +86,17 @@ bot.on("message", async message => {
 
     //count 
     else if(message.content === `${prefix}count`){
-        async function getCountForUser() {
-            let db = admin.firestore();
-            let dcid = message.author.id;
-            const cityRef = db.collection("dcusers").doc(dcid);
-            const doc = await cityRef.get();
-            if (!doc.exists) {
-                console.log("No such document!");
-                message.reply("Error reading document!");
-            } else {
-                let upmbed = new Discord.RichEmbed()
-                    .setTitle(`${message.author.username}`)
-                    .setColor("#FFCB5C")
-                    .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
-                    .setFooter(message.author.username)
-                    .setThumbnail(message.author.avatarURL)
-                    .setTimestamp(message.createdAt);
-
-                message.channel.send(upmbed);
-            }
-        }
-        getCountForUser();
+        getCountForUser(message);
     }
 
     // reggelt
     else if(message.channel.name === "reggelt") {
         
         if(cmd.toLowerCase() === "reggelt"){
-            async function reggeltupdateall() {
-
-                let db = admin.firestore();
-                const res = await db.collection("dcusers").doc("all").update({
-                    reggeltcount: admin.firestore.FieldValue.increment(1)
-                });
- 
-            }
+            
             reggeltupdateall();
+            reggeltupdatefs(message);
 
-            async function reggeltupdatefs() {
-                let db = admin.firestore();
-                const reggeltRef = db.collection("dcusers").doc(message.author.id);
-                const doc = await reggeltRef.get();
-                if (!doc.exists) {
-                    reggeltRef.set({
-                        reggeltcount: 1,
-                        pp: message.author.avatarURL,
-                        tag: message.author.tag,
-                        username: message.author.username
-                    });
-                } else {
-                    reggeltRef.update({
-                        reggeltcount: admin.firestore.FieldValue.increment(1),
-                        pp: message.author.avatarURL,
-                        tag: message.author.tag,
-                        username: message.author.username
-                    });
-                }}
-            reggeltupdatefs();
             console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`);
             message.react("☕");     
         }
@@ -171,32 +114,72 @@ bot.on("message", async message => {
                     console.log("Error:", error);
                 });
 
-            async function reggeltupdatefs2() {
-                let db = admin.firestore();
-                const reggeltRef = db.collection("dcusers").doc(message.author.id);
-                const doc = await reggeltRef.get();
-                if (!doc.exists) {
-                    reggeltRef.set({
-                        reggeltcount: -1,
-                        pp: message.author.avatarURL,
-                        tag: message.author.tag,
-                        username: message.author.username
-                    });
-                } else {
-                    reggeltRef.update({
-                        reggeltcount: admin.firestore.FieldValue.increment(-1),
-                        pp: message.author.avatarURL,
-                        tag: message.author.tag,
-                        username: message.author.username
-                    });
-                }}
-            reggeltupdatefs2();
+            await reggeltupdatefs(message, true);
         }
     }
 });
 
-let ref = rdb.ref("bots/reggeltbot/token");
-ref.once("value", function(snapshot) {
+async function reggeltupdateall() {
+    let db = admin.firestore();
+    const res = await db.collection("dcusers").doc("all").update({
+        reggeltcount: admin.firestore.FieldValue.increment(1)
+    });
+}
+
+async function reggeltupdatefs(message, decreased = false) {
+    let db = admin.firestore();
+    const reggeltRef = db.collection("dcusers").doc(message.author.id);
+    const doc = await reggeltRef.get();
+    if (!doc.exists) {
+        reggeltRef.set({
+            reggeltcount: (decreased ? -1 : 1),
+            pp: message.author.avatarURL,
+            tag: message.author.tag,
+            username: message.author.username
+        });
+    } else {
+        reggeltRef.update({
+            reggeltcount: admin.firestore.FieldValue.increment(decreased ? -1 : 1),
+            pp: message.author.avatarURL,
+            tag: message.author.tag,
+            username: message.author.username
+        });
+    }
+}
+
+async function reggeltUpdateEdit(message) {
+    let db = admin.firestore();
+    await db.collection("dcusers").doc("all").update({
+        reggeltcount: admin.firestore.FieldValue.increment(-1)
+    });
+    await db.collection("dcusers").doc(message.author.id).update({
+        reggeltcount: admin.firestore.FieldValue.increment(-1)
+    });
+}
+
+async function getCountForUser(message) {
+    let db = admin.firestore();
+    let dcid = message.author.id;
+    const cityRef = db.collection("dcusers").doc(dcid);
+    const doc = await cityRef.get();
+    if (!doc.exists) {
+        console.log("No such document!");
+        message.reply("Error reading document!");
+    } else {
+        let upmbed = new Discord.RichEmbed()
+            .setTitle(`${message.author.username}`)
+            .setColor("#FFCB5C")
+            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
+            .setFooter(message.author.username)
+            .setThumbnail(message.author.avatarURL)
+            .setTimestamp(message.createdAt);
+
+        message.channel.send(upmbed);
+    }
+}
+
+let tokenRef = rdb.ref("bots/reggeltbot/token");
+tokenRef.once("value", function(snapshot) {
     bot.login(snapshot.val());
     console.debug(snapshot.val());
 }, function (errorObject) {
