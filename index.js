@@ -49,16 +49,23 @@ bot.on("ready", async() => {
     if(newMsg.author.bot) return;
     if(newMsg.channel.name === 'reggelt'){
     if(oldMsg.content.toLowerCase().includes("reggelt") && !newMsg.content.toLowerCase().includes("reggelt")) {
-      async function reggeltupdateall() {
+      async function reggeltUpdateEdit() {
 
         var db = admin.firestore();
         const res = await db.collection('dcusers').doc('all').update({
-          reggeltcount: admin.firestore.FieldValue.increment(1)
+          reggeltcount: admin.firestore.FieldValue.increment(-1)
+        });
+        const res = await db.collection('dcusers').doc(newMsg.author.id).update({
+          reggeltcount: admin.firestore.FieldValue.increment(-1)
         });
         
        }
+       reggeltUpdateEdit()
+       if(!newMsg.deletable) {
+       } else {
         newMsg.delete[1];
         newMsg.author.send('Ebben a formában nem modósíthadod az üzenetedet.');
+       }
     }
   }
 });
@@ -70,7 +77,7 @@ bot.on("message", async message => {
   let cmd = messageArray[0];
   let args = messageArray.slice(1);
 
-    if(message.author.bot) {return}
+    if(message.author.bot) return;
 
   // help
   if(message.content === `${prefix}help`){
@@ -88,7 +95,6 @@ bot.on("message", async message => {
     .setFooter(message.author.username)
     .setThumbnail(bot.user.avatarURL)
     .setTimestamp(message.createdAt)
- 
     message.channel.send(upmbed);
 }
 
