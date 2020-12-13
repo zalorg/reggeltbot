@@ -43,7 +43,7 @@ bot.on("ready", async() => {
 
 });
 
-bot.on("messageUpdate", (oldMsg, newMsg) => {
+bot.on("messageUpdate", async (_, newMsg) => {
     if(newMsg.author.bot) return;
 
     if(newMsg.channel.name === "reggelt"){
