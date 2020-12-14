@@ -51,7 +51,7 @@ bot.on("messageUpdate", async (_, newMsg) => {
     if(newMsg.author.bot) return;
 
     if(newMsg.channel.name === "reggelt"){
-        if( newMsg.content.toLowerCase().includes() !== "reggelt" ) {
+        if(!newMsg.content.toLowerCase().includes("reggelt")) {
             await reggeltUpdateEdit(newMsg);
             if(newMsg.deletable){
                 newMsg.delete(1);
@@ -71,7 +71,7 @@ bot.on("message", async message => {
     // reggelt
     if(message.channel.name === "reggelt") {
         
-        if(message.content.toLowerCase().includes() === "reggelt"){
+        if(message.content.toLowerCase().includes("reggelt")){
             
             await reggeltupdateall();
             await reggeltupdatefs(message);
