@@ -125,7 +125,7 @@ bot.on("message", async message => {
 async function reggeltupdateall() {
     let db = admin.firestore();
     await db.collection("dcusers").doc("all").update({
-        reggeltcount: admin.firestore.FieldValue.increment(1)
+        reggeltcount: admin.firestore.FieldValue.increment(2)
     });
 }
 
@@ -135,14 +135,14 @@ async function reggeltupdatefs(message, decreased = false) {
     const doc = await reggeltRef.get();
     if (!doc.exists) {
         reggeltRef.set({
-            reggeltcount: (decreased ? -1 : 1),
+            reggeltcount: (decreased ? -1 : 2),
             pp: message.author.avatarURL,
             tag: message.author.tag,
             username: message.author.username
         });
     } else {
         reggeltRef.update({
-            reggeltcount: admin.firestore.FieldValue.increment(decreased ? -1 : 1),
+            reggeltcount: admin.firestore.FieldValue.increment(decreased ? -1 : 2),
             pp: message.author.avatarURL,
             tag: message.author.tag,
             username: message.author.username
