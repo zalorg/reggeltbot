@@ -120,6 +120,48 @@ bot.on("message", async message => {
     else if(message.content === `${prefix}count`){
         await getCountForUser(message);
     }
+        else if(cmd === `${prefix}link`) {
+        if(!args[0]){
+            message.reply("Please provide your email");
+        } else if(!args[1]) {
+            message.reply("Please provide your link code");
+        } else {
+            const db = admin.firestore();
+            admin
+                .auth()
+                .getUserByEmail(args[0])
+                .then((userRecord) => {
+                    async function asd() {
+                        const userRef = db.collection("users").doc(userRecord.uid);
+                        const userDoc = await userRef.get();
+
+                        const dcUserRef = db.collection("dcusers").doc(message.author.id);
+                        // eslint-disable-next-line no-unused-vars
+                        const dcUserDoc = await dcUserRef.get();
+
+                        if(userDoc.data().dclinked) {
+                            message.reply("This account is already linked!", args[1]);
+                        } else if(`${userDoc.data().dclink}` === args[1]) {
+                            dcUserRef.update({
+                                dcid: message.author.id,
+                            });
+                            userRef.update({
+                                dclink: admin.firestore.FieldValue.delete(),
+                                dclinked: true,
+                                dcid: message.author.id,
+                            });
+                            message.reply(`Account linked succesfuly!`);
+                        } else {
+                            message.reply(userDoc.data().dclink, args[1]);
+                        }
+                    } asd();
+                })
+                .catch((error) => {
+                    console.log("Error fetching user data:", error);
+                });
+            
+        }
+    }
 });
 
 async function reggeltupdateall() {
