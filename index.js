@@ -64,9 +64,9 @@ bot.on("messageUpdate", async (_, newMsg) => {
 bot.on("message", async message => {
     if(message.author.bot) return;
     let prefix = "r!"; 
-    //let messageArray = message.content.split(" ");
-    //let cmd = messageArray[0];
-    //let args = messageArray.slice(1);
+    let messageArray = message.content.split(" ");
+    let cmd = messageArray[0];
+    let args = messageArray.slice(1);
 
     // reggelt
     if(message.channel.name === "reggelt") {
