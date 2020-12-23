@@ -120,7 +120,7 @@ bot.on("message", async message => {
     else if(message.content === `${prefix}count`){
         await getCountForUser(message);
     }
-        else if(cmd === `${prefix}link`) {
+    else if(cmd === `${prefix}link`) {
         if(!args[0]){
             message.reply("Please provide your email");
         } else if(!args[1]) {
@@ -150,7 +150,7 @@ bot.on("message", async message => {
                                 dclinked: true,
                                 dcid: message.author.id,
                             });
-                            message.reply(`Account linked succesfuly!`);
+                            message.reply("Account linked succesfuly!");
                         } else {
                             message.reply(userDoc.data().dclink, args[1]);
                         }
