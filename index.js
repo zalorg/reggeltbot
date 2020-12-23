@@ -5,6 +5,9 @@ const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
 
+const incrementCount = 2;
+const decreaseCount = -1;
+
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: "https://zal1000.firebaseio.com"
@@ -120,7 +123,7 @@ bot.on("message", async message => {
     else if(message.content === `${prefix}count`){
         await getCountForUser(message);
     }
-        else if(cmd === `${prefix}link`) {
+    else if(cmd === `${prefix}link`) {
         if(!args[0]){
             message.reply("Please provide your email");
         } else if(!args[1]) {
@@ -150,7 +153,7 @@ bot.on("message", async message => {
                                 dclinked: true,
                                 dcid: message.author.id,
                             });
-                            message.reply(`Account linked succesfuly!`);
+                            message.reply("Account linked succesfuly!");
                         } else {
                             message.reply(userDoc.data().dclink, args[1]);
                         }
@@ -167,7 +170,7 @@ bot.on("message", async message => {
 async function reggeltupdateall() {
     let db = admin.firestore();
     await db.collection("dcusers").doc("all").update({
-        reggeltcount: admin.firestore.FieldValue.increment(2)
+        reggeltcount: admin.firestore.FieldValue.increment(incrementCount)
     });
 }
 
@@ -177,14 +180,14 @@ async function reggeltupdatefs(message, decreased = false) {
     const doc = await reggeltRef.get();
     if (!doc.exists) {
         reggeltRef.set({
-            reggeltcount: (decreased ? -1 : 2),
+            reggeltcount: (decreased ? decreaseCount : incrementCount),
             pp: message.author.avatarURL,
             tag: message.author.tag,
             username: message.author.username
         });
     } else {
         reggeltRef.update({
-            reggeltcount: admin.firestore.FieldValue.increment(decreased ? -1 : 2),
+            reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
             pp: message.author.avatarURL,
             tag: message.author.tag,
             username: message.author.username
@@ -195,10 +198,10 @@ async function reggeltupdatefs(message, decreased = false) {
 async function reggeltUpdateEdit(message) {
     let db = admin.firestore();
     await db.collection("dcusers").doc("all").update({
-        reggeltcount: admin.firestore.FieldValue.increment(-1)
+        reggeltcount: admin.firestore.FieldValue.increment(decreaseCount)
     });
     await db.collection("dcusers").doc(message.author.id).update({
-        reggeltcount: admin.firestore.FieldValue.increment(-1)
+        reggeltcount: admin.firestore.FieldValue.increment(decreaseCount)
     });
 }
 
