@@ -228,6 +228,8 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .setFooter(`This is a template fact`)
+            .addBlankField()
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setTimestamp(message.createdAt);
 
         message.channel.send(upmbed);
@@ -239,6 +241,8 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .addField("Fact id", docid)
+            .addBlankField()
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setFooter(docdata.author)
             .setTimestamp(message.createdAt);
 
@@ -253,6 +257,8 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .addField("Fact id", docid)
+            .addBlankField()
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setFooter(dcDoc.data().tag)
             .setThumbnail(dcDoc.data().pp)
             .setTimestamp(message.createdAt);
