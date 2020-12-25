@@ -179,7 +179,7 @@ async function getRandomFactWithId(id, message) {
     const ref = db.collection("facts").doc(id);
     const doc = await ref.get();
     if(!doc.exists) {
-        message.reply('Connot find that fact!');
+        message.reply('Cannot find that fact!');
     } else {
         sendRandomFact(doc.id, doc.data(), message);
     }
