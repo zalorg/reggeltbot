@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /* eslint-disable no-undef */
 const Discord = require("discord.js");
 const bot = new Discord.Client();
@@ -164,8 +165,102 @@ bot.on("message", async message => {
                 });
             
         }
+    } else if(cmd === `${prefix}fact`) {
+        if(!args[0]) {
+            await getRandomFact(message);
+        } else if(args[0] === `id`) {
+            await getRandomFactWithId(args[1], message);
+        }
     }
 });
+
+async function getRandomFactWithId(id, message) {
+    const db = admin.firestore();
+    const ref = db.collection("facts").doc(id);
+    const doc = await ref.get();
+    if(!doc.exists) {
+        message.reply('Connot find that fact!');
+    } else {
+        sendRandomFact(doc.id, doc.data(), message);
+    }
+}
+
+async function getRandomFact(message) {
+    const db = admin.firestore();
+
+    var quotes = db.collection("facts");
+
+    var key2 = quotes.doc().id;
+        
+    quotes.where(admin.firestore.FieldPath.documentId(), '>=', key2).limit(1).get()
+        .then(snapshot => {
+            if(snapshot.size > 0) {
+                snapshot.forEach(doc => {
+                    sendRandomFact(doc.id, doc.data(), message);
+                });
+            } else {
+                quotes.where(admin.firestore.FieldPath.documentId(), '<', key2).limit(1).get()
+                    .then(snapshot => {
+                        snapshot.forEach(doc => {
+                            sendRandomFact(doc.id, doc.data(), message);
+                        });
+                    })
+                    .catch(err => {
+                        message.reply(`Error geting fact: **${err.message}**`);
+                        console.log('Error getting documents', err);
+                    });
+            }
+        })
+        .catch(err => {
+            message.reply(`Error geting fact: **${err.message}**`);
+            console.log('Error getting documents', err);
+        });
+
+}
+
+async function sendRandomFact(docid, docdata, message) {
+    const db = admin.firestore();
+    const userRef = db.collection('users').doc(`${docdata.owner}`);
+    const userDoc = await userRef.get();
+    if(!docdata.owner){
+        let upmbed = new Discord.RichEmbed()
+            .setTitle(`Random fact`)
+            .setColor("#FFCB5C")
+            .addField("Fact", docdata.fact)
+            .setFooter(`This is a template fact`)
+            .setTimestamp(message.createdAt);
+
+        message.channel.send(upmbed);
+    
+    } else if(!userDoc.data().dcid) {
+
+        let upmbed = new Discord.RichEmbed()
+            .setTitle(`Random fact by.: ${docdata.author}`)
+            .setColor("#FFCB5C")
+            .addField("Fact", docdata.fact)
+            .addField("Fact id", docid)
+            .setFooter(docdata.author)
+            .setTimestamp(message.createdAt);
+
+        message.channel.send(upmbed);
+        
+    } else {
+        const dcRef = db.collection('dcusers').doc(`${userDoc.data().dcid}`);
+        const dcDoc = await dcRef.get();
+
+        let upmbed = new Discord.RichEmbed()
+            .setTitle(`Random fact by.: ${dcDoc.data().username}`)
+            .setColor("#FFCB5C")
+            .addField("Fact", docdata.fact)
+            .addField("Fact id", docid)
+            .setFooter(dcDoc.data().tag)
+            .setThumbnail(dcDoc.data().pp)
+            .setTimestamp(message.createdAt);
+
+        message.channel.send(upmbed);
+    }
+
+}
 
 async function reggeltupdateall() {
     let db = admin.firestore();
