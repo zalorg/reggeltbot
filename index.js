@@ -169,7 +169,11 @@ bot.on("message", async message => {
         if(!args[0]) {
             await getRandomFact(message);
         } else if(args[0] === `id`) {
-            await getRandomFactWithId(args[1], message);
+            if(!args[1]) {
+                message.reply('Please add fact id!');
+            } else {
+                await getRandomFactWithId(args[1], message);
+            }
         }
     }
 });
