@@ -185,6 +185,7 @@ async function restartRequest(message) {
     tokenRef.once("value", function(snapshot) {
         if(message.author.id === snapshot.val()) {
             message.reply('Restarting container...');
+            bot.destroy();
             process.exit();
         } else {
             message.reply('Nope',);
