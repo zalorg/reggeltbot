@@ -175,8 +175,24 @@ bot.on("message", async message => {
                 await getRandomFactWithId(args[1], message);
             }
         }
+    } else if (cmd === `${prefix}restart`) {
+        await restartRequest(message);
     }
 });
+
+async function restartRequest(message) {
+    let tokenRef = rdb.ref("bots/reggeltbot/ownerid");
+    tokenRef.once("value", function(snapshot) {
+        if(message.author.id === snapshot.val()) {
+            message.reply('Restarting container...');
+            process.exit();
+        } else {
+            message.reply('Nope',);
+            console.log(message.author.id);
+            console.log(snapshot.val());
+        }
+    });
+}
 
 async function getRandomFactWithId(id, message) {
     const db = admin.firestore();
