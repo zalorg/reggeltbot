@@ -2,6 +2,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/901967bd048b414c9f265d6e5f711f53)](https://app.codacy.com/gh/zal1000/reggeltbot?utm_source=github.com&utm_medium=referral&utm_content=zal1000/reggeltbot&utm_campaign=Badge_Grade)
 
 Bot status
+
 [![Discord Bots](https://top.gg/api/widget/749037285621628950.svg)](https://top.gg/bot/749037285621628950)
 
 # Commands
