@@ -6,9 +6,6 @@ const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
 
-const incrementCount = 2;
-const decreaseCount = -1;
-
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: "https://zal1000.firebaseio.com"
@@ -227,7 +224,7 @@ async function getRandomFact(message) {
                         });
                     })
                     .catch(err => {
-                        message.reply(`Error geting fact: **${err.message}**`);
+                        message.reply(`Error geting fact: **${err}**`);
                         console.log('Error getting documents', err);
                     });
             }
@@ -291,6 +288,9 @@ async function sendRandomFact(docid, docdata, message) {
 
 async function reggeltupdateall() {
     let db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const botDoc = await botRef.get();
+    const incrementCount = botDoc.data().incrementCount;
     await db.collection("dcusers").doc("all").update({
         reggeltcount: admin.firestore.FieldValue.increment(incrementCount)
     });
@@ -300,25 +300,32 @@ async function reggeltupdatefs(message, decreased = false) {
     let db = admin.firestore();
     const reggeltRef = db.collection("dcusers").doc(message.author.id);
     const doc = await reggeltRef.get();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const botDoc = await botRef.get();
+    const decreaseCount = botDoc.data().decreaseCount;
+    const incrementCount = botDoc.data().incrementCount;
     if (!doc.exists) {
         reggeltRef.set({
             reggeltcount: (decreased ? decreaseCount : incrementCount),
             pp: message.author.avatarURL,
             tag: message.author.tag,
-            username: message.author.username
+            username: message.author.username,
         });
     } else {
         reggeltRef.update({
             reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
             pp: message.author.avatarURL,
             tag: message.author.tag,
-            username: message.author.username
+            username: message.author.username,
         });
     }
 }
 
 async function reggeltUpdateEdit(message) {
     let db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const botDoc = await botRef.get();
+    const decreaseCount = botDoc.data().decreaseCount;
     await db.collection("dcusers").doc("all").update({
         reggeltcount: admin.firestore.FieldValue.increment(decreaseCount)
     });
@@ -348,19 +355,16 @@ async function getCountForUser(message) {
     }
 }
 console.log(process.env.PROD);
-// eslint-disable-next-line no-undef
-if(process.env.PROD === "false"){
-    let tokenRef = rdb.ref("bots/reggeltbot/testtoken");
-    tokenRef.once("value", function(snapshot) {
-        bot.login(snapshot.val());
-    }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-    });
-} else {
-    let tokenRef = rdb.ref("bots/reggeltbot/token");
-    tokenRef.once("value", function(snapshot) {
-        bot.login(snapshot.val());
-    }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-    });
+const PROD = process.env.PROD;
+botlogin(PROD);
+
+async function botlogin(PROD) {
+    const db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const doc = await botRef.get();
+    if(PROD === "false") {
+        bot.login(doc.data().testtoken);
+    } else {
+        bot.login(doc.data().token);
+    }
 }
