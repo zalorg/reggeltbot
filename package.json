@@ -12,7 +12,7 @@
     "console-stamp": "^0.2.9",
     "dblapi.js": "^2.4.1",
     "discord-economy": "^1.2.2",
-    "discord.js": "^11.6.4",
+    "discord.js": "^12.5.1",
     "discord.js-commando": "^0.10.0",
     "eris": "^0.10.1",
     "firebase-admin": "^9.3.0",
