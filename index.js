@@ -22,7 +22,41 @@ dblRef.once("value", function(snapshot) {
 
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
+
+    const commandData = {
+        name: "count",
+        description: "Ennyiszer köszöntél be a #reggelt csatornába"
+        // possible options here e.g. options: [{...}]
+    };
         
+
+    bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
+        data: commandData
+    });
+
+    bot.api.applications(bot.user.id).guilds('541446521313296385').commands.post({
+        data: commandData
+    });
+
+    bot.ws.on('INTERACTION_CREATE', async interaction => {
+        const command = interaction.data.name.toLowerCase();
+        //const args = interaction.data.options;
+        console.log(interaction);
+        if (command === 'count'){
+            const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
+            const userdoc = await userref.get();
+            bot.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: {
+                        content: `${userdoc.data().reggeltcount}`
+                    }
+                }
+            });
+        }
+    });
+
+
     const db = admin.database();
     const doc = admin.firestore().collection("dcusers").doc("all");
     doc.onSnapshot(docSnapshot => {
@@ -153,7 +187,7 @@ bot.on("message", async message => {
                             });
                             message.reply("Account linked succesfuly!");
                         } else {
-                            message.reply(userDoc.data().dclink, args[1]);
+                            message.reply("Error linking account");
                         }
                     } asd();
                 })
