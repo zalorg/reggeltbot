@@ -34,11 +34,7 @@ bot.on("ready", async() => {
         data: commandData
     });
 
-    bot.api.applications(bot.user.id).guilds('541446521313296385').commands.post({
-        data: commandData
-    });
-
-    bot.api.applications(bot.user.id).guilds('466916282541801472').commands.post({
+    bot.api.applications(bot.user.id).commands.post({
         data: commandData
     });
     
