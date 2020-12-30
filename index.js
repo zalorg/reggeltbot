@@ -37,19 +37,48 @@ bot.on("ready", async() => {
     bot.api.applications(bot.user.id).guilds('541446521313296385').commands.post({
         data: commandData
     });
-
+    
+    bot.api.applications(bot.user.id).guilds('466916282541801472').commands.post({
+        data: commandData
+    });
     bot.ws.on('INTERACTION_CREATE', async interaction => {
         const command = interaction.data.name.toLowerCase();
         //const args = interaction.data.options;
         console.log(interaction);
         if (command === 'count'){
             const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
-            const userdoc = await userref.get();
+            const doc = await userref.get();
+/*
+            .setTitle(`${message.author.username}`)
+            .setColor("#FFCB5C")
+            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
+            .setFooter(message.author.username)
+            .setThumbnail(message.author.avatarURL)
+            .setTimestamp(message.createdAt);
+*/
+            const exampleEmbed = {
+                color: 0xFFCB5C,
+                title: interaction.member.user.username,
+                thumbnail: {
+                    url: doc.data().pp,
+                },
+                fields: [
+                    {
+                        name: "Ennyiszer köszöntél be a #reggelt csatornába",
+                        value: `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id})`,
+                    },
+                ],
+                footer: {
+                    text: interaction.member.user.username,
+                },
+            };
+
             bot.api.interactions(interaction.id, interaction.token).callback.post({
                 data: {
                     type: 4,
                     data: {
-                        content: `${userdoc.data().reggeltcount}`
+                        "content": "Congrats on sending your command!",
+                        "embeds": [exampleEmbed],
                     }
                 }
             });
@@ -115,7 +144,7 @@ bot.on("message", async message => {
             message.react("☕");     
         }
         else {
-            message.delete(1)
+            message.delete[1]
                 .then(console.log(`message deleted in "${message.guild} (id: "${message.guild.id}")"(HUN)`))
                 .catch(function(error) {
                     message.reply("Error: " + error.message);
@@ -134,7 +163,7 @@ bot.on("message", async message => {
     
     // help
     else if(message.content === `${prefix}help`){
-        let upmbed = new Discord.RichEmbed()
+        let upmbed = new Discord.MessageEmbed()
             .setTitle(message.author.username)
             .setColor("#FFCB2B")
             .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${message.author.id}) is megnézheted)`)
@@ -271,11 +300,12 @@ async function getRandomFact(message) {
 }
 
 async function sendRandomFact(docid, docdata, message) {
+    console.log("");
     const db = admin.firestore();
     const userRef = db.collection('users').doc(`${docdata.owner}`);
     const userDoc = await userRef.get();
     if(!docdata.owner){
-        let upmbed = new Discord.RichEmbed()
+        let upmbed = new Discord.MessageEmbed()
             .setTitle(`Random fact`)
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
@@ -288,7 +318,7 @@ async function sendRandomFact(docid, docdata, message) {
     
     } else if(!userDoc.data().dcid) {
 
-        let upmbed = new Discord.RichEmbed()
+        let upmbed = new Discord.MessageEmbed()
             .setTitle(`Random fact by.: ${docdata.author}`)
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
@@ -304,7 +334,7 @@ async function sendRandomFact(docid, docdata, message) {
         const dcRef = db.collection('dcusers').doc(`${userDoc.data().dcid}`);
         const dcDoc = await dcRef.get();
 
-        let upmbed = new Discord.RichEmbed()
+        let upmbed = new Discord.MessageEmbed()
             .setTitle(`Random fact by.: ${dcDoc.data().username}`)
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
@@ -377,7 +407,7 @@ async function getCountForUser(message) {
         console.log("No such document!");
         message.reply("Error reading document!");
     } else {
-        let upmbed = new Discord.RichEmbed()
+        let upmbed = new Discord.MessageEmbed()
             .setTitle(`${message.author.username}`)
             .setColor("#FFCB5C")
             .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
