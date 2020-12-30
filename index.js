@@ -153,7 +153,7 @@ bot.on("message", async message => {
                             });
                             message.reply("Account linked succesfuly!");
                         } else {
-                            message.reply(userDoc.data().dclink, args[1]);
+                            message.reply("Error linking account");
                         }
                     } asd();
                 })
