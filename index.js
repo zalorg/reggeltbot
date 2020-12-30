@@ -37,10 +37,11 @@ bot.on("ready", async() => {
     bot.api.applications(bot.user.id).guilds('541446521313296385').commands.post({
         data: commandData
     });
-    
+
     bot.api.applications(bot.user.id).guilds('466916282541801472').commands.post({
         data: commandData
     });
+    
     bot.ws.on('INTERACTION_CREATE', async interaction => {
         const command = interaction.data.name.toLowerCase();
         //const args = interaction.data.options;
@@ -77,7 +78,6 @@ bot.on("ready", async() => {
                 data: {
                     type: 4,
                     data: {
-                        "content": "Congrats on sending your command!",
                         "embeds": [exampleEmbed],
                     }
                 }
