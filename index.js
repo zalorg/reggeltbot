@@ -23,6 +23,32 @@ dblRef.once("value", function(snapshot) {
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
         
+
+    bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
+        data: {
+            name: "hello",
+            description: "hello world command"
+            // possible options here e.g. options: [{...}]
+        }
+    });
+
+    bot.ws.on('INTERACTION_CREATE', async interaction => {
+        const command = interaction.data.name.toLowerCase();
+        //const args = interaction.data.options;
+    
+        if (command === 'hello'){
+            bot.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: {
+                        content: "hello world!!!"
+                    }
+                }
+            });
+        }
+    });
+
+
     const db = admin.database();
     const doc = admin.firestore().collection("dcusers").doc("all");
     doc.onSnapshot(docSnapshot => {
