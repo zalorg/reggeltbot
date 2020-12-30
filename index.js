@@ -114,7 +114,7 @@ bot.on("messageUpdate", async (_, newMsg) => {
         if(!newMsg.content.toLowerCase().includes("reggelt")) {
             await reggeltUpdateEdit(newMsg);
             if(newMsg.deletable){
-                newMsg.delete(1);
+                newMsg.delete();
                 newMsg.author.send("Ebben a formában nem modósíthadod az üzenetedet.");
             }
         }
@@ -140,14 +140,8 @@ bot.on("message", async message => {
             message.react("☕");     
         }
         else {
-            message.delete[1]
-                .then(console.log(`message deleted in "${message.guild} (id: "${message.guild.id}")"(HUN)`))
-                .catch(function(error) {
-                    message.reply("Error: " + error.message);
-                    console.log("Error:", error);
-                });
+            message.delete();
             message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
-                .then(console.log(`warning sent to: "${message.author.username} (id: "${message.author.id}")"(HUN)`))
                 .catch(function(error) {
                     message.reply("Error: " + error);
                     console.log("Error:", error);
@@ -367,16 +361,16 @@ async function reggeltupdatefs(message, decreased = false) {
     if (!doc.exists) {
         reggeltRef.set({
             reggeltcount: (decreased ? decreaseCount : incrementCount),
-            pp: message.author.avatarURL,
             tag: message.author.tag,
             username: message.author.username,
+            pp: message.author.avatarURL(),
         });
     } else {
         reggeltRef.update({
             reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
-            pp: message.author.avatarURL,
             tag: message.author.tag,
             username: message.author.username,
+            pp: message.author.avatarURL(),
         });
     }
 }
