@@ -58,10 +58,45 @@ bot.on("ready", async() => {
                 "description": "Whether to show only baby animals",
                 "type": 5,
                 "required": false
+            },
+            {
+                name: 'id',
+                description: 'uid',
+                type: 3,
+                required: false
             }
         ]
     };
     
+    const factCMD = {
+        name: "fact",
+        description: "Random fact",
+        // possible options here e.g. options: [{...}]
+        options: [
+            {
+                "name": "Options",
+                "description": "Command options",
+                "type": 3,
+                "required": true,
+                "choices": [
+                    {
+                        "name": "Random",
+                        "value": "random"
+                    },
+                    {
+                        "name": "Id",
+                        "value": "id"
+                    },
+                ]
+            },
+            {
+                name: 'id',
+                description: 'Fact id here',
+                type: 3,
+                required: false
+            }
+        ]
+    };
     const testCommandData = {
         name: "help",
         description: "List of all commands"
@@ -70,11 +105,14 @@ bot.on("ready", async() => {
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
         data: testCommandData
     });
-
+    bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
+        data: factCMD
+    });
+/*
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
         data: mailCMD
     });
-
+*/
     bot.api.applications(bot.user.id).commands.post({
         data: countCMD,
     });
@@ -82,7 +120,6 @@ bot.on("ready", async() => {
     bot.ws.on('INTERACTION_CREATE', async interaction => {
         const command = interaction.data.name.toLowerCase();
         //const args = interaction.data.options;
-        console.log(interaction);
         if (command === 'count'){
             const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
             const doc = await userref.get();
@@ -115,20 +152,6 @@ bot.on("ready", async() => {
         } else if(command === "help") {
 
             let prefix = "r!";
-            /*
-            .setTitle(message.author.username)
-            .setColor("#FFCB2B")
-            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${message.author.id}) is megnézheted)`)
-            .addField(`${prefix}invite`, "Bot meghívása")
-            .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
-            .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
-            .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
-            .addBlankField()
-            .addField("Bot ping", `${bot.ping}ms`)
-            .addField("Uptime", `${ms(bot.uptime)}`)
-            .setFooter(message.author.username)
-            .setThumbnail(bot.user.avatarURL())
-            */
 
            let embed = {
             color: 0xFFCB5C,
@@ -168,6 +191,50 @@ bot.on("ready", async() => {
                 }
             }
         });
+        } else if(command === "fact") {
+            console.log(interaction.data.options);
+            console.log(interaction.data.options.name)
+            /*
+        .setTitle(`Random fact`)
+        .setColor("#FFCB5C")
+        .addField("Fact", docdata.fact)
+        .setFooter(`This is a template fact`)
+        .addBlankField()
+        .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
+        */
+
+      //  if(interaction.data.options.indexOf( 0 ) === -1)
+            let embed = {
+                color: 0xFFCB5C,
+                title: "Random fact",
+    
+                fields: [
+                    {
+                        name: `Fact`,
+                        value: `njlnm`,
+                    },              
+                    {
+                        name: `invite`,
+                        value: "Bot meghívása",
+                    },              
+                    {
+                        name: "Probléma jelentése",
+                        value: "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
+                    },
+                ],
+                footer: {
+                    text: interaction.member.user.username,
+                },
+            };
+
+            bot.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: {
+                        "embeds": [embed],
+                    }
+                }
+            });
         }
     });
 
@@ -324,9 +391,7 @@ async function getPrefix() {
     const db = admin.firestore();
     const botRef = db.collection("bots").doc("reggeltbot");
     const doc = await botRef.get();
-    console.log(doc.data());
     const PROD = process.env.PROD;
-    console.log(PROD);
     if(PROD === "false") {
         return {
             prefix: doc.data().testprefix,
