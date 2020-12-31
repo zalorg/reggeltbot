@@ -213,7 +213,7 @@ bot.on("messageUpdate", async (_, newMsg) => {
 
 bot.on("message", async message => {
     if(message.author.bot) return;
-    let prefix = "r!"; 
+    let prefix = (await getPrefix()).prefix; 
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
@@ -319,6 +319,28 @@ bot.on("message", async message => {
         await restartRequest(message);
     }
 });
+
+async function getPrefix() {
+    const db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const doc = await botRef.get();
+    console.log(doc.data());
+    const PROD = process.env.PROD;
+    console.log(PROD);
+    if(PROD === "false") {
+        return {
+            prefix: doc.data().testprefix,
+        }
+    } else if(PROD === "beta") {
+        return {
+            prefix: doc.data().betaprefix,
+        }
+    } else {
+        return {
+            prefix: doc.data().prefix,
+        }
+    }
+}
 
 async function restartRequest(message) {
     let tokenRef = rdb.ref("bots/reggeltbot/ownerid");
