@@ -23,19 +23,61 @@ dblRef.once("value", function(snapshot) {
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
 
-    const commandData = {
+    const countCMD = {
         name: "count",
         description: "Ennyiszer köszöntél be a #reggelt csatornába"
         // possible options here e.g. options: [{...}]
     };
-        
+
+    const mailCMD = {
+        name: "mail",
+        description: "Elküld neked egy email-t",
+        // possible options here e.g. options: [{...}]
+        options: [
+            {
+                "name": "animal",
+                "description": "The type of animal",
+                "type": 3,
+                "required": true,
+                "choices": [
+                    {
+                        "name": "Dog",
+                        "value": "animal_dog"
+                    },
+                    {
+                        "name": "Cat",
+                        "value": "animal_cat"
+                    },
+                    {
+                        "name": "Penguin",
+                        "value": "animal_penguin"
+                    }
+                ]
+            },
+            {
+                "name": "only_smol",
+                "description": "Whether to show only baby animals",
+                "type": 5,
+                "required": false
+            }
+        ]
+    };
+    
+    const testCommandData = {
+        name: "help",
+        description: "List of all commands"
+    }
 
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
-        data: commandData
+        data: testCommandData
+    });
+
+    bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
+        data: mailCMD
     });
 
     bot.api.applications(bot.user.id).commands.post({
-        data: commandData
+        data: countCMD,
     });
     
     bot.ws.on('INTERACTION_CREATE', async interaction => {
@@ -45,15 +87,8 @@ bot.on("ready", async() => {
         if (command === 'count'){
             const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
             const doc = await userref.get();
-/*
-            .setTitle(`${message.author.username}`)
-            .setColor("#FFCB5C")
-            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
-            .setFooter(message.author.username)
-            .setThumbnail(message.author.avatarURL)
-            .setTimestamp(message.createdAt);
-*/
-            const exampleEmbed = {
+
+            let embed = {
                 color: 0xFFCB5C,
                 title: interaction.member.user.username,
                 thumbnail: {
@@ -74,10 +109,66 @@ bot.on("ready", async() => {
                 data: {
                     type: 4,
                     data: {
-                        "embeds": [exampleEmbed],
+                        "embeds": [embed],
                     }
                 }
             });
+        } else if(command === "help") {
+
+            let prefix = "r!";
+            /*
+            .setTitle(message.author.username)
+            .setColor("#FFCB2B")
+            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${message.author.id}) is megnézheted)`)
+            .addField(`${prefix}invite`, "Bot meghívása")
+            .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
+            .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
+            .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
+            .addBlankField()
+            .addField("Bot ping", `${bot.ping}ms`)
+            .addField("Uptime", `${ms(bot.uptime)}`)
+            .setFooter(message.author.username)
+            .setThumbnail(bot.user.avatarURL())
+            */
+
+           let embed = {
+            color: 0xFFCB5C,
+            title: "Commands",
+
+            fields: [
+                {
+                    name: `${prefix}count`,
+                    value: `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id}) is megnézheted)`,
+                },                
+                {
+                    name: `${prefix}invite`,
+                    value: "Bot meghívása",
+                },                
+                {
+                    name: "Reggelt csatorna beállítása",
+                    value: "Nevezz el egy csatornát **reggelt**-nek és kész",
+                },                
+                {
+                    name: "top.gg",
+                    value: "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala",
+                },                
+                {
+                    name: "Probléma jelentése",
+                    value: "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
+                },
+            ],
+            footer: {
+                text: interaction.member.user.username,
+            },
+        };
+        bot.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+                type: 4,
+                data: {
+                    "embeds": [embed],
+                }
+            }
+        });
         }
     });
 
@@ -165,7 +256,7 @@ bot.on("message", async message => {
             .addField("Bot ping", `${bot.ping}ms`)
             .addField("Uptime", `${ms(bot.uptime)}`)
             .setFooter(message.author.username)
-            .setThumbnail(bot.user.avatarURL)
+            .setThumbnail(bot.user.avatarURL())
             .setTimestamp(message.createdAt);
         message.channel.send(upmbed);
     }
@@ -296,13 +387,13 @@ async function sendRandomFact(docid, docdata, message) {
     const userDoc = await userRef.get();
     if(!docdata.owner){
         let upmbed = new Discord.MessageEmbed()
-            .setTitle(`Random fact`)
-            .setColor("#FFCB5C")
-            .addField("Fact", docdata.fact)
-            .setFooter(`This is a template fact`)
-            .addBlankField()
-            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
-            .setTimestamp(message.createdAt);
+        .setTitle(`Random fact`)
+        .setColor("#FFCB5C")
+        .addField("Fact", docdata.fact)
+        .setFooter(`This is a template fact`)
+        .addBlankField()
+        .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
+        .setTimestamp(message.createdAt);
 
         message.channel.send(upmbed);
     
@@ -402,8 +493,10 @@ async function getCountForUser(message) {
             .setColor("#FFCB5C")
             .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
             .setFooter(message.author.username)
-            .setThumbnail(message.author.avatarURL)
+            .setThumbnail(message.author.avatarURL())
             .setTimestamp(message.createdAt);
+        
+        console.log(upmbed);
 
         message.channel.send(upmbed);
     }
@@ -418,6 +511,8 @@ async function botlogin(PROD) {
     const doc = await botRef.get();
     if(PROD === "false") {
         bot.login(doc.data().testtoken);
+    } else if(PROD === "beta") {
+        bot.login(doc.data().betatoken);
     } else {
         bot.login(doc.data().token);
     }
