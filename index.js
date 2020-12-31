@@ -231,18 +231,19 @@ bot.on("message", async message => {
 });
 
 async function restartRequest(message) {
-    let tokenRef = rdb.ref("bots/reggeltbot/ownerid");
-    tokenRef.once("value", function(snapshot) {
-        if(message.author.id === snapshot.val()) {
+    const ref = admin.firestore().collection("bots").doc("reggeltbot");
+    const doc = await ref.get();
+
+        if(message.author.id === doc.data().ownerid) {
             message.reply('Restarting container...');
             bot.destroy();
             process.exit();
         } else {
             message.reply('Nope',);
             console.log(message.author.id);
-            console.log(snapshot.val());
+            console.log(doc.data().ownerid);
         }
-    });
+
 }
 
 async function getRandomFactWithId(id, message) {
