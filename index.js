@@ -80,18 +80,18 @@ bot.on("ready", async() => {
                 "required": true,
                 "choices": [
                     {
-                        "name": "Random",
-                        "value": "random"
+                        "name": "Add",
+                        "value": "add"
                     },
                     {
-                        "name": "Id",
-                        "value": "id"
+                        "name": "Get",
+                        "value": "get"
                     },
                 ]
             },
             {
                 name: 'id',
-                description: 'Fact id here',
+                description: 'Fact id here (only works with get)',
                 type: 3,
                 required: false
             }
@@ -100,7 +100,7 @@ bot.on("ready", async() => {
     const testCommandData = {
         name: "help",
         description: "List of all commands"
-    }
+    };
 
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
         data: testCommandData
@@ -108,7 +108,7 @@ bot.on("ready", async() => {
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
         data: factCMD
     });
-/*
+    /*
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
         data: mailCMD
     });
@@ -153,70 +153,27 @@ bot.on("ready", async() => {
 
             let prefix = "r!";
 
-           let embed = {
-            color: 0xFFCB5C,
-            title: "Commands",
-
-            fields: [
-                {
-                    name: `${prefix}count`,
-                    value: `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id}) is megnézheted)`,
-                },                
-                {
-                    name: `${prefix}invite`,
-                    value: "Bot meghívása",
-                },                
-                {
-                    name: "Reggelt csatorna beállítása",
-                    value: "Nevezz el egy csatornát **reggelt**-nek és kész",
-                },                
-                {
-                    name: "top.gg",
-                    value: "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala",
-                },                
-                {
-                    name: "Probléma jelentése",
-                    value: "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
-                },
-            ],
-            footer: {
-                text: interaction.member.user.username,
-            },
-        };
-        bot.api.interactions(interaction.id, interaction.token).callback.post({
-            data: {
-                type: 4,
-                data: {
-                    "embeds": [embed],
-                }
-            }
-        });
-        } else if(command === "fact") {
-            console.log(interaction.data.options);
-            console.log(interaction.data.options.name)
-            /*
-        .setTitle(`Random fact`)
-        .setColor("#FFCB5C")
-        .addField("Fact", docdata.fact)
-        .setFooter(`This is a template fact`)
-        .addBlankField()
-        .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
-        */
-
-      //  if(interaction.data.options.indexOf( 0 ) === -1)
             let embed = {
                 color: 0xFFCB5C,
-                title: "Random fact",
-    
+                title: "Commands",
+
                 fields: [
                     {
-                        name: `Fact`,
-                        value: `njlnm`,
-                    },              
+                        name: `${prefix}count`,
+                        value: `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id}) is megnézheted)`,
+                    },                
                     {
-                        name: `invite`,
+                        name: `${prefix}invite`,
                         value: "Bot meghívása",
-                    },              
+                    },                
+                    {
+                        name: "Reggelt csatorna beállítása",
+                        value: "Nevezz el egy csatornát **reggelt**-nek és kész",
+                    },                
+                    {
+                        name: "top.gg",
+                        value: "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala",
+                    },                
                     {
                         name: "Probléma jelentése",
                         value: "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
@@ -226,7 +183,6 @@ bot.on("ready", async() => {
                     text: interaction.member.user.username,
                 },
             };
-
             bot.api.interactions(interaction.id, interaction.token).callback.post({
                 data: {
                     type: 4,
@@ -235,6 +191,73 @@ bot.on("ready", async() => {
                     }
                 }
             });
+        } else if(command === "fact") {
+
+            if(interaction.data.options[0].value === "get") {
+                if(!interaction.data.options[1]) {
+                    //////////////////////////////////////////////  random fact  ////////////////////////////////////////////////////////////////////////////////
+                    const db = admin.firestore();
+                    var quotes = db.collection("facts");
+                    var key2 = quotes.doc().id;
+                    quotes.where(admin.firestore.FieldPath.documentId(), '>=', key2).limit(1).get()
+                        .then(snapshot => {
+                            if(snapshot.size > 0) {
+                                snapshot.forEach(doc => {
+                                    sendFactSlas(doc.id, doc.data(), interaction);
+
+                                });
+                            } else {
+                                quotes.where(admin.firestore.FieldPath.documentId(), '<', key2).limit(1).get()
+                                    .then(snapshot => {
+                                        snapshot.forEach(doc => {
+                                            sendFactSlas(doc.id, doc.data(), interaction);
+                                        });
+                                    })
+                                    .catch(err => {
+                                        message.reply(`Error geting fact: **${err}**`);
+                                        console.log('Error getting documents', err);
+                                    });
+                            }
+                        })
+                        .catch(err => {
+                            message.reply(`Error geting fact: **${err.message}**`);
+                            console.log('Error getting documents', err);
+                        });
+
+
+                } else {
+                    //////////////////////////////////////////////  fact with id  ///////////////////////////////////////////////////////////////////////////////
+
+                    /*
+
+                    */
+                    const db = admin.firestore();
+                    const ref = db.collection("facts").doc(interaction.data.options[1].value);
+                    const doc = await ref.get();
+                    if(!doc.exists) {
+                        bot.api.interactions(interaction.id, interaction.token).callback.post({
+                            data: {
+                                type: 4,
+                                data: {
+                                    "content": "Cannot find that fact!",
+                                }
+                            }
+                        });                    
+                    } else {
+                        let upmbed = new Discord.MessageEmbed()
+                            .setTitle(`Random fact by.: ${docdata.author}`)
+                            .setColor("#FFCB5C")
+                            .addField("Fact", `${docdata.fact}`)
+                            .addField("Fact id", `${docid}`)
+                            .addBlankField()
+                            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
+                            .setFooter(`${docdata.author}`)
+                            .setTimestamp(message.createdAt);
+                        
+                        console.log(upmbed);
+                    }
+                }
+            }
         }
     });
 
@@ -387,6 +410,44 @@ bot.on("message", async message => {
     }
 });
 
+async function sendFactSlas(docid, docdata, interaction) {
+    if(!docdata.owner) {
+        let upmbed = new Discord.MessageEmbed()
+            .setTitle(`Random fact`)
+            .setColor("#FFCB5C")
+            .addField("Fact", `${docdata.fact}`)
+            .addField('\u200b', '\u200b')
+            .addField("Fact id", `${docid}`)
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
+            .setFooter(`Template fact`);
+        bot.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+                type: 4,
+                data: {
+                    "embeds": [upmbed],
+                }
+            }
+        });
+    } else if(docdata.owner) {
+        let upmbed = new Discord.MessageEmbed()
+            .setTitle(`Random fact by.: ${docdata.author}`)
+            .setColor("#FFCB5C")
+            .addField("Fact", `${docdata.fact}`)
+            .addField('\u200b', '\u200b')
+            .addField("Fact id", `${docid}`)
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
+            .setFooter(`${docdata.author}`);
+        bot.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+                type: 4,
+                data: {
+                    "embeds": [upmbed],
+                }
+            }
+        });
+    }
+}
+
 async function getPrefix() {
     const db = admin.firestore();
     const botRef = db.collection("bots").doc("reggeltbot");
@@ -395,31 +456,32 @@ async function getPrefix() {
     if(PROD === "false") {
         return {
             prefix: doc.data().testprefix,
-        }
+        };
     } else if(PROD === "beta") {
         return {
             prefix: doc.data().betaprefix,
-        }
+        };
     } else {
         return {
             prefix: doc.data().prefix,
-        }
+        };
     }
 }
 
 async function restartRequest(message) {
-    let tokenRef = rdb.ref("bots/reggeltbot/ownerid");
-    tokenRef.once("value", function(snapshot) {
-        if(message.author.id === snapshot.val()) {
-            message.reply('Restarting container...');
-            bot.destroy();
-            process.exit();
-        } else {
-            message.reply('Nope',);
-            console.log(message.author.id);
-            console.log(snapshot.val());
-        }
-    });
+    const ref = admin.firestore().collection("bots").doc("reggeltbot");
+    const doc = await ref.get();
+
+    if(message.author.id === doc.data().ownerid) {
+        message.reply('Restarting container...');
+        bot.destroy();
+        process.exit();
+    } else {
+        message.reply('Nope',);
+        console.log(message.author.id);
+        console.log(doc.data().ownerid);
+    }
+
 }
 
 async function getRandomFactWithId(id, message) {
@@ -473,13 +535,13 @@ async function sendRandomFact(docid, docdata, message) {
     const userDoc = await userRef.get();
     if(!docdata.owner){
         let upmbed = new Discord.MessageEmbed()
-        .setTitle(`Random fact`)
-        .setColor("#FFCB5C")
-        .addField("Fact", docdata.fact)
-        .setFooter(`This is a template fact`)
-        .addBlankField()
-        .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
-        .setTimestamp(message.createdAt);
+            .setTitle(`Random fact`)
+            .setColor("#FFCB5C")
+            .addField("Fact", docdata.fact)
+            .setFooter(`This is a template fact`)
+            .addBlankField()
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
+            .setTimestamp(message.createdAt);
 
         message.channel.send(upmbed);
     
