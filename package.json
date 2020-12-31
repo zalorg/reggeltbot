@@ -1,40 +1,25 @@
 {
-  "name": "zalbot",
+  "name": "reggeltbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "[![Codacy Badge](https://api.codacy.com/project/badge/Grade/901967bd048b414c9f265d6e5f711f53)](https://app.codacy.com/gh/zal1000/reggeltbot?utm_source=github.com&utm_medium=referral&utm_content=zal1000/reggeltbot&utm_campaign=Badge_Grade)\r [![Discord Bots](https://top.gg/api/widget/749037285621628950.svg)](https://top.gg/bot/749037285621628950)",
   "main": "index.js",
-  "dependencies": {
-    "@drep/api": "^2.0.3",
-    "@google-cloud/logging": "^8.0.8",
-    "bunyan": "^1.8.14",
-    "cat": "^0.2.0",
-    "child_process": "^1.0.2",
-    "console-stamp": "^0.2.9",
-    "dblapi.js": "^2.4.1",
-    "discord-economy": "^1.2.2",
-    "discord.js": "^12.5.1",
-    "discord.js-commando": "^0.10.0",
-    "eris": "^0.10.1",
-    "firebase-admin": "^9.3.0",
-    "fs": "0.0.1-security",
-    "fs-extra": "^8.1.0",
-    "googleapis": "^64.0.0",
-    "hot-shots": "^8.2.0",
-    "ms": "^2.1.2",
-    "nodemon": "^2.0.4",
-    "process": "^0.11.10",
-    "random": "^2.2.0",
-    "request": "^2.88.2",
-    "sequelize": "^5.19.3",
-    "sqlite3": "^4.1.0",
-    "yaml": "^2.0.0-1"
-  },
-  "devDependencies": {
-    "eslint": "7.15.0"
-  },
   "scripts": {
-    "start": "node index.js"
+    "test": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zal1000/reggeltbot.git"
   },
   "author": "zal1000",
-  "license": "Apache-2.0"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zal1000/reggeltbot/issues"
+  },
+  "homepage": "https://github.com/zal1000/reggeltbot#readme",
+  "dependencies": {
+    "dblapi.js": "^2.4.1",
+    "discord.js": "^12.5.1",
+    "firebase-admin": "^9.4.2",
+    "ms": "^2.1.3"
+  }
 }
