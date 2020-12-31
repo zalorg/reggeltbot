@@ -23,6 +23,8 @@ dblRef.once("value", function(snapshot) {
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
 
+    bot.api.applications(bot.user.id).guilds('738169002085449748').commands('count').delete('794013138324160514');
+
     const countCMD = {
         name: "count",
         description: "Ennyiszer köszöntél be a #reggelt csatornába"
