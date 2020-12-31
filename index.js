@@ -234,15 +234,15 @@ async function restartRequest(message) {
     const ref = admin.firestore().collection("bots").doc("reggeltbot");
     const doc = await ref.get();
 
-        if(message.author.id === doc.data().ownerid) {
-            message.reply('Restarting container...');
-            bot.destroy();
-            process.exit();
-        } else {
-            message.reply('Nope',);
-            console.log(message.author.id);
-            console.log(doc.data().ownerid);
-        }
+    if(message.author.id === doc.data().ownerid) {
+        message.reply('Restarting container...');
+        bot.destroy();
+        process.exit();
+    } else {
+        message.reply('Nope',);
+        console.log(message.author.id);
+        console.log(doc.data().ownerid);
+    }
 
 }
 
