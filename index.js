@@ -692,3 +692,10 @@ async function botlogin(PROD) {
         bot.login(doc.data().token);
     }
 }
+
+process.on('exit', function() {
+    if(exceptionOccured) console.log('Exception occured');
+    else console.log('Kill signal received');
+
+    bot.destroy();
+});
