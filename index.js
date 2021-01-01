@@ -411,15 +411,18 @@ bot.on("message", async message => {
 });
 
 async function sendFactSlas(docid, docdata, interaction) {
-    if(!docdata.owner) {
+    const db = admin.firestore();
+    const userRef = db.collection('users').doc(`${docdata.owner}`);
+    const userDoc = await userRef.get();
+    if(!docdata.owner){
         let upmbed = new Discord.MessageEmbed()
             .setTitle(`Random fact`)
             .setColor("#FFCB5C")
-            .addField("Fact", `${docdata.fact}`)
-            .addField('\u200b', '\u200b')
-            .addField("Fact id", `${docid}`)
-            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
-            .setFooter(`Template fact`);
+            .addField("Fact", docdata.fact)
+            .setFooter(`This is a template fact`)
+            .addField('\u200B', '\u200B')
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`);
+
         bot.api.interactions(interaction.id, interaction.token).callback.post({
             data: {
                 type: 4,
@@ -427,16 +430,40 @@ async function sendFactSlas(docid, docdata, interaction) {
                     "embeds": [upmbed],
                 }
             }
-        });
-    } else if(docdata.owner) {
+        });    
+    } else if(!userDoc.data().dcid) {
+
         let upmbed = new Discord.MessageEmbed()
             .setTitle(`Random fact by.: ${docdata.author}`)
             .setColor("#FFCB5C")
-            .addField("Fact", `${docdata.fact}`)
-            .addField('\u200b', '\u200b')
-            .addField("Fact id", `${docid}`)
+            .addField("Fact", docdata.fact)
+            .addField("Fact id", docid)
+            .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
-            .setFooter(`${docdata.author}`);
+            .setFooter(docdata.author);
+
+        bot.api.interactions(interaction.id, interaction.token).callback.post({
+            data: {
+                type: 4,
+                data: {
+                    "embeds": [upmbed],
+                }
+            }
+        });        
+    } else {
+        const dcRef = db.collection('dcusers').doc(`${userDoc.data().dcid}`);
+        const dcDoc = await dcRef.get();
+
+        let upmbed = new Discord.MessageEmbed()
+            .setTitle(`Random fact by.: ${dcDoc.data().username}`)
+            .setColor("#FFCB5C")
+            .addField("Fact", docdata.fact)
+            .addField("Fact id", docid)
+            .addField('\u200B', '\u200B')
+            .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
+            .setFooter(dcDoc.data().tag)
+            .setThumbnail(dcDoc.data().pp);
+
         bot.api.interactions(interaction.id, interaction.token).callback.post({
             data: {
                 type: 4,
@@ -539,7 +566,7 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .setFooter(`This is a template fact`)
-            .addBlankField()
+            .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setTimestamp(message.createdAt);
 
@@ -552,7 +579,7 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .addField("Fact id", docid)
-            .addBlankField()
+            .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setFooter(docdata.author)
             .setTimestamp(message.createdAt);
@@ -568,7 +595,7 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .addField("Fact id", docid)
-            .addBlankField()
+            .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setFooter(dcDoc.data().tag)
             .setThumbnail(dcDoc.data().pp)
