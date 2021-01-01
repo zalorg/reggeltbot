@@ -22,6 +22,15 @@ dblRef.once("value", function(snapshot) {
 
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
+    
+    const ciuntCMD = {
+        name: "ciunt",
+        description: "Ennyiszer köszöntél be a #reggelt csatornába"
+    };
+
+    bot.api.applications(bot.user.id).guilds('541446521313296385').commands.post({
+        data: ciuntCMD,
+    });
 
     const commandData = {
         name: "count",
@@ -75,6 +84,35 @@ bot.on("ready", async() => {
                     type: 4,
                     data: {
                         "embeds": [exampleEmbed],
+                    }
+                }
+            });
+        } else if(command === "ciunt") {
+            const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
+            const doc = await userref.get();
+
+            let embed = {
+                color: 0xFFCB5C,
+                title: interaction.member.user.username,
+                thumbnail: {
+                    url: doc.data().pp,
+                },
+                fields: [
+                    {
+                        name: "Ennyiszer köszöntél be a #reggelt csatornába",
+                        value: `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id})`,
+                    },
+                ],
+                footer: {
+                    text: interaction.member.user.username,
+                },
+            };
+
+            bot.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: {
+                        "embeds": [embed],
                     }
                 }
             });
