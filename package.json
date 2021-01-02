@@ -19,6 +19,7 @@
   "dependencies": {
     "dblapi.js": "^2.4.1",
     "discord.js": "^12.5.1",
+    "ffmpeg-static": "^4.2.7",
     "firebase-admin": "^9.4.2",
     "ms": "^2.1.3"
   },
