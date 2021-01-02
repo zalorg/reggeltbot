@@ -5,11 +5,11 @@ const bot = new Discord.Client();
 const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
-/*
+
 require('@google-cloud/profiler').start().catch((err) => {
     console.log(`Failed to start profiler: ${err}`);
 });
-*/
+
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: "https://zal1000.firebaseio.com"
