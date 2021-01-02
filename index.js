@@ -9,15 +9,27 @@ let admin = require("firebase-admin");
 if(process.env.PROD === "false") {
     console.log("profiler not started");
 } else {
-    require('@google-cloud/profiler').start({
-        serviceContext: {
-            service: 'reggeltbot',
-            version: '1.0.0'
-        }
-    }).catch((err) => {
-        console.log(`Failed to start profiler: ${err}`);
-    });
-    console.log("profiler started");
+    if(process.env.PROD === "beta") {
+        require('@google-cloud/profiler').start({
+            serviceContext: {
+                service: 'reggeltbot',
+                version: 'beta'
+            }
+        }).catch((err) => {
+            console.log(`Failed to start profiler: ${err}`);
+        });
+        console.log("profiler started"); 
+    } else {
+        require('@google-cloud/profiler').start({
+            serviceContext: {
+                service: 'reggeltbot',
+                version: 'production'
+            }
+        }).catch((err) => {
+            console.log(`Failed to start profiler: ${err}`);
+        });
+        console.log("profiler started");
+    }
 }
 
 admin.initializeApp({
