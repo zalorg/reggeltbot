@@ -6,9 +6,14 @@ const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
 
-require('@google-cloud/profiler').start().catch((err) => {
-    console.log(`Failed to start profiler: ${err}`);
-});
+if(process.env.PROD === "false") {
+    console.log("profiler not started");
+} else {
+    require('@google-cloud/profiler').start().catch((err) => {
+        console.log(`Failed to start profiler: ${err}`);
+    });
+    console.log("profiler started");
+}
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
