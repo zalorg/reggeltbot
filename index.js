@@ -5,7 +5,11 @@ const bot = new Discord.Client();
 const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
-
+/*
+require('@google-cloud/profiler').start().catch((err) => {
+    console.log(`Failed to start profiler: ${err}`);
+});
+*/
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: "https://zal1000.firebaseio.com"
@@ -26,46 +30,6 @@ bot.on("ready", async() => {
         name: "count",
         description: "Ennyiszer köszöntél be a #reggelt csatornába"
         // possible options here e.g. options: [{...}]
-    };
-
-    const mailCMD = {
-        name: "mail",
-        description: "Elküld neked egy email-t",
-        // possible options here e.g. options: [{...}]
-        options: [
-            {
-                "name": "animal",
-                "description": "The type of animal",
-                "type": 3,
-                "required": true,
-                "choices": [
-                    {
-                        "name": "Dog",
-                        "value": "animal_dog"
-                    },
-                    {
-                        "name": "Cat",
-                        "value": "animal_cat"
-                    },
-                    {
-                        "name": "Penguin",
-                        "value": "animal_penguin"
-                    }
-                ]
-            },
-            {
-                "name": "only_smol",
-                "description": "Whether to show only baby animals",
-                "type": 5,
-                "required": false
-            },
-            {
-                name: 'id',
-                description: 'uid',
-                type: 3,
-                required: false
-            }
-        ]
     };
     
     const factCMD = {
@@ -94,6 +58,13 @@ bot.on("ready", async() => {
                 description: 'Fact id here (only works with get)',
                 type: 3,
                 required: false
+
+            },
+            {
+                name: 'by',
+                description: ' (only works with get)',
+                type: 6,
+                required: false,
             }
         ]
     };
@@ -102,25 +73,76 @@ bot.on("ready", async() => {
         description: "List of all commands"
     };
 
+    const ciuntCMD = {
+        name: "ciunt",
+        description: "Ennyiszer köszöntél be a #reggelt csatornába"
+    };
+
+    bot.api.applications(bot.user.id).guilds('541446521313296385').commands.post({
+        data: ciuntCMD,
+    }).catch(err => {
+        dcApiError(err);
+    });
+
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
         data: testCommandData
+    }).catch(err => {
+        dcApiError(err);
     });
+
     bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
         data: factCMD
+    }).catch(err => {
+        dcApiError(err);
     });
-    /*
-    bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
-        data: mailCMD
-    });
-*/
+
     bot.api.applications(bot.user.id).commands.post({
         data: countCMD,
+    }).catch(err => {
+        dcApiError(err);
     });
+
+    function dcApiError(err) {
+        if(err.code === 50001) {
+            return;
+        } else {
+            console.log(err);
+        }
+    }
     
     bot.ws.on('INTERACTION_CREATE', async interaction => {
         const command = interaction.data.name.toLowerCase();
         //const args = interaction.data.options;
         if (command === 'count'){
+            const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
+            const doc = await userref.get();
+
+            let embed = {
+                color: 0xFFCB5C,
+                title: interaction.member.user.username,
+                thumbnail: {
+                    url: doc.data().pp,
+                },
+                fields: [
+                    {
+                        name: "Ennyiszer köszöntél be a #reggelt csatornába",
+                        value: `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id})`,
+                    },
+                ],
+                footer: {
+                    text: interaction.member.user.username,
+                },
+            };
+
+            bot.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: {
+                        "embeds": [embed],
+                    }
+                }
+            });
+        } else if(command === "ciunt") {
             const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
             const doc = await userref.get();
 
@@ -320,13 +342,25 @@ bot.on("message", async message => {
             message.react("☕");     
         }
         else {
-            message.delete();
-            message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
-                .catch(function(error) {
-                    message.reply("Error: " + error);
-                    console.log("Error:", error);
-                });
-
+            if(!message.deletable) {
+                message.channel.send('Missing permission!')
+                    .catch(err => {
+                        message.guild.owner.send('Missing permission! I need **Send Messages** to function correctly');
+                        console.log(err);
+                    });
+                message.guild.owner.send('Missing permission! I need **Manage Messages** to function correctly')
+                    .catch(
+                        
+                    );
+            } else {
+                message.delete();
+                message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
+                    .catch(function(error) {
+                        message.reply("Error: " + error);
+                        console.log("Error:", error);
+                    });
+    
+            }
             await reggeltupdatefs(message, true);
         }
     }
@@ -692,10 +726,3 @@ async function botlogin(PROD) {
         bot.login(doc.data().token);
     }
 }
-
-process.on('exit', function() {
-    if(exceptionOccured) console.log('Exception occured');
-    else console.log('Kill signal received');
-
-    bot.destroy();
-});
