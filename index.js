@@ -10,7 +10,10 @@ if(process.env.PROD === "false") {
     console.log("profiler not started");
 } else {
     require('@google-cloud/profiler').start({
-        projectId: 'zal1000',
+        serviceContext: {
+            service: 'reggeltbot',
+            version: '1.0.0'
+        }
     }).catch((err) => {
         console.log(`Failed to start profiler: ${err}`);
     });
