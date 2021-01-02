@@ -9,7 +9,9 @@ let admin = require("firebase-admin");
 if(process.env.PROD === "false") {
     console.log("profiler not started");
 } else {
-    require('@google-cloud/profiler').start().catch((err) => {
+    require('@google-cloud/profiler').start({
+        projectId: 'zal1000',
+    }).catch((err) => {
         console.log(`Failed to start profiler: ${err}`);
     });
     console.log("profiler started");
