@@ -23,103 +23,6 @@ dblRef.once("value", function(snapshot) {
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
     
-    const ciuntCMD = {
-        name: "ciunt",
-        description: "Ennyiszer köszöntél be a #reggelt csatornába"
-    };
-
-    bot.api.applications(bot.user.id).guilds('541446521313296385').commands.post({
-        data: ciuntCMD,
-    });
-
-    const commandData = {
-        name: "count",
-        description: "Ennyiszer köszöntél be a #reggelt csatornába"
-        // possible options here e.g. options: [{...}]
-    };
-        
-
-    bot.api.applications(bot.user.id).guilds('738169002085449748').commands.post({
-        data: commandData
-    });
-
-    bot.api.applications(bot.user.id).commands.post({
-        data: commandData
-    });
-    
-    bot.ws.on('INTERACTION_CREATE', async interaction => {
-        const command = interaction.data.name.toLowerCase();
-        //const args = interaction.data.options;
-        console.log(interaction);
-        if (command === 'count'){
-            const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
-            const doc = await userref.get();
-/*
-            .setTitle(`${message.author.username}`)
-            .setColor("#FFCB5C")
-            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
-            .setFooter(message.author.username)
-            .setThumbnail(message.author.avatarURL)
-            .setTimestamp(message.createdAt);
-*/
-            const exampleEmbed = {
-                color: 0xFFCB5C,
-                title: interaction.member.user.username,
-                thumbnail: {
-                    url: doc.data().pp,
-                },
-                fields: [
-                    {
-                        name: "Ennyiszer köszöntél be a #reggelt csatornába",
-                        value: `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id})`,
-                    },
-                ],
-                footer: {
-                    text: interaction.member.user.username,
-                },
-            };
-
-            bot.api.interactions(interaction.id, interaction.token).callback.post({
-                data: {
-                    type: 4,
-                    data: {
-                        "embeds": [exampleEmbed],
-                    }
-                }
-            });
-        } else if(command === "ciunt") {
-            const userref = admin.firestore().collection("dcusers").doc(interaction.member.user.id);
-            const doc = await userref.get();
-
-            let embed = {
-                color: 0xFFCB5C,
-                title: interaction.member.user.username,
-                thumbnail: {
-                    url: doc.data().pp,
-                },
-                fields: [
-                    {
-                        name: "Ennyiszer köszöntél be a #reggelt csatornába",
-                        value: `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${interaction.member.user.id})`,
-                    },
-                ],
-                footer: {
-                    text: interaction.member.user.username,
-                },
-            };
-
-            bot.api.interactions(interaction.id, interaction.token).callback.post({
-                data: {
-                    type: 4,
-                    data: {
-                        "embeds": [embed],
-                    }
-                }
-            });
-        }
-    });
-
-
     const db = admin.database();
     const doc = admin.firestore().collection("dcusers").doc("all");
     doc.onSnapshot(docSnapshot => {
@@ -235,7 +138,7 @@ bot.on("message", async message => {
                             message.reply("This account is already linked!", args[1]);
                         } else if(`${userDoc.data().dclink}` === args[1]) {
                             dcUserRef.update({
-                                dcid: message.author.id,
+                                uid: userRecord.email,
                             });
                             userRef.update({
                                 dclink: admin.firestore.FieldValue.delete(),
