@@ -23,7 +23,7 @@ spec:
       containers:
         - env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: /var/secrets/google/key.json
+              value: /var/secrets/google/zal1000-20bc518d7c88.json
           image: gcr.io/zal1000/github.com/zal1000/reggeltbot
           imagePullPolicy: IfNotPresent
           name: reggeltbot-1
