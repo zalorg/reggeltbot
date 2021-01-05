@@ -5,6 +5,7 @@ const bot = new Discord.Client();
 const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
+const https = require('https');
 
 if(process.env.PROD === "false") {
     console.log("profiler not started");
@@ -160,6 +161,7 @@ bot.on("message", async message => {
         } else if(!args[1]) {
             message.reply("Please provide your link code");
         } else {
+            botTypeing(message.channel.id);
             const db = admin.firestore();
             admin
                 .auth()
@@ -247,6 +249,7 @@ async function restartRequest(message) {
 }
 
 async function getRandomFactWithId(id, message) {
+    
     const db = admin.firestore();
     const ref = db.collection("facts").doc(id);
     const doc = await ref.get();
@@ -411,9 +414,61 @@ async function getCountForUser(message) {
         message.channel.send(upmbed);
     }
 }
+
+async function botTypeing(channel) {
+    const data = JSON.stringify({});
+    console.log((await getBotToken(process.env.PROD)).token);
+      
+    const options = {
+        hostname: 'discord.com',
+        port: 443,
+        path: `/api/v8/channels/${channel}/typing`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length,
+            'Authorization': `Bot ${(await getBotToken(process.env.PROD)).token}`,
+            
+        }
+    };
+      
+    const req = https.request(options, res => {
+        console.log(`statusCode: ${res.statusCode}`);
+      
+        res.on('data', d => {
+            process.stdout.write(d);
+        });
+    });
+      
+    req.on('error', error => {
+        console.error(error);
+    });
+      
+    req.write(data);
+    req.end();
+}
 console.log(process.env.PROD);
 const PROD = process.env.PROD;
 botlogin(PROD);
+
+async function getBotToken(PROD) {
+    const db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const doc = await botRef.get();
+    if(PROD === "false") {
+        return {
+            token: doc.data().testtoken,
+        };
+    } else if(PROD === "beta") {
+        return {
+            token: doc.data().betatoken,
+        };
+    } else {
+        return {
+            token: doc.data().token,
+        };
+    } 
+}
 
 async function botlogin(PROD) {
     const db = admin.firestore();
