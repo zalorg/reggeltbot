@@ -59,17 +59,13 @@ bot.on("ready", async() => {
     });
 
     const updateref = admin.database().ref('bots/updates');
-    // Retrieve new posts as they are added to our database
-
-    // Get the data on a post that has changed
     updateref.on("child_changed", function(snapshot) {
         unsub();
         var changedPost = snapshot.val();
         console.log(changedPost);
         bot.user.setActivity(`Updateing to: ${snapshot.val()}`, {type: "PLAYING"});
-
     });
-    
+
 });
 
 bot.on("messageUpdate", async (_, newMsg) => {
