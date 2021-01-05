@@ -50,29 +50,29 @@ dblRef.once("value", function(snapshot) {
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
 
-
-    const db = admin.database();
     const doc = admin.firestore().collection("dcusers").doc("all");
-    doc.onSnapshot(docSnapshot => {
+    const unsub = doc.onSnapshot(docSnapshot => {
         bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
     }, err => {
         console.log(`Encountered error: ${err}`);
         bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
     });
+
+    const updateref = admin.database().ref('bots/updates');
+    // Retrieve new posts as they are added to our database
+
+    // Get the data on a post that has changed
+    updateref.on("child_changed", function(snapshot) {
+        unsub();
+        var changedPost = snapshot.val();
+        console.log(changedPost);
+        bot.user.setActivity(`Updateing to: ${snapshot.val()}`, {type: "PLAYING"});
+
+    });
+
   
   
-    const refS = db.ref("bots/status/reggeltbotS");
-    refS.on("value", function(snapshot) {
-        if(process.env.PROD === "false"){
-            bot.user.setStatus("dnd");
-            console.log("bot started in test mode");
-        } else {
-            bot.user.setStatus(snapshot.val());
-            console.log(snapshot.val());
-        }
-    }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-    }); 
+
 
 });
 
