@@ -69,11 +69,7 @@ bot.on("ready", async() => {
         bot.user.setActivity(`Updateing to: ${snapshot.val()}`, {type: "PLAYING"});
 
     });
-
-  
-  
-
-
+    
 });
 
 bot.on("messageUpdate", async (_, newMsg) => {
