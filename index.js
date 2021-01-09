@@ -24,7 +24,7 @@ bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
     
     const db = admin.database();
-    const doc = admin.firestore().collection("dcusers").doc("all");
+    const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
     doc.onSnapshot(docSnapshot => {
         bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
     }, err => {
@@ -287,7 +287,7 @@ async function reggeltupdateall() {
     const botRef = db.collection("bots").doc("reggeltbot");
     const botDoc = await botRef.get();
     const incrementCount = botDoc.data().incrementCount;
-    await db.collection("dcusers").doc("all").update({
+    await db.collection("bots").doc("reggeltbot-count-all").update({
         reggeltcount: admin.firestore.FieldValue.increment(incrementCount)
     });
 }
@@ -322,7 +322,7 @@ async function reggeltUpdateEdit(message) {
     const botRef = db.collection("bots").doc("reggeltbot");
     const botDoc = await botRef.get();
     const decreaseCount = botDoc.data().decreaseCount;
-    await db.collection("dcusers").doc("all").update({
+    await db.collection("bots").doc("reggeltbot-count-all").update({
         reggeltcount: admin.firestore.FieldValue.increment(decreaseCount)
     });
     await db.collection("dcusers").doc(message.author.id).update({
