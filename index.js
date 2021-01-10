@@ -88,9 +88,9 @@ bot.on("message", async message => {
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
-
+    console.log((await getReggeltChannel(process.env.PROD)).channel);
     // reggelt
-    if(message.channel.name === "reggelt") {
+    if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
         
         if(message.content.toLowerCase().includes("reggelt")){
             
@@ -203,6 +203,25 @@ bot.on("message", async message => {
         await restartRequest(message);
     }
 });
+
+async function getReggeltChannel(PROD) {
+    const db = admin.firestore();
+    const ref = db.collection('bots').doc('reggeltbot-channels');
+    const doc = await ref.get();
+    if(PROD === "false") {
+        return {
+            channel: doc.data().test,
+        };
+    } else if(PROD === "beta") {
+        return {
+            channel: doc.data().beta,
+        };
+    } else {
+        return {
+            channel: doc.data().main,
+        };
+    }
+}
 
 async function getPrefix() {
     const db = admin.firestore();
