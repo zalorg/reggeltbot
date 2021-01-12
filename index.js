@@ -88,11 +88,40 @@ bot.on("message", async message => {
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
-    console.log((await getReggeltChannel(process.env.PROD)).channel);
     // reggelt
     if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
-        
+        const db = admin.firestore();
+
         if(message.content.toLowerCase().includes("reggelt")){
+            const ref = db.collection('dcusers').doc(message.author.id);
+            const doc = await ref.get();
+            const cd = Math.floor(Date.now() / 1000) + 21600;
+
+            console.log(cd);
+            console.log(Math.floor(Date.now() / 1000));
+
+            if(doc.data().cooldown > Math.floor(Date.now() / 1000)) {
+                console.log(1);
+            } else {
+                console.log(2);
+            }
+
+
+            if(doc.exists) {
+                ref.update({
+                    cooldown: cd,
+                    tag: message.author.tag,
+                    username: message.author.username,
+                    pp: message.author.avatarURL(),
+                });
+            } else {
+                ref.set({
+                    cooldown: cd,
+                    tag: message.author.tag,
+                    username: message.author.username,
+                    pp: message.author.avatarURL(),
+                });
+            }
             
             await reggeltupdateall();
             await reggeltupdatefs(message);
