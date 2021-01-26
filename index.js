@@ -95,36 +95,55 @@ bot.on("message", async message => {
         if(message.content.toLowerCase().includes("reggelt")){
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
-            const cd = Math.floor(Date.now() / 1000) + 21600;
+
+            const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild.id);
+            const cddoc = await cdref.get();
+
+            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc(message.guild.id);
+            const configDoc = await configref.get();
+            const cdval = configDoc.data().cd * 3600;
+            const cd = Math.floor(Date.now() / 1000) + cdval;
 
             console.log(cd);
             console.log(Math.floor(Date.now() / 1000));
 
-            if(doc.data().cooldown > Math.floor(Date.now() / 1000)) {
+            if(cddoc.exists) {
+                
+                if(cddoc.data().reggeltc > Math.floor(Date.now() / 1000)) {
+                    console.log(1);
+                } else {
+                    console.log(2);
+                }
+
                 console.log(1);
             } else {
-                console.log(2);
+                cdref.set({
+                    regegltcount: cdval,
+                });
             }
+
 
 
             if(doc.exists) {
                 ref.update({
-                    cooldown: cd,
                     tag: message.author.tag,
                     username: message.author.username,
                     pp: message.author.avatarURL(),
                 });
             } else {
                 ref.set({
-                    cooldown: cd,
                     tag: message.author.tag,
                     username: message.author.username,
                     pp: message.author.avatarURL(),
                 });
             }
+
+            if(!process.env.PROD === "false") {
+                await reggeltupdateall();
+                await reggeltupdatefs(message);
+            }
             
-            await reggeltupdateall();
-            await reggeltupdatefs(message);
+
 
             console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`);
             message.react("☕");     
@@ -158,13 +177,13 @@ bot.on("message", async message => {
         let upmbed = new Discord.MessageEmbed()
             .setTitle(message.author.username)
             .setColor("#FFCB2B")
-            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.zal1000.com/count.html?=${message.author.id}) is megnézheted)`)
+            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count/${message.author.id}) is megnézheted)`)
             .addField(`${prefix}invite`, "Bot meghívása")
             .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
             .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
             .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
-            .addBlankField()
-            .addField("Bot ping", `${bot.ping}ms`)
+            .addField('\u200B', '\u200B')
+            .addField("Bot ping", `${bot.ws.ping}ms`)
             .addField("Uptime", `${ms(bot.uptime)}`)
             .setFooter(message.author.username)
             .setThumbnail(bot.user.avatarURL())
@@ -188,30 +207,7 @@ bot.on("message", async message => {
                 .auth()
                 .getUserByEmail(args[0])
                 .then((userRecord) => {
-                    async function asd() {
-                        const userRef = db.collection("users").doc(userRecord.uid);
-                        const userDoc = await userRef.get();
-
-                        const dcUserRef = db.collection("dcusers").doc(message.author.id);
-                        // eslint-disable-next-line no-unused-vars
-                        const dcUserDoc = await dcUserRef.get();
-
-                        if(userDoc.data().dclinked) {
-                            message.reply("This account is already linked!", args[1]);
-                        } else if(`${userDoc.data().dclink}` === args[1]) {
-                            dcUserRef.update({
-                                dcid: message.author.id,
-                            });
-                            userRef.update({
-                                dclink: admin.firestore.FieldValue.delete(),
-                                dclinked: true,
-                                dcid: message.author.id,
-                            });
-                            message.reply("Account linked succesfuly!");
-                        } else {
-                            message.reply("Error linking account");
-                        }
-                    } asd();
+                    accountLink(userRecord, db);
                 })
                 .catch((error) => {
                     console.log("Error fetching user data:", error);
@@ -330,7 +326,6 @@ async function getRandomFact(message) {
             message.reply(`Error geting fact: **${err.message}**`);
             console.log('Error getting documents', err);
         });
-
 }
 
 async function sendRandomFact(docid, docdata, message) {
@@ -444,11 +439,10 @@ async function getCountForUser(message) {
         let upmbed = new Discord.MessageEmbed()
             .setTitle(`${message.author.username}`)
             .setColor("#FFCB5C")
-            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.zal1000.com/count.html?=${dcid})`)
+            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count/${dcid})`)
             .setFooter(message.author.username)
             .setThumbnail(message.author.avatarURL())
             .setTimestamp(message.createdAt);
-        
         console.log(upmbed);
 
         message.channel.send(upmbed);
@@ -508,6 +502,31 @@ async function getBotToken(PROD) {
             token: doc.data().token,
         };
     } 
+}
+
+async function accountLink(userRecord, db) {
+    const userRef = db.collection("users").doc(userRecord.uid);
+    const userDoc = await userRef.get();
+
+    const dcUserRef = db.collection("dcusers").doc(message.author.id);
+    // eslint-disable-next-line no-unused-vars
+    const dcUserDoc = await dcUserRef.get();
+
+    if(userDoc.data().dclinked) {
+        message.reply("This account is already linked!", args[1]);
+    } else if(`${userDoc.data().dclink}` === args[1]) {
+        dcUserRef.update({
+            uid: message.author.id,
+        });
+        userRef.update({
+            dclink: admin.firestore.FieldValue.delete(),
+            dclinked: true,
+            dcid: message.author.id,
+        });
+        message.reply("Account linked succesfuly!");
+    } else {
+        message.reply("Error linking account");
+    }
 }
 
 async function botlogin(PROD) {
