@@ -6,32 +6,9 @@ const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
 const https = require('https');
+const express = require('express');
 
-if(process.env.PROD === "false") {
-    console.log("profiler not started");
-} else {
-    if(process.env.PROD === "beta") {
-        require('@google-cloud/profiler').start({
-            serviceContext: {
-                service: 'reggeltbot',
-                version: 'beta'
-            }
-        }).catch((err) => {
-            console.log(`Failed to start profiler: ${err}`);
-        });
-        console.log("profiler started"); 
-    } else {
-        require('@google-cloud/profiler').start({
-            serviceContext: {
-                service: 'reggeltbot',
-                version: 'production'
-            }
-        }).catch((err) => {
-            console.log(`Failed to start profiler: ${err}`);
-        });
-        console.log("profiler started");
-    }
-}
+const app = express();
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
@@ -80,6 +57,12 @@ bot.on("messageUpdate", async (_, newMsg) => {
             }
         }
     }
+});
+
+app.get('/ping', async (req, res) => {
+    res.status(200).send({
+        ping: bot.ws.ping,
+    });
 });
 
 bot.on("message", async message => {
@@ -541,3 +524,5 @@ async function botlogin(PROD) {
         bot.login(doc.data().token);
     }
 }
+
+app.listen(3000);
