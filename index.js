@@ -97,7 +97,7 @@ bot.on("message", async message => {
         let upmbed = new Discord.MessageEmbed()
             .setTitle(message.author.username)
             .setColor("#FFCB2B")
-            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count/${message.author.id}) is megnézheted)`)
+            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=${message.author.id}) is megnézheted)`)
             .addField(`${prefix}invite`, "Bot meghívása")
             .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
             .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
@@ -342,7 +342,7 @@ async function getCountForUser(message) {
         let upmbed = new Discord.MessageEmbed()
             .setTitle(`${message.author.username}`)
             .setColor("#FFCB5C")
-            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count/${dcid})`)
+            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
             .setFooter(message.author.username)
             .setThumbnail(message.author.avatarURL)
             .setTimestamp(message.createdAt);
