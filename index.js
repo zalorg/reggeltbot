@@ -82,27 +82,41 @@ bot.on("message", async message => {
             const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild.id);
             const cddoc = await cdref.get();
 
-            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc(message.guild.id);
+            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
             const configDoc = await configref.get();
             const cdval = configDoc.data().cd * 3600;
             const cd = Math.floor(Date.now() / 1000) + cdval;
 
-            console.log(cd);
+            console.log(`Cooldown ends: ${cd}`);
             console.log(Math.floor(Date.now() / 1000));
 
             if(cddoc.exists) {
-                
-                if(cddoc.data().reggeltc > Math.floor(Date.now() / 1000)) {
-                    console.log(1);
+                console.log('');
+                console.log(cddoc.data().reggeltcount);
+                if(cddoc.data().reggeltcount > Math.floor(Date.now() / 1000)) {
+                    message.delete();
+                    message.author.send('You are on cooldown!');
                 } else {
+                    if(!process.env.PROD === "false") {
+                        await reggeltupdateall();
+                        await reggeltupdatefs(message);
+                    }
+                    cdref.update({
+                        reggeltcount: cd,
+                    });
                     console.log(2);
                 }
 
                 console.log(1);
             } else {
                 cdref.set({
-                    regegltcount: cdval,
+                    reggeltcount: cd,
                 });
+                if(!process.env.PROD === "false") {
+                    await reggeltupdateall();
+                    await reggeltupdatefs(message);
+                }
+                console.log('doc created');
             }
 
 
@@ -121,10 +135,7 @@ bot.on("message", async message => {
                 });
             }
 
-            if(!process.env.PROD === "false") {
-                await reggeltupdateall();
-                await reggeltupdatefs(message);
-            }
+
             
 
 
