@@ -5,6 +5,10 @@ const bot = new Discord.Client();
 const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
+const https = require('https');
+const express = require('express');
+
+const app = express();
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
@@ -22,7 +26,6 @@ dblRef.once("value", function(snapshot) {
 
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
-    
     const db = admin.database();
     const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
     doc.onSnapshot(docSnapshot => {
@@ -31,20 +34,14 @@ bot.on("ready", async() => {
         console.log(`Encountered error: ${err}`);
         bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
     });
-  
-  
-    const refS = db.ref("bots/status/reggeltbotS");
-    refS.on("value", function(snapshot) {
-        if(process.env.PROD === "false"){
-            bot.user.setStatus("dnd");
-            console.log("bot started in test mode");
-        } else {
-            bot.user.setStatus(snapshot.val());
-            console.log(snapshot.val());
-        }
-    }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-    }); 
+
+    const updateref = admin.database().ref('bots/updates');
+    updateref.on("child_changed", function(snapshot) {
+        unsub();
+        var changedPost = snapshot.val();
+        console.log(changedPost);
+        bot.user.setActivity(`Updateing to: ${snapshot.val()}`, {type: "PLAYING"});
+    });
 
 });
 
@@ -62,32 +59,109 @@ bot.on("messageUpdate", async (_, newMsg) => {
     }
 });
 
+app.get('/ping', async (req, res) => {
+    res.status(200).send({
+        ping: bot.ws.ping,
+    });
+});
+
 bot.on("message", async message => {
     if(message.author.bot) return;
-    let prefix = "r!"; 
+    let prefix = (await getPrefix()).prefix; 
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
-
     // reggelt
-    if(message.channel.name === "reggelt") {
-        
+    if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
+        const db = admin.firestore();
+
         if(message.content.toLowerCase().includes("reggelt")){
+            const ref = db.collection('dcusers').doc(message.author.id);
+            const doc = await ref.get();
+
+            const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild.id);
+            const cddoc = await cdref.get();
+
+            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
+            const configDoc = await configref.get();
+            const cdval = configDoc.data().cd * 3600;
+            const cd = Math.floor(Date.now() / 1000) + cdval;
+
+            console.log(`Cooldown ends: ${cd}`);
+            console.log(Math.floor(Date.now() / 1000));
+
+            if(cddoc.exists) {
+                console.log('');
+                console.log(cddoc.data().reggeltcount);
+                if(cddoc.data().reggeltcount > Math.floor(Date.now() / 1000)) {
+                    message.delete();
+                    message.author.send('You are on cooldown!');
+                } else {
+                    if(!process.env.PROD === "false") {
+                        await reggeltupdateall();
+                        await reggeltupdatefs(message);
+                    }
+                    cdref.update({
+                        reggeltcount: cd,
+                    });
+                    console.log(2);
+                }
+
+                console.log(1);
+            } else {
+                cdref.set({
+                    reggeltcount: cd,
+                });
+                if(!process.env.PROD === "false") {
+                    await reggeltupdateall();
+                    await reggeltupdatefs(message);
+                }
+                console.log('doc created');
+            }
+
+
+
+            if(doc.exists) {
+                ref.update({
+                    tag: message.author.tag,
+                    username: message.author.username,
+                    pp: message.author.avatarURL(),
+                });
+            } else {
+                ref.set({
+                    tag: message.author.tag,
+                    username: message.author.username,
+                    pp: message.author.avatarURL(),
+                });
+            }
+
+
             
-            await reggeltupdateall();
-            await reggeltupdatefs(message);
+
 
             console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`);
             message.react("☕");     
         }
         else {
-            message.delete();
-            message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
-                .catch(function(error) {
-                    message.reply("Error: " + error);
-                    console.log("Error:", error);
-                });
-
+            if(!message.deletable) {
+                message.channel.send('Missing permission!')
+                    .catch(err => {
+                        message.guild.owner.send('Missing permission! I need **Send Messages** to function correctly');
+                        console.log(err);
+                    });
+                message.guild.owner.send('Missing permission! I need **Manage Messages** to function correctly')
+                    .catch(
+                        
+                    );
+            } else {
+                message.delete();
+                message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
+                    .catch(function(error) {
+                        message.reply("Error: " + error);
+                        console.log("Error:", error);
+                    });
+    
+            }
             await reggeltupdatefs(message, true);
         }
     }
@@ -102,11 +176,11 @@ bot.on("message", async message => {
             .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
             .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
             .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
-            .addBlankField()
-            .addField("Bot ping", `${bot.ping}ms`)
+            .addField('\u200B', '\u200B')
+            .addField("Bot ping", `${bot.ws.ping}ms`)
             .addField("Uptime", `${ms(bot.uptime)}`)
             .setFooter(message.author.username)
-            .setThumbnail(bot.user.avatarURL)
+            .setThumbnail(bot.user.avatarURL())
             .setTimestamp(message.createdAt);
         message.channel.send(upmbed);
     }
@@ -121,6 +195,7 @@ bot.on("message", async message => {
         } else if(!args[1]) {
             message.reply("Please provide your link code");
         } else {
+            botTypeing(message.channel.id);
             const db = admin.firestore();
             admin
                 .auth()
@@ -171,6 +246,45 @@ bot.on("message", async message => {
     }
 });
 
+async function getReggeltChannel(PROD) {
+    const db = admin.firestore();
+    const ref = db.collection('bots').doc('reggeltbot-channels');
+    const doc = await ref.get();
+    if(PROD === "false") {
+        return {
+            channel: doc.data().test,
+        };
+    } else if(PROD === "beta") {
+        return {
+            channel: doc.data().beta,
+        };
+    } else {
+        return {
+            channel: doc.data().main,
+        };
+    }
+}
+
+async function getPrefix() {
+    const db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const doc = await botRef.get();
+    const PROD = process.env.PROD;
+    if(PROD === "false") {
+        return {
+            prefix: doc.data().testprefix,
+        };
+    } else if(PROD === "beta") {
+        return {
+            prefix: doc.data().betaprefix,
+        };
+    } else {
+        return {
+            prefix: doc.data().prefix,
+        };
+    }
+}
+
 async function restartRequest(message) {
     const ref = admin.firestore().collection("bots").doc("reggeltbot");
     const doc = await ref.get();
@@ -188,6 +302,7 @@ async function restartRequest(message) {
 }
 
 async function getRandomFactWithId(id, message) {
+    
     const db = admin.firestore();
     const ref = db.collection("facts").doc(id);
     const doc = await ref.get();
@@ -228,7 +343,6 @@ async function getRandomFact(message) {
             message.reply(`Error geting fact: **${err.message}**`);
             console.log('Error getting documents', err);
         });
-
 }
 
 async function sendRandomFact(docid, docdata, message) {
@@ -242,7 +356,7 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .setFooter(`This is a template fact`)
-            .addBlankField()
+            .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setTimestamp(message.createdAt);
 
@@ -255,7 +369,7 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .addField("Fact id", docid)
-            .addBlankField()
+            .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setFooter(docdata.author)
             .setTimestamp(message.createdAt);
@@ -271,7 +385,7 @@ async function sendRandomFact(docid, docdata, message) {
             .setColor("#FFCB5C")
             .addField("Fact", docdata.fact)
             .addField("Fact id", docid)
-            .addBlankField()
+            .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
             .setFooter(dcDoc.data().tag)
             .setThumbnail(dcDoc.data().pp)
@@ -344,15 +458,93 @@ async function getCountForUser(message) {
             .setColor("#FFCB5C")
             .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
             .setFooter(message.author.username)
-            .setThumbnail(message.author.avatarURL)
+            .setThumbnail(message.author.avatarURL())
             .setTimestamp(message.createdAt);
+        console.log(upmbed);
 
         message.channel.send(upmbed);
     }
 }
+
+async function botTypeing(channel) {
+    const data = JSON.stringify({});
+    console.log((await getBotToken(process.env.PROD)).token);
+      
+    const options = {
+        hostname: 'discord.com',
+        port: 443,
+        path: `/api/v8/channels/${channel}/typing`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length,
+            'Authorization': `Bot ${(await getBotToken(process.env.PROD)).token}`,
+            
+        }
+    };
+      
+    const req = https.request(options, res => {
+        console.log(`statusCode: ${res.statusCode}`);
+      
+        res.on('data', d => {
+            process.stdout.write(d);
+        });
+    });
+      
+    req.on('error', error => {
+        console.error(error);
+    });
+      
+    req.write(data);
+    req.end();
+}
 console.log(process.env.PROD);
 const PROD = process.env.PROD;
 botlogin(PROD);
+
+async function getBotToken(PROD) {
+    const db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const doc = await botRef.get();
+    if(PROD === "false") {
+        return {
+            token: doc.data().testtoken,
+        };
+    } else if(PROD === "beta") {
+        return {
+            token: doc.data().betatoken,
+        };
+    } else {
+        return {
+            token: doc.data().token,
+        };
+    } 
+}
+
+async function accountLink(userRecord, db) {
+    const userRef = db.collection("users").doc(userRecord.uid);
+    const userDoc = await userRef.get();
+
+    const dcUserRef = db.collection("dcusers").doc(message.author.id);
+    // eslint-disable-next-line no-unused-vars
+    const dcUserDoc = await dcUserRef.get();
+
+    if(userDoc.data().dclinked) {
+        message.reply("This account is already linked!", args[1]);
+    } else if(`${userDoc.data().dclink}` === args[1]) {
+        dcUserRef.update({
+            uid: message.author.id,
+        });
+        userRef.update({
+            dclink: admin.firestore.FieldValue.delete(),
+            dclinked: true,
+            dcid: message.author.id,
+        });
+        message.reply("Account linked succesfuly!");
+    } else {
+        message.reply("Error linking account");
+    }
+}
 
 async function botlogin(PROD) {
     const db = admin.firestore();
@@ -360,7 +552,11 @@ async function botlogin(PROD) {
     const doc = await botRef.get();
     if(PROD === "false") {
         bot.login(doc.data().testtoken);
+    } else if(PROD === "beta") {
+        bot.login(doc.data().betatoken);
     } else {
         bot.login(doc.data().token);
     }
 }
+
+app.listen(3000);

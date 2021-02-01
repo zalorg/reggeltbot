@@ -1,0 +1,152 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: reggeltbot-beta
+  managedFields:
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+        'f:spec':
+          'f:progressDeadlineSeconds': {}
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector':
+            'f:matchLabels':
+              .: {}
+              'f:app': {}
+          'f:strategy':
+            'f:rollingUpdate':
+              .: {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+            'f:type': {}
+          'f:template':
+            'f:metadata':
+              'f:labels':
+                .: {}
+                'f:app': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"reggeltbot-1"}':
+                  .: {}
+                  'f:env':
+                    .: {}
+                    'k:{"name":"GOOGLE_APPLICATION_CREDENTIALS"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                    'k:{"name":"PROD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
+                  'f:image': {}
+                  'f:imagePullPolicy': {}
+                  'f:name': {}
+                  'f:resources': {}
+                  'f:terminationMessagePath': {}
+                  'f:terminationMessagePolicy': {}
+                  'f:volumeMounts':
+                    .: {}
+                    'k:{"mountPath":"/var/secrets/google"}':
+                      .: {}
+                      'f:mountPath': {}
+                      'f:name': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+              'f:volumes':
+                .: {}
+                'k:{"name":"google-cloud-key"}':
+                  .: {}
+                  'f:name': {}
+                  'f:secret':
+                    .: {}
+                    'f:defaultMode': {}
+                    'f:secretName': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2020-12-31T00:40:43Z'
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:deployment.kubernetes.io/revision': {}
+        'f:status':
+          'f:availableReplicas': {}
+          'f:conditions':
+            'k:{"type":"Available"}':
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+            'k:{"type":"Progressing"}':
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+          'f:observedGeneration': {}
+          'f:readyReplicas': {}
+          'f:replicas': {}
+          'f:updatedReplicas': {}
+      manager: kube-controller-manager
+      operation: Update
+      time: '2020-12-31T00:40:45Z'
+  name: reggeltbot-beta
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reggeltbot-beta
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: reggeltbot-beta
+    spec:
+      containers:
+        - env:
+            - name: PROD
+              valueFrom:
+                configMapKeyRef:
+                  key: PROD
+                  name: reggeltbot-beta-config-7ea9
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              valueFrom:
+                configMapKeyRef:
+                  key: GOOGLE_APPLICATION_CREDENTIALS
+                  name: reggeltbot-beta-config-7ea9
+          image: gcr.io/zal1000/github.com/zal1000/reggeltbot
+          imagePullPolicy: IfNotPresent
+          name: reggeltbot-1
+          volumeMounts:
+            - mountPath: /var/secrets/google
+              name: google-cloud-key
+      volumes:
+        - name: google-cloud-key
+          secret:
+            defaultMode: 420
+            secretName: firebase-key
