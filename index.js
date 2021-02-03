@@ -26,7 +26,6 @@ dblRef.once("value", function(snapshot) {
 
 bot.on("ready", async() => {
     console.log(`${bot.user.username} has started`);
-    const db = admin.database();
     const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
     doc.onSnapshot(docSnapshot => {
         bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
@@ -201,30 +200,7 @@ bot.on("message", async message => {
                 .auth()
                 .getUserByEmail(args[0])
                 .then((userRecord) => {
-                    async function asd() {
-                        const userRef = db.collection("users").doc(userRecord.uid);
-                        const userDoc = await userRef.get();
-
-                        const dcUserRef = db.collection("dcusers").doc(message.author.id);
-                        // eslint-disable-next-line no-unused-vars
-                        const dcUserDoc = await dcUserRef.get();
-
-                        if(userDoc.data().dclinked) {
-                            message.reply("This account is already linked!", args[1]);
-                        } else if(`${userDoc.data().dclink}` === args[1]) {
-                            dcUserRef.update({
-                                uid: userRecord.email,
-                            });
-                            userRef.update({
-                                dclink: admin.firestore.FieldValue.delete(),
-                                dclinked: true,
-                                dcid: message.author.id,
-                            });
-                            message.reply("Account linked succesfuly!");
-                        } else {
-                            message.reply("Error linking account");
-                        }
-                    } asd();
+                    accountLink(userRecord, db);
                 })
                 .catch((error) => {
                     console.log("Error fetching user data:", error);
