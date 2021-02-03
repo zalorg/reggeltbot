@@ -34,14 +34,6 @@ bot.on("ready", async() => {
         bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
     });
 
-    const updateref = admin.database().ref('bots/updates');
-    updateref.on("child_changed", function(snapshot) {
-        unsub();
-        var changedPost = snapshot.val();
-        console.log(changedPost);
-        bot.user.setActivity(`Updateing to: ${snapshot.val()}`, {type: "PLAYING"});
-    });
-
 });
 
 bot.on("messageUpdate", async (_, newMsg) => {
@@ -62,6 +54,62 @@ app.get('/ping', async (req, res) => {
     res.status(200).send({
         ping: bot.ws.ping,
     });
+});
+
+bot.ws.on('INTERACTION_CREATE', async interaction => {
+    let prefix = (await getPrefix()).prefix; 
+    const cmd = interaction.data.name;
+    if(cmd === "count" || cmd === "ciunt") {
+        let db = admin.firestore();
+        let dcid = interaction.member.user.id;
+        const cityRef = db.collection("dcusers").doc(dcid);
+        const doc = await cityRef.get();
+        if (!doc.exists) {
+            interactionResponse(interaction, {
+                type: 4,
+                data: {
+                    content: 'Error reading document!'
+                }
+            });
+        } else {
+            let upmbed = new Discord.MessageEmbed()
+                .setTitle(`${interaction.member.user.username}`)
+                .setColor("#FFCB5C")
+                .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
+                .setFooter(interaction.member.user.username)
+                .setThumbnail(doc.data().pp)
+                .setTimestamp(Date.now());
+            console.log(upmbed);
+    
+            interactionResponse(interaction, {
+                type: 4,
+                data: {
+                    embeds: [upmbed]
+                }
+            });
+        }
+    } else if(cmd === "help") {
+        let upmbed = new Discord.MessageEmbed()
+            .setTitle(interaction.member.user.username)
+            .setColor("#FFCB2B")
+            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=${interaction.member.user.id}) is megnézheted)`)
+            .addField(`${prefix}invite`, "Bot meghívása")
+            .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
+            .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
+            .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
+            .addField('\u200B', '\u200B')
+            .addField("Bot ping", `${bot.ws.ping}ms`)
+            .addField("Uptime", `${ms(bot.uptime)}`)
+            .setFooter(interaction.member.user.username)
+            .setThumbnail(bot.user.avatarURL())
+            .setTimestamp(Date.now());
+        interactionResponse(interaction, {
+            type: 4,
+            data: {
+                embeds: [upmbed]
+            }
+        });
+    }
 });
 
 bot.on("message", async message => {
@@ -220,33 +268,32 @@ bot.on("message", async message => {
     } else if (cmd === `${prefix}restart`) {
         await restartRequest(message);
     } else if (cmd === `${prefix}update`) {
-        const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
-        const doc = await ref.get();
-        const gme = message.guild.me;
-        ref.set({
-            list: true,
-            permissions: {
-                ADMINISTRATOR: gme.hasPermission('ADMINISTRATOR'),
-                MANAGE_GUILD: gme.hasPermission('MANAGE_GUILD'),
-                MANAGE_CHANNELS: gme.hasPermission('MANAGE_CHANNELS'),
-                MANAGE_MESSAGES: gme.hasPermission('MANAGE_MESSAGES'),
-            },
-            presmflags: gme.permissions.toArray(),
-        }).then(r => {
-            message.reply('Server added succesfuly!');
-        }).catch(e => {
-            message.reply('Error adding server, please try again later and open a new issue on github()');
-        }); 
-        
-        console.log('');
-        console.log(message.guild.me.hasPermission('MANAGE_GUILD'));
-
+        updateUser(message);
     }
 });
 
-async function updateUser(msg) {
-
+async function updateUser(message) {
+    const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
+    //const doc = await ref.get();
+    const gme = message.guild.me;
+    console.log(gme.permissions.toArray());
+    ref.set({
+        owner: message.guild.ownerID,
+        icon: message.guild.iconURL(),
+        permissions: {
+            ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
+            MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
+            MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
+            MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
+        },
+        allpermissions: gme.permissions.toArray()
+    }).then(() => {
+        message.reply('Server added/updated succesfuly!');
+    }).catch(() => {
+        message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
+    });
 }
+
 
 async function getReggeltChannel(PROD) {
     const db = admin.firestore();
@@ -348,7 +395,6 @@ async function getRandomFact(message) {
 }
 
 async function sendRandomFact(docid, docdata, message) {
-    console.log("");
     const db = admin.firestore();
     const userRef = db.collection('users').doc(`${docdata.owner}`);
     const userDoc = await userRef.get();
@@ -559,6 +605,10 @@ async function botlogin(PROD) {
     } else {
         bot.login(doc.data().token);
     }
+}
+
+async function interactionResponse(interaction, data) {
+    bot.api.interactions(interaction.id, interaction.token).callback.post({data: data});
 }
 
 app.listen(3000);
