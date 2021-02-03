@@ -278,6 +278,7 @@ async function updateUser(message) {
     const gme = message.guild.me;
     console.log(gme.permissions.toArray());
     ref.set({
+        name: message.guild.name,
         owner: message.guild.ownerID,
         icon: message.guild.iconURL(),
         permissions: {
@@ -339,13 +340,15 @@ async function restartRequest(message) {
     const doc = await ref.get();
 
     if(message.author.id === doc.data().ownerid) {
-        message.reply('Restarting container...');
-        bot.destroy();
-        process.exit();
+        message.reply('Restarting container...').then(() => {
+            bot.destroy();
+        }).then(() => {
+            process.exit();
+        });
+        
+        
     } else {
         message.reply('Nope',);
-        console.log(message.author.id);
-        console.log(doc.data().ownerid);
     }
 
 }
