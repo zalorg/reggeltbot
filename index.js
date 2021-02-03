@@ -219,8 +219,34 @@ bot.on("message", async message => {
         }
     } else if (cmd === `${prefix}restart`) {
         await restartRequest(message);
+    } else if (cmd === `${prefix}update`) {
+        const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
+        const doc = await ref.get();
+        const gme = message.guild.me;
+        ref.set({
+            list: true,
+            permissions: {
+                ADMINISTRATOR: gme.hasPermission('ADMINISTRATOR'),
+                MANAGE_GUILD: gme.hasPermission('MANAGE_GUILD'),
+                MANAGE_CHANNELS: gme.hasPermission('MANAGE_CHANNELS'),
+                MANAGE_MESSAGES: gme.hasPermission('MANAGE_MESSAGES'),
+            },
+            presmflags: gme.permissions.toArray(),
+        }).then(r => {
+            message.reply('Server added succesfuly!');
+        }).catch(e => {
+            message.reply('Error adding server, please try again later and open a new issue on github()');
+        }); 
+        
+        console.log('');
+        console.log(message.guild.me.hasPermission('MANAGE_GUILD'));
+
     }
 });
+
+async function updateUser(msg) {
+
+}
 
 async function getReggeltChannel(PROD) {
     const db = admin.firestore();
