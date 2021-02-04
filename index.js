@@ -348,7 +348,7 @@ async function restartRequest(message) {
         
         
     } else {
-        message.reply('Nope',);
+        message.reply('Nope <3',);
     }
 
 }
