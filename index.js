@@ -248,7 +248,7 @@ bot.on("message", async message => {
                 .auth()
                 .getUserByEmail(args[0])
                 .then((userRecord) => {
-                    accountLink(userRecord, db);
+                    accountLink(userRecord, db, message);
                 })
                 .catch((error) => {
                     console.log("Error fetching user data:", error);
@@ -572,7 +572,7 @@ async function getBotToken(PROD) {
     } 
 }
 
-async function accountLink(userRecord, db) {
+async function accountLink(userRecord, db, message) {
     const userRef = db.collection("users").doc(userRecord.uid);
     const userDoc = await userRef.get();
 
