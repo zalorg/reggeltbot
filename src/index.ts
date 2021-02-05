@@ -1,7 +1,8 @@
 /* eslint-disable quotes */
 /* eslint-disable no-undef */
-const Discord = require("discord.js");
-const bot = new Discord.Client();
+import axios from "axios";
+import Discord = require("discord.js");
+const bot: any = new Discord.Client();
 const DBL = require("dblapi.js");
 let ms = require("ms");
 let admin = require("firebase-admin");
@@ -25,13 +26,13 @@ dblRef.once("value", function(snapshot: { val: () => any; }) {
 });
 
 bot.on("ready", async() => {
-    console.log(`${bot.user.username} has started`);
+    console.log(`${bot.user!.username} has started`);
     const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
     doc.onSnapshot((docSnapshot: { data: () => { (): any; new(): any; reggeltcount: any; }; }) => {
-        bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
+        bot.user!.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
     }, (err: any) => {
         console.log(`Encountered error: ${err}`);
-        bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
+        bot.user!.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
     });
 
 });
@@ -55,6 +56,12 @@ app.get('/ping', async (req: any, res: any) => {
         ping: bot.ws.ping,
     });
 });
+
+
+bot.on('error', async (err: any) => {
+    console.log(err);
+})
+
 
 bot.ws.on('INTERACTION_CREATE', async (interaction: any) => {
     let prefix = (await getPrefix()).prefix; 
@@ -101,7 +108,7 @@ bot.ws.on('INTERACTION_CREATE', async (interaction: any) => {
             .addField("Bot ping", `${bot.ws.ping}ms`)
             .addField("Uptime", `${ms(bot.uptime)}`)
             .setFooter(interaction.member.user.username)
-            .setThumbnail(bot.user.avatarURL())
+            .setThumbnail(bot.user!.avatarURL()!)
             .setTimestamp(Date.now());
         interactionResponse(interaction, {
             type: 4,
@@ -227,7 +234,7 @@ bot.on("message", async (message: any) => {
             .addField("Bot ping", `${bot.ws.ping}ms`)
             .addField("Uptime", `${ms(bot.uptime)}`)
             .setFooter(message.author.username)
-            .setThumbnail(bot.user.avatarURL())
+            .setThumbnail(bot.user!.avatarURL()!)
             .setTimestamp(message.createdAt);
         message.channel.send(upmbed);
     }
@@ -614,7 +621,9 @@ async function botlogin(PROD: string | undefined) {
 }
 
 async function interactionResponse(interaction: { id: any; token: any; }, data: { type: number; data: { content: string; } | { embeds: any[]; } | { embeds: any[]; }; }) {
-    bot.api.interactions(interaction.id, interaction.token).callback.post({data: data});
+    await axios.post(`https://discord.com/api/v8/interactions/${interaction.id}/${interaction.token}/callback`, {
+        data: data
+    })
 }
 
 app.listen(3000);
