@@ -4,5 +4,6 @@ WORKDIR /usr/src/reggeltbot
 COPY package.json /usr/src/reggeltbot
 RUN npm install
 COPY . /usr/src/reggeltbot
+RUN npm install typescript
 RUN tsc
 CMD ["node", "lib/index.js"]
