@@ -8,3 +8,5 @@ api.py
 sh.md
 send.js
 lib
+lib/index.js
+lib/index.js.map
