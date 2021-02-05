@@ -4,4 +4,4 @@ WORKDIR /usr/src/reggeltbot
 COPY package.json /usr/src/reggeltbot
 RUN npm install
 COPY . /usr/src/reggeltbot
-CMD ["node", "index.js"]
+CMD ["node", "lib/index.js"]
