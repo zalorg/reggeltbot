@@ -1,7 +1,6 @@
-/* eslint-disable quotes */
-/* eslint-disable no-undef */
 import axios from "axios";
 import Discord = require("discord.js");
+//const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
 const bot: any = new Discord.Client();
 const DBL = require("dblapi.js");
 let ms = require("ms");
@@ -29,10 +28,10 @@ bot.on("ready", async() => {
     console.log(`${bot.user!.username} has started`);
     const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
     doc.onSnapshot((docSnapshot: { data: () => { (): any; new(): any; reggeltcount: any; }; }) => {
-        bot.user!.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
+        bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
     }, (err: any) => {
         console.log(`Encountered error: ${err}`);
-        bot.user!.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
+        bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
     });
 
 });
@@ -133,7 +132,7 @@ bot.on("message", async (message: any) => {
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
 
-            const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild.id);
+            const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild!.id);
             const cddoc = await cdref.get();
 
             const configref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
@@ -193,17 +192,17 @@ bot.on("message", async (message: any) => {
             
 
 
-            console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`);
+            console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild!.id}")"(HUN)`);
             message.react("☕");     
         }
         else {
             if(!message.deletable) {
                 message.channel.send('Missing permission!')
                     .catch((err: any) => {
-                        message.guild.owner.send('Missing permission! I need **Send Messages** to function correctly');
+                        message.guild!.owner!.send('Missing permission! I need **Send Messages** to function correctly');
                         console.log(err);
                     });
-                message.guild.owner.send('Missing permission! I need **Manage Messages** to function correctly')
+                message.guild!.owner!.send('Missing permission! I need **Manage Messages** to function correctly')
                     .catch(
                         
                     );
@@ -275,11 +274,12 @@ bot.on("message", async (message: any) => {
     } else if (cmd === `${prefix}restart`) {
         await restartRequest(message);
     } else if (cmd === `${prefix}update`) {
+        message
         updateUser(message);
     }
 });
 
-async function updateUser(message: { author: { id: any; }; guild: { id: any; me: any; name: any; ownerID: any; iconURL: () => any; }; reply: (arg0: string) => void; }) {
+async function updateUser(message: any) {
     const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
     //const doc = await ref.get();
     const gme = message.guild.me;
