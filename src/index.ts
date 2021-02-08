@@ -72,6 +72,10 @@ bot.on("messageUpdate", async (_: any, newMsg: any) => {
     }
 });
 
+app.get('/', (req: any, res: any) => {
+    res.sendStatus(200);
+})
+
 app.get('/ping', async (req: any, res: any) => {
     res.status(200).send({
         ping: bot.ws.ping,
