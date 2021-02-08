@@ -7,3 +7,5 @@ index-asd.js
 api.py
 sh.md
 send.js
+dist/
+out/

@@ -1,10 +1,12 @@
-/* eslint-disable quotes */
-/* eslint-disable no-undef */
-const Discord = require("discord.js");
-const bot = new Discord.Client();
+import axios from "axios";
+//import Discord = require("discord.js");
+import * as Discord from 'discord.js';
+
+//const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
+const bot: any = new Discord.Client();
 const DBL = require("dblapi.js");
 let ms = require("ms");
-let admin = require("firebase-admin");
+import * as admin from 'firebase-admin';
 const https = require('https');
 const express = require('express');
 
@@ -16,27 +18,43 @@ admin.initializeApp({
 });
 let rdb = admin.database();
 
+function rdbupdate(){
+    const db = admin.database();
+
+    const ref = db.ref(`bots/status`);
+    const time = msToTime(bot.uptime);
+    ref.update({
+        reggeltbotPing: `${bot.ws.ping}`,
+        reggeltbotUp: `${bot.uptime}`,
+        reggeltbotUpRead: time,
+    });
+
+    setTimeout(rdbupdate, 1000);
+}
+
+rdbupdate();
+
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
-dblRef.once("value", function(snapshot) {
+dblRef.once("value", function(snapshot: { val: () => any; }) {
     new DBL(snapshot.val(), bot);
     console.debug(snapshot.val());
-}, function (errorObject) {
+}, function (errorObject: { code: string; }) {
     console.log("The read failed: " + errorObject.code);
 });
 
 bot.on("ready", async() => {
-    console.log(`${bot.user.username} has started`);
+    console.log(`${bot.user!.username} has started`);
     const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
-    doc.onSnapshot(docSnapshot => {
+    doc.onSnapshot((docSnapshot: any) => {
         bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
-    }, err => {
+    }, (err: any) => {
         console.log(`Encountered error: ${err}`);
         bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
     });
 
 });
 
-bot.on("messageUpdate", async (_, newMsg) => {
+bot.on("messageUpdate", async (_: any, newMsg: any) => {
     if(newMsg.author.bot) return;
 
     if(newMsg.channel.name === "reggelt"){
@@ -50,13 +68,19 @@ bot.on("messageUpdate", async (_, newMsg) => {
     }
 });
 
-app.get('/ping', async (req, res) => {
+app.get('/ping', async (req: any, res: any) => {
     res.status(200).send({
         ping: bot.ws.ping,
     });
 });
 
-bot.ws.on('INTERACTION_CREATE', async interaction => {
+
+bot.on('error', async (err: any) => {
+    console.log(err);
+})
+
+
+bot.ws.on('INTERACTION_CREATE', async (interaction: any) => {
     let prefix = (await getPrefix()).prefix; 
     const cmd = interaction.data.name;
     if(cmd === "count" || cmd === "ciunt") {
@@ -75,9 +99,9 @@ bot.ws.on('INTERACTION_CREATE', async interaction => {
             let upmbed = new Discord.MessageEmbed()
                 .setTitle(`${interaction.member.user.username}`)
                 .setColor("#FFCB5C")
-                .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
+                .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data()!.reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
                 .setFooter(interaction.member.user.username)
-                .setThumbnail(doc.data().pp)
+                .setThumbnail(doc.data()!.pp)
                 .setTimestamp(Date.now());
             console.log(upmbed);
     
@@ -101,7 +125,7 @@ bot.ws.on('INTERACTION_CREATE', async interaction => {
             .addField("Bot ping", `${bot.ws.ping}ms`)
             .addField("Uptime", `${ms(bot.uptime)}`)
             .setFooter(interaction.member.user.username)
-            .setThumbnail(bot.user.avatarURL())
+            .setThumbnail(bot.user!.avatarURL()!)
             .setTimestamp(Date.now());
         interactionResponse(interaction, {
             type: 4,
@@ -112,7 +136,7 @@ bot.ws.on('INTERACTION_CREATE', async interaction => {
     }
 });
 
-bot.on("message", async message => {
+bot.on("message", async (message: any) => {
     if(message.author.bot) return;
     let prefix = (await getPrefix()).prefix; 
     let messageArray = message.content.split(" ");
@@ -126,12 +150,12 @@ bot.on("message", async message => {
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
 
-            const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild.id);
+            const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild!.id);
             const cddoc = await cdref.get();
 
             const configref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
             const configDoc = await configref.get();
-            const cdval = configDoc.data().cd * 3600;
+            const cdval = configDoc.data()!.cd * 3600;
             const cd = Math.floor(Date.now() / 1000) + cdval;
 
             console.log(`Cooldown ends: ${cd}`);
@@ -139,12 +163,12 @@ bot.on("message", async message => {
 
             if(cddoc.exists) {
                 console.log('');
-                console.log(cddoc.data().reggeltcount);
-                if(cddoc.data().reggeltcount > Math.floor(Date.now() / 1000)) {
+                console.log(cddoc.data()!.reggeltcount);
+                if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
                     message.delete();
                     message.author.send('You are on cooldown!');
                 } else {
-                    if(!process.env.PROD === "false") {
+                    if(!process.env.PROD) {
                         await reggeltupdateall();
                         await reggeltupdatefs(message);
                     }
@@ -159,7 +183,7 @@ bot.on("message", async message => {
                 cdref.set({
                     reggeltcount: cd,
                 });
-                if(!process.env.PROD === "false") {
+                if(!process.env.PROD) {
                     await reggeltupdateall();
                     await reggeltupdatefs(message);
                 }
@@ -186,24 +210,24 @@ bot.on("message", async message => {
             
 
 
-            console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild.id}")"(HUN)`);
+            console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild!.id}")"(HUN)`);
             message.react("☕");     
         }
         else {
             if(!message.deletable) {
                 message.channel.send('Missing permission!')
-                    .catch(err => {
-                        message.guild.owner.send('Missing permission! I need **Send Messages** to function correctly');
+                    .catch((err: any) => {
+                        message.guild!.owner!.send('Missing permission! I need **Send Messages** to function correctly');
                         console.log(err);
                     });
-                message.guild.owner.send('Missing permission! I need **Manage Messages** to function correctly')
+                message.guild!.owner!.send('Missing permission! I need **Manage Messages** to function correctly')
                     .catch(
                         
                     );
             } else {
                 message.delete();
                 message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
-                    .catch(function(error) {
+                    .catch(function(error: string) {
                         message.reply("Error: " + error);
                         console.log("Error:", error);
                     });
@@ -227,7 +251,7 @@ bot.on("message", async message => {
             .addField("Bot ping", `${bot.ws.ping}ms`)
             .addField("Uptime", `${ms(bot.uptime)}`)
             .setFooter(message.author.username)
-            .setThumbnail(bot.user.avatarURL())
+            .setThumbnail(bot.user!.avatarURL()!)
             .setTimestamp(message.createdAt);
         message.channel.send(upmbed);
     }
@@ -243,14 +267,13 @@ bot.on("message", async message => {
             message.reply("Please provide your link code");
         } else {
             botTypeing(message.channel.id);
-            const db = admin.firestore();
             admin
                 .auth()
                 .getUserByEmail(args[0])
-                .then((userRecord) => {
-                    accountLink(userRecord, db, message, args);
+                .then((userRecord: any) => {
+                    return accountLink(userRecord, message);
                 })
-                .catch((error) => {
+                .catch((error: any) => {
                     console.log("Error fetching user data:", error);
                 });
             
@@ -268,11 +291,72 @@ bot.on("message", async message => {
     } else if (cmd === `${prefix}restart`) {
         await restartRequest(message);
     } else if (cmd === `${prefix}update`) {
+        message
         updateUser(message);
+    } else if (cmd === `${prefix}ping`) {
+        if(!args) {
+            message.reply(bot.ws.ping);
+        } else if(args[0] === 'api' && args[1] === 'internal') {
+            axios.get(`${(await apiurl()).ip}/ping`).then(res => {
+                console.log(res)
+                message.reply(res.status);
+            }).catch(err => {
+                message.reply(err.status);
+                throw err;
+            })
+        }
+    } else if (cmd === `${prefix}leaderboard`) {
+        console.log((await apiurl()).ip)
+        if(!args[0]) {
+            await axios.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=10`).then(res => {
+                const embed = new Discord.MessageEmbed()
+                .setTitle('Leaderboard')
+                .setColor('#FFCA5C')
+                .setURL(`https://reggeltbot.com/leaderboard?m=10`)
+                .setThumbnail(res.data[0].pp)
+                res.data.forEach((lb: any) => {
+                    embed.addField(lb.name, lb.reggeltcount)
+                });
+
+                message.channel.send(embed)
+            }).catch(err => {
+                message.reply('API Error')
+                console.error(err);
+            })
+        } else {
+            const number = parseInt(args[0]);
+            console.log(number)
+            if(!number) {
+                message.reply('Please use a number')
+            } else if(number < 0) {
+                console.log(1)
+                message.reply('Please use a number between 1 and 20')
+            } else if(number > 21) {
+                console.log(2)
+
+                message.reply('Please use a number between 1 and 20')
+            } else {
+                await axios.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=${number}`).then(res => {
+                    const embed = new Discord.MessageEmbed()
+                    .setTitle('Leaderboard')
+                    .setColor('#FFCA5C')
+                    .setURL(`https://reggeltbot.com/leaderboard?m=${number}`)
+                    .setThumbnail(res.data[0].pp)
+                    res.data.forEach((lb: any) => {
+                        embed.addField(lb.name, lb.reggeltcount)
+                    });
+    
+                    message.channel.send(embed)
+                }).catch(err => {
+                    message.reply('API Error')
+                    console.error(err);
+                })
+            }
+        }
     }
 });
 
-async function updateUser(message) {
+async function updateUser(message: any) {
     const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
     //const doc = await ref.get();
     const gme = message.guild.me;
@@ -296,21 +380,21 @@ async function updateUser(message) {
 }
 
 
-async function getReggeltChannel(PROD) {
+async function getReggeltChannel(PROD: string | undefined) {
     const db = admin.firestore();
     const ref = db.collection('bots').doc('reggeltbot-channels');
     const doc = await ref.get();
     if(PROD === "false") {
         return {
-            channel: doc.data().test,
+            channel: doc.data()!.test,
         };
     } else if(PROD === "beta") {
         return {
-            channel: doc.data().beta,
+            channel: doc.data()!.beta,
         };
     } else {
         return {
-            channel: doc.data().main,
+            channel: doc.data()!.main,
         };
     }
 }
@@ -322,24 +406,24 @@ async function getPrefix() {
     const PROD = process.env.PROD;
     if(PROD === "false") {
         return {
-            prefix: doc.data().testprefix,
+            prefix: doc.data()!.testprefix,
         };
     } else if(PROD === "beta") {
         return {
-            prefix: doc.data().betaprefix,
+            prefix: doc.data()!.betaprefix,
         };
     } else {
         return {
-            prefix: doc.data().prefix,
+            prefix: doc.data()!.prefix,
         };
     }
 }
 
-async function restartRequest(message) {
+async function restartRequest(message: { author: { id: any; }; reply: (arg0: string) => Promise<any>; }) {
     const ref = admin.firestore().collection("bots").doc("reggeltbot");
     const doc = await ref.get();
 
-    if(message.author.id === doc.data().ownerid) {
+    if(message.author.id === doc.data()!.ownerid) {
         message.reply('Restarting container...').then(() => {
             bot.destroy();
         }).then(() => {
@@ -348,12 +432,12 @@ async function restartRequest(message) {
         
         
     } else {
-        message.reply('Nope',);
+        message.reply('Nope <3',);
     }
 
 }
 
-async function getRandomFactWithId(id, message) {
+async function getRandomFactWithId(id: any, message: any) {
     
     const db = admin.firestore();
     const ref = db.collection("facts").doc(id);
@@ -361,11 +445,11 @@ async function getRandomFactWithId(id, message) {
     if(!doc.exists) {
         message.reply('Cannot find that fact!');
     } else {
-        sendRandomFact(doc.id, doc.data(), message);
+        sendRandomFact(doc.id, message);
     }
 }
 
-async function getRandomFact(message) {
+async function getRandomFact(message: any) {
     const db = admin.firestore();
 
     var quotes = db.collection("facts");
@@ -373,39 +457,41 @@ async function getRandomFact(message) {
     var key2 = quotes.doc().id;
         
     quotes.where(admin.firestore.FieldPath.documentId(), '>=', key2).limit(1).get()
-        .then(snapshot => {
+        .then((snapshot: { size: number; forEach: (arg0: (doc: any) => void) => void; }) => {
             if(snapshot.size > 0) {
-                snapshot.forEach(doc => {
-                    sendRandomFact(doc.id, doc.data(), message);
+                snapshot.forEach((doc: { id: any; data: () => any; }) => {
+                    sendRandomFact(doc.id, message);
                 });
             } else {
                 quotes.where(admin.firestore.FieldPath.documentId(), '<', key2).limit(1).get()
-                    .then(snapshot => {
-                        snapshot.forEach(doc => {
-                            sendRandomFact(doc.id, doc.data(), message);
+                    .then((snapshot: any) => {
+                        snapshot.forEach((doc: { id: any; data: () => any; }) => {
+                            sendRandomFact(doc.id, message);
                         });
                     })
-                    .catch(err => {
+                    .catch((err: any) => {
                         message.reply(`Error geting fact: **${err}**`);
                         console.log('Error getting documents', err);
                     });
             }
         })
-        .catch(err => {
+        .catch((err: { message: any; }) => {
             message.reply(`Error geting fact: **${err.message}**`);
             console.log('Error getting documents', err);
         });
 }
 
-async function sendRandomFact(docid, docdata, message) {
+async function sendRandomFact(docid: any, message: { createdAt: any; channel: { send: (arg0: any) => void; }; }) {
     const db = admin.firestore();
-    const userRef = db.collection('users').doc(`${docdata.owner}`);
+    const ref = db.collection("facts").doc(docid);
+    const doc = await ref.get();
+    const userRef = db.collection('users').doc(`${doc.data()!.owner}`);
     const userDoc = await userRef.get();
-    if(!docdata.owner){
+    if(!doc.data()!.owner){
         let upmbed = new Discord.MessageEmbed()
             .setTitle(`Random fact`)
             .setColor("#FFCB5C")
-            .addField("Fact", docdata.fact)
+            .addField("Fact", doc.data()!.fact)
             .setFooter(`This is a template fact`)
             .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
@@ -413,33 +499,33 @@ async function sendRandomFact(docid, docdata, message) {
 
         message.channel.send(upmbed);
     
-    } else if(!userDoc.data().dcid) {
+    } else if(!userDoc.data()!.dcid) {
 
         let upmbed = new Discord.MessageEmbed()
-            .setTitle(`Random fact by.: ${docdata.author}`)
+            .setTitle(`Random fact by.: ${doc.data()!.author}`)
             .setColor("#FFCB5C")
-            .addField("Fact", docdata.fact)
+            .addField("Fact", doc.data()!.fact)
             .addField("Fact id", docid)
             .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
-            .setFooter(docdata.author)
+            .setFooter(doc.data()!.author)
             .setTimestamp(message.createdAt);
 
         message.channel.send(upmbed);
         
     } else {
-        const dcRef = db.collection('dcusers').doc(`${userDoc.data().dcid}`);
+        const dcRef = db.collection('dcusers').doc(`${userDoc.data()!.dcid}`);
         const dcDoc = await dcRef.get();
 
         let upmbed = new Discord.MessageEmbed()
-            .setTitle(`Random fact by.: ${dcDoc.data().username}`)
+            .setTitle(`Random fact by.: ${dcDoc.data()!.username}`)
             .setColor("#FFCB5C")
-            .addField("Fact", docdata.fact)
+            .addField("Fact", doc.data()!.fact)
             .addField("Fact id", docid)
             .addField('\u200B', '\u200B')
             .addField("Add your fact", `You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))`)
-            .setFooter(dcDoc.data().tag)
-            .setThumbnail(dcDoc.data().pp)
+            .setFooter(dcDoc.data()!.tag)
+            .setThumbnail(dcDoc.data()!.pp)
             .setTimestamp(message.createdAt);
 
         message.channel.send(upmbed);
@@ -451,20 +537,20 @@ async function reggeltupdateall() {
     let db = admin.firestore();
     const botRef = db.collection("bots").doc("reggeltbot");
     const botDoc = await botRef.get();
-    const incrementCount = botDoc.data().incrementCount;
+    const incrementCount = botDoc.data()!.incrementCount;
     await db.collection("bots").doc("reggeltbot-count-all").update({
         reggeltcount: admin.firestore.FieldValue.increment(incrementCount)
     });
 }
 
-async function reggeltupdatefs(message, decreased = false) {
+async function reggeltupdatefs(message: { author: { id: any; tag: any; username: any; avatarURL: () => any; }; }, decreased = false) {
     let db = admin.firestore();
     const reggeltRef = db.collection("dcusers").doc(message.author.id);
     const doc = await reggeltRef.get();
     const botRef = db.collection("bots").doc("reggeltbot");
     const botDoc = await botRef.get();
-    const decreaseCount = botDoc.data().decreaseCount;
-    const incrementCount = botDoc.data().incrementCount;
+    const decreaseCount = botDoc.data()!.decreaseCount;
+    const incrementCount = botDoc.data()!.incrementCount;
     if (!doc.exists) {
         reggeltRef.set({
             reggeltcount: (decreased ? decreaseCount : incrementCount),
@@ -482,11 +568,11 @@ async function reggeltupdatefs(message, decreased = false) {
     }
 }
 
-async function reggeltUpdateEdit(message) {
+async function reggeltUpdateEdit(message: { author: { id: string; }; }) {
     let db = admin.firestore();
     const botRef = db.collection("bots").doc("reggeltbot");
     const botDoc = await botRef.get();
-    const decreaseCount = botDoc.data().decreaseCount;
+    const decreaseCount = botDoc.data()!.decreaseCount;
     await db.collection("bots").doc("reggeltbot-count-all").update({
         reggeltcount: admin.firestore.FieldValue.increment(decreaseCount)
     });
@@ -495,7 +581,7 @@ async function reggeltUpdateEdit(message) {
     });
 }
 
-async function getCountForUser(message) {
+async function getCountForUser(message: { author: { id: any; username: any; avatarURL: () => any; }; reply: (arg0: string) => void; createdAt: any; channel: { send: (arg0: any) => void; }; }) {
     let db = admin.firestore();
     let dcid = message.author.id;
     const cityRef = db.collection("dcusers").doc(dcid);
@@ -507,7 +593,7 @@ async function getCountForUser(message) {
         let upmbed = new Discord.MessageEmbed()
             .setTitle(`${message.author.username}`)
             .setColor("#FFCB5C")
-            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data().reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
+            .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data()!.reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
             .setFooter(message.author.username)
             .setThumbnail(message.author.avatarURL())
             .setTimestamp(message.createdAt);
@@ -517,7 +603,7 @@ async function getCountForUser(message) {
     }
 }
 
-async function botTypeing(channel) {
+async function botTypeing(channel: any) {
     const data = JSON.stringify({});
     console.log((await getBotToken(process.env.PROD)).token);
       
@@ -534,15 +620,15 @@ async function botTypeing(channel) {
         }
     };
       
-    const req = https.request(options, res => {
+    const req = https.request(options, (res: { statusCode: any; on: (arg0: string, arg1: (d: any) => void) => void; }) => {
         console.log(`statusCode: ${res.statusCode}`);
       
-        res.on('data', d => {
+        res.on('data', (d: string | Buffer) => {
             process.stdout.write(d);
         });
     });
       
-    req.on('error', error => {
+    req.on('error', (error: any) => {
         console.error(error);
     });
       
@@ -553,36 +639,40 @@ console.log(process.env.PROD);
 const PROD = process.env.PROD;
 botlogin(PROD);
 
-async function getBotToken(PROD) {
+async function getBotToken(PROD: string | undefined) {
     const db = admin.firestore();
     const botRef = db.collection("bots").doc("reggeltbot");
     const doc = await botRef.get();
     if(PROD === "false") {
         return {
-            token: doc.data().testtoken,
+            token: doc.data()!.testtoken,
         };
     } else if(PROD === "beta") {
         return {
-            token: doc.data().betatoken,
+            token: doc.data()!.betatoken,
         };
     } else {
         return {
-            token: doc.data().token,
+            token: doc.data()!.token,
         };
     } 
 }
 
-async function accountLink(userRecord, db, message, args) {
+async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string, arg1: undefined) => void; }) {
+    const db = admin.firestore();
+    let messageArray = message.content.split(" ");
+    //let cmd = messageArray[0];
+    let args: any = messageArray.slice(1);
     const userRef = db.collection("users").doc(userRecord.uid);
     const userDoc = await userRef.get();
 
     const dcUserRef = db.collection("dcusers").doc(message.author.id);
     // eslint-disable-next-line no-unused-vars
-    const dcUserDoc = await dcUserRef.get();
+    //const dcUserDoc = await dcUserRef.get();
 
-    if(userDoc.data().dclinked) {
+    if(userDoc.data()!.dclinked) {
         message.reply("This account is already linked!", args[1]);
-    } else if(`${userDoc.data().dclink}` === args[1]) {
+    } else if(`${userDoc.data()!.dclink}` === args[1]) {
         dcUserRef.update({
             uid: message.author.id,
         });
@@ -591,27 +681,55 @@ async function accountLink(userRecord, db, message, args) {
             dclinked: true,
             dcid: message.author.id,
         });
-        message.reply("Account linked succesfuly!");
+        message.reply("Account linked succesfuly!", undefined);
     } else {
-        message.reply("Error linking account");
+        message.reply("Error linking account", undefined);
     }
 }
 
-async function botlogin(PROD) {
+async function botlogin(PROD: string | undefined) {
     const db = admin.firestore();
     const botRef = db.collection("bots").doc("reggeltbot");
     const doc = await botRef.get();
     if(PROD === "false") {
-        bot.login(doc.data().testtoken);
+        bot.login(doc.data()!.testtoken);
     } else if(PROD === "beta") {
-        bot.login(doc.data().betatoken);
+        bot.login(doc.data()!.betatoken);
     } else {
-        bot.login(doc.data().token);
+        bot.login(doc.data()!.token);
     }
 }
 
-async function interactionResponse(interaction, data) {
-    bot.api.interactions(interaction.id, interaction.token).callback.post({data: data});
+async function interactionResponse(interaction: { id: any; token: any; }, data: { type: number; data: { content: string; } | { embeds: any[]; } | { embeds: any[]; }; }) {
+    await axios.post(`https://discord.com/api/v8/interactions/${interaction.id}/${interaction.token}/callback`, {
+        data: data
+    })
 }
+
+async function apiurl() {
+    const prodenv = process.env.PROD;
+    if(!prodenv || prodenv === "beta") {
+        return {
+            ip: "http://10.8.2.188:8080",
+        };
+    } else {
+        return {
+            ip: "http://localhost:8080",
+        };
+    }
+}
+
+function msToTime(duration: number) {
+    //var milliseconds = (duration % 1000) / 100
+    const seconds1 = Math.floor((duration / 1000) % 60)
+    const minutes1 = Math.floor((duration / (1000 * 60)) % 60)
+    const hours1 = Math.floor((duration / (1000 * 60 * 60)) % 24);
+  
+    const hours = (hours1 < 10) ? "0" + hours1 : hours1;
+    const minutes = (minutes1 < 10) ? "0" + minutes1 : minutes1;
+    const seconds = (seconds1 < 10) ? "0" + seconds1 : seconds1;
+  
+    return hours + ":" + minutes + ":" + seconds;
+  }
 
 app.listen(3000);
