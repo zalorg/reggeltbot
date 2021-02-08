@@ -34,8 +34,9 @@ function rdbupdate(){
 
     setTimeout(rdbupdate, 1000);
 }
-
-rdbupdate();
+if(!process.env.PROD) {
+    rdbupdate();
+}
 
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
 dblRef.once("value", function(snapshot: { val: () => any; }) {
