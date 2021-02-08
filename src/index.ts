@@ -34,8 +34,9 @@ function rdbupdate(){
 
     setTimeout(rdbupdate, 1000);
 }
-
-rdbupdate();
+if(!process.env.PROD) {
+    rdbupdate();
+}
 
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
 dblRef.once("value", function(snapshot: { val: () => any; }) {
@@ -70,6 +71,10 @@ bot.on("messageUpdate", async (_: any, newMsg: any) => {
         }
     }
 });
+
+app.get('/', (req: any, res: any) => {
+    res.sendStatus(200);
+})
 
 app.get('/ping', async (req: any, res: any) => {
     res.status(200).send({
