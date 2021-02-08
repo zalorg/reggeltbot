@@ -276,6 +276,18 @@ bot.on("message", async (message: any) => {
     } else if (cmd === `${prefix}update`) {
         message
         updateUser(message);
+    } else if (cmd === `${prefix}ping`) {
+        if(!args) {
+            message.reply(bot.ws.ping);
+        } else if(args[0] === 'api' && args[1] === 'internal') {
+            axios.get('http://10.4.0.17/ping').then(res => {
+                console.log(res)
+                message.reply(res.status);
+            }).catch(err => {
+                message.reply(err.status);
+                throw err;
+            })
+        }
     }
 });
 
