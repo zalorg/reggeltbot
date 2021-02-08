@@ -280,7 +280,7 @@ bot.on("message", async (message: any) => {
         if(!args) {
             message.reply(bot.ws.ping);
         } else if(args[0] === 'api' && args[1] === 'internal') {
-            axios.get('http://10.4.0.17/ping').then(res => {
+            axios.get('http://10.8.2.188/ping').then(res => {
                 console.log(res)
                 message.reply(res.status);
             }).catch(err => {
