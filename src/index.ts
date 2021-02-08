@@ -12,6 +12,9 @@ const express = require('express');
 
 const app = express();
 
+//declare var  Discord: { MessageEmbed: new () => { (): any; new(): any; setTitle: { (arg0: string): { (): any; new(): any; setColor: { (arg0: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; setFooter: { (arg0: any): { (): any; new(): any; setThumbnail: { (arg0: any): { (): any; new(): any; setTimestamp: { (arg0: any): any; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; setURL: { (arg0: string): { (): any; new(): any; setThumbnail: { (arg0: any): any; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; };
+
+
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: "https://zal1000.firebaseio.com"
@@ -142,6 +145,25 @@ bot.on("message", async (message: any) => {
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
+
+    if(!message.author.bot) {
+        updateUser(message);
+        const ref = admin.firestore().collection('dcusers').doc(message.author.id);
+        await axios.get(`https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`).then(res => {
+            ref.update({
+                pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`,
+                username: message.author.username,
+                tag: message.author.tag,
+            })
+        }).catch(err => {
+            ref.update({
+                pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`,
+                username: message.author.username,
+                tag: message.author.tag,
+            })  
+        })
+    }
+
     // reggelt
     if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
         const db = admin.firestore();
@@ -290,9 +312,6 @@ bot.on("message", async (message: any) => {
         }
     } else if (cmd === `${prefix}restart`) {
         await restartRequest(message);
-    } else if (cmd === `${prefix}update`) {
-        message
-        updateUser(message);
     } else if (cmd === `${prefix}ping`) {
         if(!args) {
             message.reply(bot.ws.ping);
@@ -359,8 +378,8 @@ bot.on("message", async (message: any) => {
 async function updateUser(message: any) {
     const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
     //const doc = await ref.get();
-    const gme = message.guild.me;
-    console.log(gme.permissions.toArray());
+    const gme = message.guild.member(message.author.id);
+    //console.log(gme.permissions.toArray());
     ref.set({
         name: message.guild.name,
         owner: message.guild.ownerID,
@@ -373,9 +392,10 @@ async function updateUser(message: any) {
         },
         allpermissions: gme.permissions.toArray()
     }).then(() => {
-        message.reply('Server added/updated succesfuly!');
-    }).catch(() => {
-        message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
+        //message.reply('Server added/updated succesfuly!');
+    }).catch(err => {
+        //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
+        throw err;
     });
 }
 
