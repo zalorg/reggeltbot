@@ -159,13 +159,17 @@ bot.on("message", async (message: any) => {
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`,
                 username: message.author.username,
                 tag: message.author.tag,
+            }).catch(err => {
+                console.error(err.code);
             })
         }).catch(err => {
             ref.update({
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`,
                 username: message.author.username,
                 tag: message.author.tag,
-            })  
+            }).catch(err => {
+                console.error(err.code);
+            })
         })
     }
 
