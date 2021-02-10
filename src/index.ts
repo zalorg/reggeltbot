@@ -1,14 +1,14 @@
 import axios from "axios";
 //import Discord = require("discord.js");
 import * as Discord from 'discord.js';
-const fs = require('fs')
+import fs = require('fs');
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
 const bot: any = new Discord.Client();
-const DBL = require("dblapi.js");
+import DBL = require("dblapi.js");
 let ms = require("ms");
 import * as admin from 'firebase-admin';
-const https = require('https');
-const express = require('express');
+import https = require('https');
+import express = require('express');
 
 const app = express();
 
@@ -649,7 +649,7 @@ async function botTypeing(channel: any) {
         }
     };
       
-    const req = https.request(options, (res: { statusCode: any; on: (arg0: string, arg1: (d: any) => void) => void; }) => {
+    const req = https.request(options, (res: any) => {
         console.log(`statusCode: ${res.statusCode}`);
       
         res.on('data', (d: string | Buffer) => {
