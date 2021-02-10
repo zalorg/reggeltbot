@@ -1,7 +1,7 @@
 import axios from "axios";
 //import Discord = require("discord.js");
 import * as Discord from 'discord.js';
-
+const fs = require('fs')
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
 const bot: any = new Discord.Client();
 const DBL = require("dblapi.js");
@@ -45,7 +45,6 @@ dblRef.once("value", function(snapshot: { val: () => any; }) {
 }, function (errorObject: { code: string; }) {
     console.log("The read failed: " + errorObject.code);
 });
-
 bot.on("ready", async() => {
     console.log(`${bot.user!.username} has started`);
     const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
@@ -150,6 +149,7 @@ bot.on("message", async (message: any) => {
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
+    
 
     if(!message.author.bot) {
         updateUser(message);
@@ -176,6 +176,8 @@ bot.on("message", async (message: any) => {
     // reggelt
     if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
         const db = admin.firestore();
+
+        console.log(await getBansCache(message.author.id))
 
         if(message.content.toLowerCase().includes("reggelt")){
             const ref = db.collection('dcusers').doc(message.author.id);
@@ -243,8 +245,7 @@ bot.on("message", async (message: any) => {
 
             console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild!.id}")"(HUN)`);
             message.react("☕");     
-        }
-        else {
+        } else {
             if(!message.deletable) {
                 message.channel.send('Missing permission!')
                     .catch((err: any) => {
@@ -407,7 +408,6 @@ async function updateUser(message: any) {
         throw err;
     });
 }
-
 
 async function getReggeltChannel(PROD: string | undefined) {
     const db = admin.firestore();
@@ -572,7 +572,7 @@ async function reggeltupdateall() {
     });
 }
 
-async function reggeltupdatefs(message: { author: { id: any; tag: any; username: any; avatarURL: () => any; }; }, decreased = false) {
+async function reggeltupdatefs(message: { author: { id: string; tag: string; username: string; avatarURL: () => string; }; }, decreased = false) {
     let db = admin.firestore();
     const reggeltRef = db.collection("dcusers").doc(message.author.id);
     const doc = await reggeltRef.get();
@@ -759,6 +759,27 @@ function msToTime(duration: number) {
     const seconds = (seconds1 < 10) ? "0" + seconds1 : seconds1;
   
     return hours + ":" + minutes + ":" + seconds;
+  }
+
+  async function getBansCache(id: string) {
+    fs.readFile('./cache.json', 'utf8', (err: any, data: string) => {
+
+        if (err) {
+            console.log(`Error reading file from disk: ${err}`);
+            throw err;
+        } else {
+    
+            // parse JSON string to JSON object
+            const cache = JSON.parse(data);
+    
+            // print all databases
+            return {
+                banned: cache.bans.reggelt.find((e: any) => e === id)
+            }
+        
+        }
+    
+    });
   }
 
 app.listen(3000);
