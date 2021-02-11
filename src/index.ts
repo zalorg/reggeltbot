@@ -39,6 +39,8 @@ if(!process.env.PROD) {
     rdbupdate();
 }
 
+bot.events = new Discord.Collection();
+
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
 dblRef.once("value", function(snapshot: { val: () => any; }) {
     new DBL(snapshot.val(), bot);
@@ -46,28 +48,12 @@ dblRef.once("value", function(snapshot: { val: () => any; }) {
 }, function (errorObject: { code: string; }) {
     console.log("The read failed: " + errorObject.code);
 });
-bot.on("ready", async () => {
 
-    const bansRef = admin.firestore().collection('bots').doc('reggeltbot').collection('bans').doc('global');
-    bansRef.onSnapshot(snap => {
-        const bans = {
-            bans: snap.data()!.bans
-        }
-        console.log(bans)
-        fs.writeFileSync('./cache/global-bans.json', JSON.stringify(bans))
-    })
-
-
-    console.log(`${bot.user!.username} has started`);
-    const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
-    doc.onSnapshot((docSnapshot: any) => {
-        bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
-    }, (err: any) => {
-        console.log(`Encountered error: ${err}`);
-        bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
-    });
-
-});
+const eventFiles = fs.readdirSync('./dist/events/').filter(file => file.endsWith('.js'));
+for(const file of eventFiles) {
+    const event = require(`./dist/events/${file}`);
+    bot.events.set(event.name, event)
+}
 
 bot.on("messageUpdate", async (_: any, newMsg: any) => {
     if(newMsg.author.bot) return;
