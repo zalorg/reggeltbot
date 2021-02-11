@@ -50,8 +50,9 @@ dblRef.once("value", function(snapshot: { val: () => any; }) {
 });
 
 const eventFiles = fs.readdirSync('./dist/events/').filter(file => file.endsWith('.js'));
-for(const file of eventFiles) {
-    const event = require(`./dist/events/${file}`);
+for (const file of eventFiles) {
+    const m = file.split(".", 1)
+    const event = require(`./events/${m[0]}`);
     bot.events.set(event.name, event)
 }
 
