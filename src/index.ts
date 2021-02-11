@@ -19,6 +19,7 @@ admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: "https://zal1000.firebaseio.com"
 });
+
 let rdb = admin.database();
 
 function rdbupdate(){
@@ -45,7 +46,18 @@ dblRef.once("value", function(snapshot: { val: () => any; }) {
 }, function (errorObject: { code: string; }) {
     console.log("The read failed: " + errorObject.code);
 });
-bot.on("ready", async() => {
+bot.on("ready", async () => {
+
+    const bansRef = admin.firestore().collection('bots').doc('reggeltbot').collection('bans').doc('global');
+    bansRef.onSnapshot(snap => {
+        const bans = {
+            bans: snap.data()!.bans
+        }
+        console.log(bans)
+        fs.writeFileSync('./cache/global-bans.json', JSON.stringify(bans))
+    })
+
+
     console.log(`${bot.user!.username} has started`);
     const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
     doc.onSnapshot((docSnapshot: any) => {
@@ -177,8 +189,12 @@ bot.on("message", async (message: any) => {
     if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
         const db = admin.firestore();
 
-        console.log(await getBansCache(message.author.id))
-
+        const data = JSON.parse(fs.readFileSync('./cache/global-bans.json', 'utf8'));
+        if(data.bans.find((element: any) => element === message.author.id)) {
+            message.delete();
+            message.author.send('You are banned!')
+            return;
+        }
         if(message.content.toLowerCase().includes("reggelt")){
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
@@ -761,25 +777,5 @@ function msToTime(duration: number) {
     return hours + ":" + minutes + ":" + seconds;
   }
 
-  async function getBansCache(id: string) {
-    fs.readFile('./cache.json', 'utf8', (err: any, data: string) => {
-
-        if (err) {
-            console.log(`Error reading file from disk: ${err}`);
-            throw err;
-        } else {
-    
-            // parse JSON string to JSON object
-            const cache = JSON.parse(data);
-    
-            // print all databases
-            return {
-                banned: cache.bans.reggelt.find((e: any) => e === id)
-            }
-        
-        }
-    
-    });
-  }
 
 app.listen(3000);
