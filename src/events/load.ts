@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import fs = require('fs');
 
 module.exports = {
-    event: 'ready',
+    name: 'ready',
     execute(bot: any) {
         bot.on("ready", async () => {
 

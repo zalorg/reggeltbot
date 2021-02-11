@@ -40,6 +40,7 @@ if(!process.env.PROD) {
 }
 
 bot.events = new Discord.Collection();
+bot.commands = new Discord.Collection();
 
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
 dblRef.once("value", function(snapshot: { val: () => any; }) {
@@ -49,12 +50,23 @@ dblRef.once("value", function(snapshot: { val: () => any; }) {
     console.log("The read failed: " + errorObject.code);
 });
 
+const commandFiles = fs.readdirSync('./dist/commands/').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+    const m = file.split(".", 1)
+    const command = require(`./commands/${m[0]}`);
+    console.log(command)
+    bot.commands.set(command.name, command)
+}
+
 const eventFiles = fs.readdirSync('./dist/events/').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
     const m = file.split(".", 1)
     const event = require(`./events/${m[0]}`);
+    console.log(event)
     bot.events.set(event.name, event)
 }
+console.log(bot.events.get('ready'))
+bot.events.get('ready').execute(bot);
 
 bot.on("messageUpdate", async (_: any, newMsg: any) => {
     if(newMsg.author.bot) return;
@@ -174,102 +186,7 @@ bot.on("message", async (message: any) => {
 
     // reggelt
     if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
-        const db = admin.firestore();
-
-        const data = JSON.parse(fs.readFileSync('./cache/global-bans.json', 'utf8'));
-        if(data.bans.find((element: any) => element === message.author.id)) {
-            message.delete();
-            message.author.send('You are banned!')
-            return;
-        }
-        if(message.content.toLowerCase().includes("reggelt")){
-            const ref = db.collection('dcusers').doc(message.author.id);
-            const doc = await ref.get();
-
-            const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild!.id);
-            const cddoc = await cdref.get();
-
-            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
-            const configDoc = await configref.get();
-            const cdval = configDoc.data()!.cd * 3600;
-            const cd = Math.floor(Date.now() / 1000) + cdval;
-
-            console.log(`Cooldown ends: ${cd}`);
-            console.log(Math.floor(Date.now() / 1000));
-
-            if(cddoc.exists) {
-                console.log('');
-                console.log(cddoc.data()!.reggeltcount);
-                if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
-                    message.delete();
-                    message.author.send('You are on cooldown!');
-                } else {
-                    if(!process.env.PROD) {
-                        await reggeltupdateall();
-                        await reggeltupdatefs(message);
-                    }
-                    cdref.update({
-                        reggeltcount: cd,
-                    });
-                    console.log(2);
-                }
-
-                console.log(1);
-            } else {
-                cdref.set({
-                    reggeltcount: cd,
-                });
-                if(!process.env.PROD) {
-                    await reggeltupdateall();
-                    await reggeltupdatefs(message);
-                }
-                console.log('doc created');
-            }
-
-
-
-            if(doc.exists) {
-                ref.update({
-                    tag: message.author.tag,
-                    username: message.author.username,
-                    pp: message.author.avatarURL(),
-                });
-            } else {
-                ref.set({
-                    tag: message.author.tag,
-                    username: message.author.username,
-                    pp: message.author.avatarURL(),
-                });
-            }
-
-
-            
-
-
-            console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild!.id}")"(HUN)`);
-            message.react("☕");     
-        } else {
-            if(!message.deletable) {
-                message.channel.send('Missing permission!')
-                    .catch((err: any) => {
-                        message.guild!.owner!.send('Missing permission! I need **Send Messages** to function correctly');
-                        console.log(err);
-                    });
-                message.guild!.owner!.send('Missing permission! I need **Manage Messages** to function correctly')
-                    .catch(
-                        
-                    );
-            } else {
-                message.delete();
-                message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
-                    .catch(function(error: string) {
-                        message.reply("Error: " + error);
-                        console.log("Error:", error);
-                    });
-    
-            }
-            await reggeltupdatefs(message, true);
-        }
+        await bot.events.get('reggelt').execute(message);
     }
     
     // help
@@ -338,53 +255,8 @@ bot.on("message", async (message: any) => {
             })
         }
     } else if (cmd === `${prefix}leaderboard`) {
-        console.log((await apiurl()).ip)
-        if(!args[0]) {
-            await axios.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=10`).then(res => {
-                const embed = new Discord.MessageEmbed()
-                .setTitle('Leaderboard')
-                .setColor('#FFCA5C')
-                .setURL(`https://reggeltbot.com/leaderboard?m=10`)
-                .setThumbnail(res.data[0].pp)
-                res.data.forEach((lb: any) => {
-                    embed.addField(lb.name, lb.reggeltcount)
-                });
+        await bot.commands.get('leaderboard').execute(message, args);
 
-                message.channel.send(embed)
-            }).catch(err => {
-                message.reply('API Error')
-                console.error(err);
-            })
-        } else {
-            const number = parseInt(args[0]);
-            console.log(number)
-            if(!number) {
-                message.reply('Please use a number')
-            } else if(number < 0) {
-                console.log(1)
-                message.reply('Please use a number between 1 and 20')
-            } else if(number > 21) {
-                console.log(2)
-
-                message.reply('Please use a number between 1 and 20')
-            } else {
-                await axios.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=${number}`).then(res => {
-                    const embed = new Discord.MessageEmbed()
-                    .setTitle('Leaderboard')
-                    .setColor('#FFCA5C')
-                    .setURL(`https://reggeltbot.com/leaderboard?m=${number}`)
-                    .setThumbnail(res.data[0].pp)
-                    res.data.forEach((lb: any) => {
-                        embed.addField(lb.name, lb.reggeltcount)
-                    });
-    
-                    message.channel.send(embed)
-                }).catch(err => {
-                    message.reply('API Error')
-                    console.error(err);
-                })
-            }
-        }
     }
 });
 
@@ -563,41 +435,6 @@ async function sendRandomFact(docid: any, message: { createdAt: any; channel: { 
         message.channel.send(upmbed);
     }
 
-}
-
-async function reggeltupdateall() {
-    let db = admin.firestore();
-    const botRef = db.collection("bots").doc("reggeltbot");
-    const botDoc = await botRef.get();
-    const incrementCount = botDoc.data()!.incrementCount;
-    await db.collection("bots").doc("reggeltbot-count-all").update({
-        reggeltcount: admin.firestore.FieldValue.increment(incrementCount)
-    });
-}
-
-async function reggeltupdatefs(message: { author: { id: string; tag: string; username: string; avatarURL: () => string; }; }, decreased = false) {
-    let db = admin.firestore();
-    const reggeltRef = db.collection("dcusers").doc(message.author.id);
-    const doc = await reggeltRef.get();
-    const botRef = db.collection("bots").doc("reggeltbot");
-    const botDoc = await botRef.get();
-    const decreaseCount = botDoc.data()!.decreaseCount;
-    const incrementCount = botDoc.data()!.incrementCount;
-    if (!doc.exists) {
-        reggeltRef.set({
-            reggeltcount: (decreased ? decreaseCount : incrementCount),
-            tag: message.author.tag,
-            username: message.author.username,
-            pp: message.author.avatarURL(),
-        });
-    } else {
-        reggeltRef.update({
-            reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
-            tag: message.author.tag,
-            username: message.author.username,
-            pp: message.author.avatarURL(),
-        });
-    }
 }
 
 async function reggeltUpdateEdit(message: { author: { id: string; }; }) {
