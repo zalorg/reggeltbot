@@ -1,9 +1,14 @@
 import axios = require('axios');
 import * as Discord from 'discord.js';
+import * as admin from 'firebase-admin';
 module.exports = {
     name: 'ping',
     async execute(bot: any, args: any, message: any) {
-        
+        axios.default.defaults.headers.common['Authorization'] = `Bot ${(await botlogin())}`;
+        console.log(`Bot ${(await botlogin())}`)
+        await axios.default.post(`https://discord.com/api/v8/channels/${message.channel.id}/typing`).catch(err => {
+            console.log(`Error: ${err.message}`)
+        })
         const pingss = await pings();
         console.log('')
         console.log(pingss.find(element => element.err))
@@ -144,5 +149,19 @@ async function apiurl() {
         return {
             ip: "http://localhost:8080",
         };
+    }
+}
+
+async function botlogin() {
+    const PROD = process.env.PROD
+    const db = admin.firestore();
+    const botRef = db.collection("bots").doc("reggeltbot");
+    const doc = await botRef.get();
+    if(PROD === "false") {
+        return doc.data()!.testtoken;
+    } else if(PROD === "beta") {
+        return doc.data()!.betatoken;
+    } else {
+        return doc.data()!.token;
     }
 }
