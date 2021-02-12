@@ -1,0 +1,129 @@
+import axios = require('axios');
+import * as Discord from 'discord.js';
+module.exports = {
+    name: 'ping',
+    async execute(bot: any, args: any, message: any) {
+        const pingss = await pings();
+        console.log('')
+        console.log(pingss.find(element => element.err))
+        console.log(pingss.find(element => element.status));
+        console.log('')
+        if(!pingss.find(element => element.err)) {
+            let embed = new Discord.MessageEmbed()
+            .setTitle(`Ping to systems`)
+            .setColor("#0B8043")
+            .addField("Gateway", `${bot.ws.ping}ms`)
+            .setFooter(message.author.username)
+            .setTimestamp(Date.now());
+
+            pingss.forEach(ping => {
+                if(ping.status === 200) {
+                    embed.addField(ping.name, `Status: ${ping.status}`)
+                } else if(!ping.status) {
+                    embed.addField(ping.name, `Error: ${ping.err}`)
+                }
+            })
+
+            message.channel.send(embed);
+        } else if(pingss.find(element => element.status)) {
+            let embed = new Discord.MessageEmbed()
+            .setTitle(`Ping to systems`)
+            .setColor("#FF8000")
+            .addField("Gateway", `${bot.ws.ping}ms`)
+            .setFooter(message.author.username)
+            .setTimestamp(Date.now());
+
+            pingss.forEach(ping => {
+                if(ping.status === 200) {
+                    embed.addField(ping.name, `Status: ${ping.status}`)
+                } else if(!ping.status) {
+                    embed.addField(ping.name, `Error: ${ping.err}`)
+                }
+            })
+
+            message.channel.send(embed);
+        } else {
+            let embed = new Discord.MessageEmbed()
+            .setTitle(`Ping to systems`)
+            .setColor("#DD4B39")
+            .addField("Gateway", `${bot.ws.ping}ms`)
+            .setFooter(message.author.username)
+            .setTimestamp(Date.now());
+
+            pingss.forEach(ping => {
+                if(ping.status === 200) {
+                    embed.addField(ping.name, `Status: ${ping.status}`)
+                } else if(!ping.status) {
+                    embed.addField(ping.name, `Error: ${ping.err}`)
+                }
+            })
+
+            message.channel.send(embed);
+        }
+    }
+}
+
+async function pings() {
+    const array: { name: string; status: any; err: any; }[] = [];
+
+    const internalapi = await apiurl();
+
+    await axios.default.get(`${internalapi.ip}/ping`).then(res => {
+        array.push({
+            name: 'Internal',
+            status: res.status,
+            err: null,
+        })
+    }).catch(err => {
+        array.push({
+            name: 'Internal',
+            status: err.status,
+            err: err.message,
+        })
+    })
+
+    await axios.default.get(`https://zal1000.ew.r.appspot.com/ping`).then(res => {
+        array.push({
+            name: 'App Engine',
+            status: res.status,
+            err: null,
+        })
+    }).catch(err => {
+        array.push({
+            name: 'App Engine',
+            status: err.status,
+            err: err.message,
+        })
+    })
+
+    await axios.default.get(`https://api-zd72hz742a-uc.a.run.app/ping`).then(res => {
+        array.push({
+            name: 'Cloud Run',
+            status: res.status,
+            err: null,
+        })
+    }).catch(err => {
+        array.push({
+            name: 'Cloud Run',
+            status: err.status,
+            err: err.message,
+        })
+    })
+
+    console.log(array);
+    return array;
+
+}
+
+async function apiurl() {
+    const prodenv = process.env.PROD;
+    if(!prodenv || prodenv === "beta") {
+        return {
+            ip: "http://10.8.2.188:8080",
+        };
+    } else {
+        return {
+            ip: "http://localhost:8080",
+        };
+    }
+}

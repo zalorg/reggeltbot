@@ -66,20 +66,10 @@ for (const file of eventFiles) {
 }
 console.log(bot.events.get('ready'))
 bot.events.get('ready').execute(bot);
+//bot.events.get('rAdd').execute(bot);
+bot.events.get('msgUpdate').execute(bot);
 
-bot.on("messageUpdate", async (_: any, newMsg: any) => {
-    if(newMsg.author.bot) return;
 
-    if(newMsg.channel.name === "reggelt"){
-        if(!newMsg.content.toLowerCase().includes("reggelt")) {
-            await reggeltUpdateEdit(newMsg);
-            if(newMsg.deletable){
-                newMsg.delete();
-                newMsg.author.send("Ebben a formában nem modósíthadod az üzenetedet.");
-            }
-        }
-    }
-});
 
 app.get('/', (req: any, res: any) => {
     res.sendStatus(200);
@@ -204,17 +194,7 @@ bot.on("message", async (message: any) => {
     } else if (cmd === `${prefix}restart`) {
         await restartRequest(message);
     } else if (cmd === `${prefix}ping`) {
-        if(!args) {
-            message.reply(bot.ws.ping);
-        } else if(args[0] === 'api' && args[1] === 'internal') {
-            axios.get(`${(await apiurl()).ip}/ping`).then(res => {
-                console.log(res)
-                message.reply(res.status);
-            }).catch(err => {
-                message.reply(err.status);
-                throw err;
-            })
-        }
+        bot.commands.get('ping').execute(bot, args, message)
     } else if (cmd === `${prefix}leaderboard`) {
         await bot.commands.get('leaderboard').execute(message, args);
 
@@ -302,18 +282,7 @@ async function restartRequest(message: { author: { id: any; }; reply: (arg0: str
 
 }
 
-async function reggeltUpdateEdit(message: { author: { id: string; }; }) {
-    let db = admin.firestore();
-    const botRef = db.collection("bots").doc("reggeltbot");
-    const botDoc = await botRef.get();
-    const decreaseCount = botDoc.data()!.decreaseCount;
-    await db.collection("bots").doc("reggeltbot-count-all").update({
-        reggeltcount: admin.firestore.FieldValue.increment(decreaseCount)
-    });
-    await db.collection("dcusers").doc(message.author.id).update({
-        reggeltcount: admin.firestore.FieldValue.increment(decreaseCount)
-    });
-}
+
 
 console.log(process.env.PROD);
 const PROD = process.env.PROD;
