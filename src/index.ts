@@ -307,19 +307,6 @@ async function interactionResponse(interaction: { id: any; token: any; }, data: 
     })
 }
 
-async function apiurl() {
-    const prodenv = process.env.PROD;
-    if(!prodenv || prodenv === "beta") {
-        return {
-            ip: "http://10.8.2.188:8080",
-        };
-    } else {
-        return {
-            ip: "http://localhost:8080",
-        };
-    }
-}
-
 function msToTime(duration: number) {
     //var milliseconds = (duration % 1000) / 100
     const seconds1 = Math.floor((duration / 1000) % 60)
