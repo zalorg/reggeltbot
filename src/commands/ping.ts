@@ -3,6 +3,7 @@ import * as Discord from 'discord.js';
 module.exports = {
     name: 'ping',
     async execute(bot: any, args: any, message: any) {
+        
         const pingss = await pings();
         console.log('')
         console.log(pingss.find(element => element.err))
@@ -18,7 +19,7 @@ module.exports = {
 
             pingss.forEach(ping => {
                 if(ping.status === 200) {
-                    embed.addField(ping.name, `Status: ${ping.status}`)
+                    embed.addField(ping.name, `Status: ${ping.data} Ping: ${ping.ping}ms`)
                 } else if(!ping.status) {
                     embed.addField(ping.name, `Error: ${ping.err}`)
                 }
@@ -35,7 +36,7 @@ module.exports = {
 
             pingss.forEach(ping => {
                 if(ping.status === 200) {
-                    embed.addField(ping.name, `Status: ${ping.status}`)
+                    embed.addField(ping.name, `Status: ${ping.data} Ping: ${ping.ping}ms`)
                 } else if(!ping.status) {
                     embed.addField(ping.name, `Error: ${ping.err}`)
                 }
@@ -52,7 +53,7 @@ module.exports = {
 
             pingss.forEach(ping => {
                 if(ping.status === 200) {
-                    embed.addField(ping.name, `Status: ${ping.status}`)
+                    embed.addField(ping.name, `Status: ${ping.data} Ping: ${ping.ping}ms`)
                 } else if(!ping.status) {
                     embed.addField(ping.name, `Error: ${ping.err}`)
                 }
@@ -64,49 +65,67 @@ module.exports = {
 }
 
 async function pings() {
-    const array: { name: string; status: any; err: any; }[] = [];
+    const array: { name: string; status: any; err: any; ping: any; data: any; }[] = [];
 
     const internalapi = await apiurl();
+    
+    let date2 = Date.now();
 
     await axios.default.get(`${internalapi.ip}/ping`).then(res => {
         array.push({
             name: 'Internal',
             status: res.status,
             err: null,
+            ping: Date.now() - date2,
+            data: res.data,
         })
     }).catch(err => {
         array.push({
             name: 'Internal',
             status: err.status,
             err: err.message,
+            ping: null,
+            data: err.data,
         })
     })
+
+    let date3 = Date.now();
 
     await axios.default.get(`https://zal1000.ew.r.appspot.com/ping`).then(res => {
         array.push({
             name: 'App Engine',
             status: res.status,
             err: null,
+            ping: Date.now() - date3,
+            data: res.data,
         })
     }).catch(err => {
         array.push({
             name: 'App Engine',
             status: err.status,
             err: err.message,
+            ping: null,
+            data: err.data,
+
         })
     })
+    let date4 = Date.now();
 
     await axios.default.get(`https://api-zd72hz742a-uc.a.run.app/ping`).then(res => {
         array.push({
             name: 'Cloud Run',
             status: res.status,
             err: null,
+            ping: Date.now() - date4,
+            data: res.data,
         })
     }).catch(err => {
         array.push({
             name: 'Cloud Run',
             status: err.status,
             err: err.message,
+            ping: null,
+            data: err.data,
         })
     })
 
