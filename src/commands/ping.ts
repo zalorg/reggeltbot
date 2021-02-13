@@ -10,57 +10,83 @@ module.exports = {
             console.log(`Error: ${err.message}`)
         })
         const pingss = await pings();
-        console.log('')
-        console.log(pingss.find(element => element.err))
-        console.log(pingss.find(element => element.status));
-        console.log('')
+        /*const greenEmote = message.guild.emojis.cache.get('809931766642245663');
+        const redEmote = message.guild.emojis.cache.get('809931766601220096');
+        const yellowEmote = message.guild.emojis.cache.get('809933477608816702');*/
+        const pingval = 500;
+        const greenEmote = '<:greenTick:809931766642245663>'
+        const redEmote = '<:redTick:809931766601220096>'
+        const yellowEmote = '<:pendingClock:809933477608816702>'
+
+        console.log(greenEmote)
+        console.log(redEmote)
+        console.log(yellowEmote)
+
+        let embed = new Discord.MessageEmbed()
+        .addField("Gateway", `${bot.ws.ping}ms`)
+        .setFooter(message.author.username)
+        .setTimestamp(Date.now());
+        console.log(`${pingss.find(element => element.ping > pingval)}`)
+
+        if(pingss.find(element => element.err)) {
+            if(pingss.find(element => element.status)) {
+                // some ok some not ok
+                embed.setColor("#E67E22").setTitle(`Partial outage`)
+            } else {
+                // none ok
+                embed.setColor("#E74C3C").setTitle(`Major outage`)
+            }
+        } else if(pingss.find(element => element.status)) {
+            // all ok
+            if(pingss.find(element => element.ping > pingval)) {
+                embed.setColor("#F1C40F").setTitle(`Degraded performance`)
+            } else{
+                embed.setColor("#188038").setTitle(`All Systems Operational`)
+            }
+        }
+
         if(!pingss.find(element => element.err)) {
-            let embed = new Discord.MessageEmbed()
-            .setTitle(`Ping to systems`)
-            .setColor("#0B8043")
-            .addField("Gateway", `${bot.ws.ping}ms`)
-            .setFooter(message.author.username)
-            .setTimestamp(Date.now());
+
 
             pingss.forEach(ping => {
                 if(ping.status === 200) {
-                    embed.addField(ping.name, `Status: ${ping.data} Ping: ${ping.ping}ms`)
+                    if(ping.ping > pingval) {
+                        embed.addField(ping.name, `${yellowEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`)
+                    } else {
+                        embed.addField(ping.name, `${greenEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`)
+                    }
                 } else if(!ping.status) {
-                    embed.addField(ping.name, `Error: ${ping.err}`)
+                    embed.addField(ping.name, `${redEmote} Error: ${ping.err}`)
                 }
             })
 
             message.channel.send(embed);
         } else if(pingss.find(element => element.status)) {
-            let embed = new Discord.MessageEmbed()
-            .setTitle(`Ping to systems`)
-            .setColor("#FF8000")
-            .addField("Gateway", `${bot.ws.ping}ms`)
-            .setFooter(message.author.username)
-            .setTimestamp(Date.now());
 
             pingss.forEach(ping => {
                 if(ping.status === 200) {
-                    embed.addField(ping.name, `Status: ${ping.data} Ping: ${ping.ping}ms`)
+                    if(ping.ping > pingval) {
+                        embed.addField(ping.name, `${yellowEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                    } else {
+                        embed.addField(ping.name, `${greenEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                    }
                 } else if(!ping.status) {
-                    embed.addField(ping.name, `Error: ${ping.err}`)
+                    embed.addField(ping.name, `${redEmote} Error: ${ping.err}`)
                 }
             })
 
             message.channel.send(embed);
         } else {
-            let embed = new Discord.MessageEmbed()
-            .setTitle(`Ping to systems`)
-            .setColor("#DD4B39")
-            .addField("Gateway", `${bot.ws.ping}ms`)
-            .setFooter(message.author.username)
-            .setTimestamp(Date.now());
 
             pingss.forEach(ping => {
                 if(ping.status === 200) {
-                    embed.addField(ping.name, `Status: ${ping.data} Ping: ${ping.ping}ms`)
+                    if(ping.ping > pingval) {
+                        embed.addField(ping.name, `${yellowEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                    } else {
+                        embed.addField(ping.name, `${greenEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                    }
                 } else if(!ping.status) {
-                    embed.addField(ping.name, `Error: ${ping.err}`)
+                    embed.addField(ping.name, `${redEmote} Error: ${ping.err}`)
                 }
             })
 
