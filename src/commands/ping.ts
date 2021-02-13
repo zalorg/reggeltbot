@@ -10,10 +10,17 @@ module.exports = {
             console.log(`Error: ${err.message}`)
         })
         const pingss = await pings();
-        const greenEmote = message.guild.emojis.cache.get('809931766642245663');
+        /*const greenEmote = message.guild.emojis.cache.get('809931766642245663');
         const redEmote = message.guild.emojis.cache.get('809931766601220096');
-        const yellowEmote = message.guild.emojis.cache.get('809933477608816702');
+        const yellowEmote = message.guild.emojis.cache.get('809933477608816702');*/
         const pingval = 500;
+        const greenEmote = '<:greenTick:809931766642245663>'
+        const redEmote = '<:redTick:809931766601220096>'
+        const yellowEmote = '<:pendingClock:809933477608816702>'
+
+        console.log(greenEmote)
+        console.log(redEmote)
+        console.log(yellowEmote)
 
         let embed = new Discord.MessageEmbed()
         .addField("Gateway", `${bot.ws.ping}ms`)
