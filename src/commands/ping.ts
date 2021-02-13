@@ -5,7 +5,6 @@ module.exports = {
     name: 'ping',
     async execute(bot: any, args: any, message: any) {
         axios.default.defaults.headers.common['Authorization'] = `Bot ${(await botlogin())}`;
-        console.log(`Bot ${(await botlogin())}`)
         await axios.default.post(`https://discord.com/api/v8/channels/${message.channel.id}/typing`).catch(err => {
             console.log(`Error: ${err.message}`)
         })
