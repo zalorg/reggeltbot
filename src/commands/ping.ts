@@ -9,7 +9,7 @@ module.exports = {
         await axios.default.post(`https://discord.com/api/v8/channels/${message.channel.id}/typing`).catch(err => {
             console.log(`Error: ${err.message}`)
         })
-        const pingss = await pings();
+        const pingss = await pings(bot);
         /*const greenEmote = message.guild.emojis.cache.get('809931766642245663');
         const redEmote = message.guild.emojis.cache.get('809931766601220096');
         const yellowEmote = message.guild.emojis.cache.get('809933477608816702');*/
@@ -23,7 +23,6 @@ module.exports = {
         console.log(yellowEmote)
 
         let embed = new Discord.MessageEmbed()
-        .addField("Gateway", `${bot.ws.ping}ms`)
         .setFooter(message.author.username)
         .setTimestamp(Date.now());
         console.log(`${pingss.find(element => element.ping > pingval)}`)
@@ -95,10 +94,18 @@ module.exports = {
     }
 }
 
-async function pings() {
+async function pings(bot: any) {
     const array: { name: string; status: any; err: any; ping: any; data: any; }[] = [];
 
     const internalapi = await apiurl();
+
+    array.push({
+        name: 'Gateway',
+        status: 200,
+        err: null,
+        ping: bot.ws.ping,
+        data: 'OK'
+    })
     
     let date2 = Date.now();
 
