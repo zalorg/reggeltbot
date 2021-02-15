@@ -5,7 +5,6 @@ import fs = require('fs');
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
 const bot: any = new Discord.Client();
 import DBL = require("dblapi.js");
-let ms = require("ms");
 import * as admin from 'firebase-admin';
 import express = require('express');
 
@@ -40,6 +39,7 @@ if(!process.env.PROD) {
 
 bot.events = new Discord.Collection();
 bot.commands = new Discord.Collection();
+bot.wsevents = new Discord.Collection();
 
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
 dblRef.once("value", function(snapshot: { val: () => any; }) {
@@ -64,6 +64,16 @@ for (const file of eventFiles) {
     console.log(event)
     bot.events.set(event.name, event)
 }
+
+const wseventFiles = fs.readdirSync('./dist/events/ws/').filter(file => file.endsWith('.js'));
+for (const file of wseventFiles) {
+    const m = file.split(".", 1)
+    const event = require(`./events/ws/${m[0]}`);
+    console.log(event)
+    bot.wsevents.set(event.name, event)
+    bot.wsevents.get(event.name).execute(bot);
+
+}
 console.log(bot.events.get('ready'))
 bot.events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
@@ -86,62 +96,6 @@ bot.on('error', async (err: any) => {
     console.log(err);
 })
 
-
-bot.ws.on('INTERACTION_CREATE', async (interaction: any) => {
-    let prefix = (await getPrefix()).prefix; 
-    const cmd = interaction.data.name;
-    if(cmd === "count" || cmd === "ciunt") {
-        let db = admin.firestore();
-        let dcid = interaction.member.user.id;
-        const cityRef = db.collection("dcusers").doc(dcid);
-        const doc = await cityRef.get();
-        if (!doc.exists) {
-            interactionResponse(interaction, {
-                type: 4,
-                data: {
-                    content: 'Error reading document!'
-                }
-            });
-        } else {
-            let upmbed = new Discord.MessageEmbed()
-                .setTitle(`${interaction.member.user.username}`)
-                .setColor("#FFCB5C")
-                .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data()!.reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
-                .setFooter(interaction.member.user.username)
-                .setThumbnail(doc.data()!.pp)
-                .setTimestamp(Date.now());
-            console.log(upmbed);
-    
-            interactionResponse(interaction, {
-                type: 4,
-                data: {
-                    embeds: [upmbed]
-                }
-            });
-        }
-    } else if(cmd === "help") {
-        let upmbed = new Discord.MessageEmbed()
-            .setTitle(interaction.member.user.username)
-            .setColor("#FFCB2B")
-            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=${interaction.member.user.id}) is megnézheted)`)
-            .addField(`${prefix}invite`, "Bot meghívása")
-            .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
-            .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
-            .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
-            .addField('\u200B', '\u200B')
-            .addField("Bot ping", `${bot.ws.ping}ms`)
-            .addField("Uptime", `${ms(bot.uptime)}`)
-            .setFooter(interaction.member.user.username)
-            .setThumbnail(bot.user!.avatarURL()!)
-            .setTimestamp(Date.now());
-        interactionResponse(interaction, {
-            type: 4,
-            data: {
-                embeds: [upmbed]
-            }
-        });
-    }
-});
 
 bot.on("message", async (message: any) => {
     if(message.author.bot) return;
@@ -299,12 +253,6 @@ async function botlogin(PROD: string | undefined) {
     } else {
         bot.login(doc.data()!.token);
     }
-}
-
-async function interactionResponse(interaction: { id: any; token: any; }, data: { type: number; data: { content: string; } | { embeds: any[]; } | { embeds: any[]; }; }) {
-    await axios.post(`https://discord.com/api/v8/interactions/${interaction.id}/${interaction.token}/callback`, {
-        data: data
-    })
 }
 
 function msToTime(duration: number) {
