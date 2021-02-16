@@ -1,14 +1,22 @@
 import axios = require('axios');
 import * as Discord from 'discord.js';
 import * as admin from 'firebase-admin';
+import fs = require('fs');
 module.exports = {
     name: 'ping',
     async execute(bot: any, args: any, message: any) {
+
+        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+
+        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.ping;
+
         axios.default.defaults.headers.common['Authorization'] = `Bot ${(await botlogin())}`;
         await axios.default.post(`https://discord.com/api/v8/channels/${message.channel.id}/typing`).catch(err => {
             console.log(`Error: ${err.message}`)
         })
-        const pingss = await pings(bot);
+        const pingss = await pings(bot, lang);
         /*const greenEmote = message.guild.emojis.cache.get('809931766642245663');
         const redEmote = message.guild.emojis.cache.get('809931766601220096');
         const yellowEmote = message.guild.emojis.cache.get('809933477608816702');*/
@@ -17,29 +25,24 @@ module.exports = {
         const redEmote = '<:redTick:809931766601220096>'
         const yellowEmote = '<:pendingClock:809933477608816702>'
 
-        console.log(greenEmote)
-        console.log(redEmote)
-        console.log(yellowEmote)
-
         let embed = new Discord.MessageEmbed()
         .setFooter(message.author.username)
         .setTimestamp(Date.now());
-        console.log(`${pingss.find(element => element.ping > pingval)}`)
 
         if(pingss.find(element => element.err)) {
             if(pingss.find(element => element.status)) {
                 // some ok some not ok
-                embed.setColor("#E67E22").setTitle(`Partial outage`)
+                embed.setColor("#E67E22").setTitle(lang.po)
             } else {
                 // none ok
-                embed.setColor("#E74C3C").setTitle(`Major outage`)
+                embed.setColor("#E74C3C").setTitle(lang.mo)
             }
         } else if(pingss.find(element => element.status)) {
             // all ok
             if(pingss.find(element => element.ping > pingval)) {
-                embed.setColor("#F1C40F").setTitle(`Degraded performance`)
+                embed.setColor("#F1C40F").setTitle(lang.dp)
             } else{
-                embed.setColor("#188038").setTitle(`All Systems Operational`)
+                embed.setColor("#188038").setTitle(lang.aso)
             }
         }
 
@@ -48,13 +51,15 @@ module.exports = {
 
             pingss.forEach(ping => {
                 if(ping.status === 200) {
+
+
                     if(ping.ping > pingval) {
-                        embed.addField(ping.name, `${yellowEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`)
+                        embed.addField(ping.name, `${yellowEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`.replace('Status', `${lang.status}`))
                     } else {
-                        embed.addField(ping.name, `${greenEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`)
+                        embed.addField(ping.name, `${greenEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`.replace('Status', `${lang.status}`))
                     }
                 } else if(!ping.status) {
-                    embed.addField(ping.name, `${redEmote} Error: ${ping.err}`)
+                    embed.addField(ping.name, `${redEmote} Error: **${ping.err}**`.replace('Error:', `${lang.error}:`))
                 }
             })
 
@@ -64,12 +69,12 @@ module.exports = {
             pingss.forEach(ping => {
                 if(ping.status === 200) {
                     if(ping.ping > pingval) {
-                        embed.addField(ping.name, `${yellowEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                        embed.addField(ping.name, `${yellowEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`.replace('Status', `${lang.status}`))
                     } else {
-                        embed.addField(ping.name, `${greenEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                        embed.addField(ping.name, `${greenEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`.replace('Status', `${lang.status}`))
                     }
                 } else if(!ping.status) {
-                    embed.addField(ping.name, `${redEmote} Error: ${ping.err}`)
+                    embed.addField(ping.name, `${redEmote} Error: **${ping.err}**`.replace('Error:', `${lang.error}:`))
                 }
             })
 
@@ -79,12 +84,12 @@ module.exports = {
             pingss.forEach(ping => {
                 if(ping.status === 200) {
                     if(ping.ping > pingval) {
-                        embed.addField(ping.name, `${yellowEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                        embed.addField(ping.name, `${yellowEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`.replace('Status', `${lang.status}`))
                     } else {
-                        embed.addField(ping.name, `${greenEmote} Status: ${ping.data} Ping: ${ping.ping}ms`)
+                        embed.addField(ping.name, `${greenEmote} Status: **${ping.data}** Ping: **${ping.ping}ms**`.replace('Status', `${lang.status}`))
                     }
                 } else if(!ping.status) {
-                    embed.addField(ping.name, `${redEmote} Error: ${ping.err}`)
+                    embed.addField(ping.name, `${redEmote} Error: **${ping.err}**`.replace('Error:', `${lang.error}:`))
                 }
             })
 
@@ -93,13 +98,13 @@ module.exports = {
     }
 }
 
-async function pings(bot: any) {
+async function pings(bot: any, lang: any) {
     const array: { name: string; status: any; err: any; ping: any; data: any; }[] = [];
 
     const internalapi = await apiurl();
 
     array.push({
-        name: 'Gateway',
+        name: lang.gateway,
         status: 200,
         err: null,
         ping: bot.ws.ping,
@@ -110,7 +115,7 @@ async function pings(bot: any) {
 
     await axios.default.get(`${internalapi.ip}/ping`).then(res => {
         array.push({
-            name: 'Internal',
+            name: lang.internal,
             status: res.status,
             err: null,
             ping: Date.now() - date2,
@@ -118,7 +123,7 @@ async function pings(bot: any) {
         })
     }).catch(err => {
         array.push({
-            name: 'Internal',
+            name: lang.internal,
             status: err.status,
             err: err.message,
             ping: null,

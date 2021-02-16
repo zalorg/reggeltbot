@@ -19,6 +19,8 @@ module.exports = {
         .setThumbnail(bot.user!.avatarURL()!)
         .setTimestamp(Date.now());
 
-        message.channel.send(embed);
+        message.channel.send(embed)
+
+        
     }
 }

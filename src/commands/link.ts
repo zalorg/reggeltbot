@@ -1,12 +1,20 @@
 import * as admin from 'firebase-admin';
 import https = require('https');
+import fs = require('fs');
 module.exports = {
     name: 'link',
     async execute(message: any, args: any) {
+
+        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+
+        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.link;
+
         if(!args[0]){
-            message.reply("Please provide your email");
+            message.reply(lang.noMail);
         } else if(!args[1]) {
-            message.reply("Please provide your link code");
+            message.reply(lang.noCode);
         } else {
             botTypeing(message.channel.id);
             admin
@@ -23,7 +31,13 @@ module.exports = {
     }
 }
 
-async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string, arg1: undefined) => void; }) {
+async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string, arg1: undefined) => void; guild: { id: string } } ) {
+
+    const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+
+    const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+
+    const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.ping;
     const db = admin.firestore();
     let messageArray = message.content.split(" ");
     //let cmd = messageArray[0];
@@ -36,7 +50,7 @@ async function accountLink(userRecord: { uid: any; }, message: { content: string
     //const dcUserDoc = await dcUserRef.get();
 
     if(userDoc.data()!.dclinked) {
-        message.reply("This account is already linked!", args[1]);
+        message.reply(lang.aal, args[1]);
     } else if(`${userDoc.data()!.dclink}` === args[1]) {
         dcUserRef.update({
             uid: message.author.id,
@@ -46,13 +60,14 @@ async function accountLink(userRecord: { uid: any; }, message: { content: string
             dclinked: true,
             dcid: message.author.id,
         });
-        message.reply("Account linked succesfuly!", undefined);
+        message.reply(lang.als, undefined);
     } else {
-        message.reply("Error linking account", undefined);
+        message.reply(lang.ela, undefined);
     }
 }
 
 async function botTypeing(channel: any) {
+
     const data = JSON.stringify({});
     console.log((await getBotToken(process.env.PROD)).token);
       

@@ -6,13 +6,20 @@ module.exports = {
     async execute(message: any) {
         const db = admin.firestore();
 
+        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+
+        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8'));
+
         const data = JSON.parse(fs.readFileSync('./cache/global-bans.json', 'utf8'));
         if(data.bans.find((element: any) => element === message.author.id)) {
             message.delete();
-            message.author.send('You are banned!')
+            message.author.send(lang.root.bans.reggeltGlobal)
             return;
         }
-        if(message.content.toLowerCase().includes("reggelt")){
+
+        if(message.content.toLowerCase().includes(lang.keyWord)){
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
 
@@ -32,7 +39,7 @@ module.exports = {
                 console.log(cddoc.data()!.reggeltcount);
                 if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
                     message.delete();
-                    message.author.send('You are on cooldown!');
+                    message.author.send(lang.onCooldown);
                 } else {
                     if(!process.env.PROD) {
                         await reggeltupdateall();
@@ -72,22 +79,21 @@ module.exports = {
                 });
             }
 
-            console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild!.id}")"(HUN)`);
             message.react("☕");     
         } else {
             if(!message.deletable) {
-                message.channel.send('Missing permission!')
+                message.channel.send(lang.events.reggelt.noPerms)
                     .catch((err: any) => {
-                        message.guild!.owner!.send('Missing permission! I need **Send Messages** to function correctly');
+                        message.guild!.owner!.send(lang.events.reggelt.noSend);
                         console.log(err);
                     });
-                message.guild!.owner!.send('Missing permission! I need **Manage Messages** to function correctly')
-                    .catch(
-                        
-                    );
             } else {
                 message.delete();
-                message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
+                console.log(lang)
+                let nReggelt: string = lang.notReggelt;
+                let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild.name}`).replace('**%!KEYWORD%**', `**${lang.keyWord}**`)
+                console.log(replyMSG)
+                message.author.send(replyMSG)
                     .catch(function(error: string) {
                         message.reply("Error: " + error);
                         console.log("Error:", error);

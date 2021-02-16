@@ -1,0 +1,47 @@
+{
+    "root": {
+        "bans": {
+            "gloabl": "You are banned from useing this bot!",
+            "guild": "You cant use this bot on this server!",
+            "reggeltGlobal": "You are banned from useing the morning feature! (globaly)",
+            "reggeltGuild": "You are banned from useing the morning feature! (%!GUILD%!)"
+        }
+    },
+    "events" : {
+        "reggelt": {
+            "channel": "morning",
+            "keyWord": "morning",
+            "onCooldown": "You are on cooldown!",
+            "noPrems": "Missing permission!",
+            "noSend": "Missing permission! I need **Send Messages** to function correctly",
+            "notReggelt": "You can only type **%!KEYWORD%** here! (%!GUILD%!)"
+        },
+        "reggeltUpdate": {
+            "editSend": "You cannot edit messages in this channel"
+        }
+    },
+    "commands": {
+        "ping": {
+            "gateway": "Gateway",
+            "internal": "Internal",
+            "status": "Status",
+            "error": "Error",
+            "po": "Partial outage",
+            "mo": "Major outage",
+            "dp": "Degraded performance",
+            "aso": "All Systems Operational"
+        },
+        "link": {
+            "aal": "This account is already linked!",
+            "als": "Account linked succesfuly!",
+            "ela": "Error linking account",
+            "noMail": "Please provide your email",
+            "noCode": "Please provide your link code"
+        },
+        "leaderboard": {
+            "leaderboard": "Leaderboard",
+            "numberNaN": "Please use a number!",
+            "notOneTwenty": "Please use a number between 1 and 20"
+        }
+    }
+}

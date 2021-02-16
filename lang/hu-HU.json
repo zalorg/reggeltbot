@@ -1,0 +1,47 @@
+{
+    "root": {
+        "bans": {
+            "gloabl": "A bot adminisztrátorai eltiltottak a bot használatótól!",
+            "guild": "A %!GUILD%! adminisztrátorai eltiltottak a bot használatótól!",
+            "reggeltGlobal": "A bot adminisztrátorai eltiltottak a reggelt funkció használatától!",
+            "reggeltGuild": "A %!GUILD%! adminisztrátorai eltiltottak a reggelt funkció használatától!"
+        }
+    },
+    "events" : {
+        "reggelt": {
+            "channel": "reggelt",
+            "keyWord": "reggelt",
+            "onCooldown": "Túl gyorsan akarsz/próbálsz beköszönni!",
+            "noPrems": "Hiányos jogosultságok!",
+            "noSend": "Hiányos jogosultságok! A rendes működésemhez kell a **Send Messages** jogosultság",
+            "notReggelt": "Ide csak **%!KEYWORD%** lehet írni! (%!GUILD%!)"
+        },
+        "reggeltUpdate": {
+            "editSend": "Ebben a csatornában nem mód"
+        }
+    },
+    "commands": {
+        "ping": {
+            "gateway": "Discord",
+            "internal": "Belső",
+            "status": "Státusz",
+            "error": "Hiba",
+            "po": "Részleges leállás",
+            "mo": "Jelentős  leállás",
+            "dp": "Csökkent teljesítmény",
+            "aso": "Minden rendszer működőképes"
+        },
+        "link": {
+            "aal": "This account is already linked!",
+            "als": "Account linked succesfuly!",
+            "ela": "Error linking account",
+            "noMail": "Please provide your email",
+            "noCode": "Please provide your link code"
+        },
+        "leaderboard": {
+            "leaderboard": "Leaderboard",
+            "numberNaN": "Please use a number!",
+            "notOneTwenty": "Please use a number between 1 and 20"
+        }
+    }
+}
