@@ -21,8 +21,9 @@ module.exports = {
             
             return message.channel.send(embed)
         } else {
-            admin.firestore().collection('bots').doc('reggeltbot').collection('langs').doc(message.guild.id).set({
-                code: args[0]
+        
+            admin.firestore().collection('bots').doc('reggeltbot').collection('langs').doc("guilds").update({
+
             }).then(r => {
                 message.reply(`Guild language changed to: ${args[0]}!`)
             }).catch(e => {
