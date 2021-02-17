@@ -70,7 +70,7 @@ async function sendRandomFact(docid: any, message: { createdAt: any; channel: { 
 
     const lngcode: any = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
 
-    const currentLang = lngcode.guilds.find((element: any) => element.id === message.guild.id)
+    const currentLang = lngcode.guilds[message.guild.id]
 
     const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.fact;
     
