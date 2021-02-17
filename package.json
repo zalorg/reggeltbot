@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/zal1000/reggeltbot#readme",
   "dependencies": {
+    "@google-cloud/translate": "^6.1.0",
     "axios": "^0.21.1",
     "dblapi.js": "^2.4.1",
     "discord.js": "^12.5.1",
