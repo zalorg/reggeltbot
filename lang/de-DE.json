@@ -1,10 +1,10 @@
 {
     "root": {
         "bans": {
-            "gloabl": "Du bist kann nicht benutzt diese Bot, weil der Botadministrator hat für dich verboten!",
-            "guild": "Du bist kann nicht benutzt diese Bot, weil der Administrator des %!GUILD%! hat für dich verboten!",
-            "reggeltGlobal": "Du bist kann nicht benutzt der morgen Funktion, weil der Botadministrator hat für dich verboten!",
-            "reggeltGuild": "Du bist kann nicht benutzt der morgen Funktion, weil der Administrator des %!GUILD%! hat für dich verboten!"
+            "gloabl": "Du kann nicht benutzt diese Bot, weil der Botadministrator hat für dich verboten!",
+            "guild": "Du kann nicht benutzt diese Bot, weil der Administrator des %!GUILD%! hat für dich verboten!",
+            "reggeltGlobal": "Du kann nicht benutzt der morgen Funktion, weil der Botadministrator hat für dich verboten!",
+            "reggeltGuild": "Du kann nicht benutzt der morgen Funktion, weil der Administrator des %!GUILD%! hat für dich verboten!"
         }
     },
     "events" : {
@@ -42,6 +42,21 @@
             "leaderboard": "Bestenliste",
             "numberNaN": "Gib mir ein zahl!",
             "notOneTwenty": "Gib mir ein zahl zwischen 1 und 20!"
+        },
+        "help": {
+            "title": "Reggeltbot hilfen",
+            "f1": "%!PREFIX%!count",
+            "f11": "Es sagen du wieviel mal grüßen in %!CHANNEL%! Kanal, oder schau in der [Webseite](https://reggeltbot.com/count?i=%!DCID%!).",
+            "f2": "%!PREFIX%!invite",
+            "f21": "Bot einladen",
+            "f3": "%!CHANNEL%! Kanal einstellung",
+            "f31": "Named der Kannal an **%!KEYWORD%!** und fertig",
+            "f4": "top.gg",
+            "f41": "Du kann finde diese Bot in [top.gg](https://top.gg/bot/749037285621628950) seite",
+            "f5": "Fehler und Problem melden",
+            "f51": "Du wenn findest ein bug in der bot , bitte schicke [hier ein GitHub Issue](https://github.com/zal1000/reggeltbot/issues).",
+            "ping": "Bot Reaktionszeit",
+            "uptime": "Betriebszeit"
         }
     }
 }
