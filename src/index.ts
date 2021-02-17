@@ -139,18 +139,32 @@ bot.on("message", async (message: any) => {
 
     //count 
     else if(message.content === `${prefix}count`){
+
         await bot.commands.get('count').execute(message);
     }
     else if(cmd === `${prefix}link`) {
-        bot.commands.get('link').execute(message, args)
+
+        bot.commands.get('link').execute(message, args);
+
     } else if(cmd === `${prefix}fact`) {
-        bot.commands.get('fact').execute(message, args)
+
+        bot.commands.get('fact').execute(message, args);
+
     } else if (cmd === `${prefix}restart`) {
+
         await restartRequest(message);
+
     } else if (cmd === `${prefix}ping`) {
+
         bot.commands.get('ping').execute(bot, args, message)
+
     } else if (cmd === `${prefix}leaderboard`) {
+
         await bot.commands.get('leaderboard').execute(message, args);
+
+    } else if (cmd === `${prefix}github`) {
+
+        await bot.commands.get('github').execute(message, args, bot);
 
     }
 });

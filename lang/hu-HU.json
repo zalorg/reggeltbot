@@ -11,13 +11,13 @@
         "reggelt": {
             "channel": "reggelt",
             "keyWord": "reggelt",
-            "onCooldown": "Túl gyorsan akarsz/próbálsz beköszönni!",
+            "onCooldown": "Túl gyorsan próbálsz beköszönni!",
             "noPrems": "Hiányos jogosultságok!",
             "noSend": "Hiányos jogosultságok! A rendes működésemhez kell a **Send Messages** jogosultság",
             "notReggelt": "Ide csak **%!KEYWORD%** lehet írni! (%!GUILD%!)"
         },
         "reggeltUpdate": {
-            "editSend": "Ebben a csatornában nem mód"
+            "editSend": "Ebben a csatornában nem módosíthatod az uzeneted"
         }
     },
     "commands": {
@@ -32,16 +32,16 @@
             "aso": "Minden rendszer működőképes"
         },
         "link": {
-            "aal": "This account is already linked!",
-            "als": "Account linked succesfuly!",
-            "ela": "Error linking account",
-            "noMail": "Please provide your email",
-            "noCode": "Please provide your link code"
+            "aal": "Ez a fiók már öszze van kapcsolva!",
+            "als": "Fiók sikeresen összekötve!",
+            "ela": "Hiba örtént a fiók összekapcsolása közben",
+            "noMail": "Adj meg egy emailt!",
+            "noCode": "Add meg az összekapcsolási kódot!"
         },
         "leaderboard": {
-            "leaderboard": "Leaderboard",
-            "numberNaN": "Please use a number!",
-            "notOneTwenty": "Please use a number between 1 and 20"
+            "leaderboard": "Toplista",
+            "numberNaN": "Adj meg egy számot!",
+            "notOneTwenty": "Adj meg egy számot 1 és 20 között!"
         }
     }
 }
