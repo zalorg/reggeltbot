@@ -1,20 +1,30 @@
 //import * as admin from 'firebase-admin';
 import ms = require('ms');
 import * as Discord from 'discord.js';
+import fs = require('fs');
 module.exports = {
     name: 'help',
     execute(message: any, prefix: string, bot: any) {
+
+        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+
+        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.help;
+
+        const reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).events.reggelt;
+
         const embed = new Discord.MessageEmbed()
-        .setTitle('Reggeltbot help')
+        .setTitle(lang.title)
         .setColor("#FFCB2B")
-        .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=${message.author.id}) is megnézheted)`)
-        .addField(`${prefix}invite`, "Bot meghívása")
-        .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
-        .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
-        .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
+        .addField(lang.f1.replace('%!PREFIX%!', prefix), lang.f11.replace('%!DCID%!', message.author.id))
+        .addField(lang.f2.replace('%!PREFIX%!', prefix), lang.f21)
+        .addField(lang.f3.replace('%!CHANNEL%!', reggeltconfig.channel), lang.f31.replace('%!KEYWORD%!'), reggeltconfig.keyWord)
+        .addField(lang.f4, lang.f41)
+        .addField(lang.f5, lang.f51)
         .addField('\u200B', '\u200B')
-        .addField("Bot ping", `${bot.ws.ping}ms`)
-        .addField("Uptime", `${ms(bot.uptime)}`)
+        .addField(lang.ping, `${bot.ws.ping}ms`)
+        .addField(lang.uptime, `${ms(bot.uptime)}`)
         .setFooter(message.author.username)
         .setThumbnail(bot.user!.avatarURL()!)
         .setTimestamp(Date.now());

@@ -42,6 +42,21 @@
             "leaderboard": "Toplista",
             "numberNaN": "Adj meg egy számot!",
             "notOneTwenty": "Adj meg egy számot 1 és 20 között!"
+        },
+        "help": {
+            "title": "Reggeltbot információk",
+            "f1": "%!PREFIX%!count",
+            "f11": "Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=%!DCID%!) is megnézheted)",
+            "f2": "%!PREFIX%!invite",
+            "f21": "Bot meghívása",
+            "f3": "%!CHANNEL%! csatorna beállítása",
+            "f31": "Nevezz el egy csatornát **%!KEYWORD%!**-nek és kész",
+            "f4": "top.gg",
+            "f41": "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala",
+            "f5": "Probléma jelentése",
+            "f51": "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
+            "ping": "Bot válaszidő",
+            "uptime": "Üzemidő"
         }
     }
 }
