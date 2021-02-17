@@ -1,0 +1,47 @@
+{
+    "root": {
+        "bans": {
+            "gloabl": "Du bist kann nicht benutzt diese Bot, weil der Botadministrator hat für dich verboten!",
+            "guild": "Du bist kann nicht benutzt diese Bot, weil der Administrator des %!GUILD%! hat für dich verboten!",
+            "reggeltGlobal": "Du bist kann nicht benutzt der morgen Funktion, weil der Botadministrator hat für dich verboten!",
+            "reggeltGuild": "Du bist kann nicht benutzt der morgen Funktion, weil der Administrator des %!GUILD%! hat für dich verboten!"
+        }
+    },
+    "events" : {
+        "reggelt": {
+            "channel": "morgen",
+            "keyWord": "morgen",
+            "onCooldown": "Du wille zu schnell grüßen!",
+            "noPrems": "Vermisst Berechtigungen!",
+            "noSend": "Vermisst Berechtigungen Der Bot müssen der der  **Send Messages** Berechtigung",
+            "notReggelt": "In dieser Kanal kann du nur **%!KEYWORD%** schicken. (%!GUILD%!)"
+        },
+        "reggeltUpdate": {
+            "editSend": "In dieser Kanal kann nicht du der Nachricht bearbeiten."
+        }
+    },
+    "commands": {
+        "ping": {
+            "gateway": "Discord",
+            "internal": "Innen",
+            "status": "Status",
+            "error": "Fehler",
+            "po": "Partiell Stillstand",
+            "mo": "Kritisch Stillstand",
+            "dp": "Vermindert Performance",
+            "aso": "Alles System ist funktionsfähig"
+        },
+        "link": {
+            "aal": "Schon dieses Konto hat gelinkt.",
+            "als": "Konto hat erfolgreich gelinkt!",
+            "ela": "Ein Fehler ist aufgetreten wenn du linked dieser E-Mail Adresse",
+            "noMail": "Gib mir deine E-Mail Adresse!",
+            "noCode": "Gib mir der link-code!"
+        },
+        "leaderboard": {
+            "leaderboard": "Bestenliste",
+            "numberNaN": "Gib mir ein zahl!",
+            "notOneTwenty": "Gib mir ein zahl zwischen 1 und 20!"
+        }
+    }
+}
