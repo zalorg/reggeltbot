@@ -5,6 +5,7 @@ module.exports = {
     name: 'link',
     async execute(message: any, args: any) {
 
+
         const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
 
         const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
@@ -12,9 +13,9 @@ module.exports = {
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.link;
 
         if(!args[0]){
-            message.reply(lang.noMail);
+            message.reply(`${lang.noMail}`);
         } else if(!args[1]) {
-            message.reply(lang.noCode);
+            message.reply(`${lang.noCode}`);
         } else {
             botTypeing(message.channel.id);
             admin
@@ -31,13 +32,14 @@ module.exports = {
     }
 }
 
-async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string, arg1: undefined) => void; guild: { id: string } } ) {
+async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string) => void; guild: { id: string } } ) {
 
     const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
 
     const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
 
-    const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.ping;
+    const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.link;
+    
     const db = admin.firestore();
     let messageArray = message.content.split(" ");
     //let cmd = messageArray[0];
@@ -50,7 +52,8 @@ async function accountLink(userRecord: { uid: any; }, message: { content: string
     //const dcUserDoc = await dcUserRef.get();
 
     if(userDoc.data()!.dclinked) {
-        message.reply(lang.aal, args[1]);
+        console.log(lang.aal, args[1])
+        message.reply(`${lang.aal}`);
     } else if(`${userDoc.data()!.dclink}` === args[1]) {
         dcUserRef.update({
             uid: message.author.id,
@@ -60,9 +63,9 @@ async function accountLink(userRecord: { uid: any; }, message: { content: string
             dclinked: true,
             dcid: message.author.id,
         });
-        message.reply(lang.als, undefined);
+        message.reply(`${lang.als}`);
     } else {
-        message.reply(lang.ela, undefined);
+        message.reply(`${lang.ela}`);
     }
 }
 
