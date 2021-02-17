@@ -57,6 +57,17 @@
             "f51": "Wenn du ein Problem erkennst (während du Bot benutzt), kannst du [hier](https://github.com/zal1000/reggeltbot/issues) berichten",
             "ping": "Reaktionszeit von Bot",
             "uptime": "Laufzeit"
+        },
+        "fact": {
+            "errorGF": "Error geting fact",
+            "noId": "Please add fact id!",
+            "title1": "Random fact",
+            "title2": "Random fact by.: %!AUTHOR%!",
+            "fact": "Fact",
+            "factid":"Fact id",
+            "add": "Add your fact",
+            "addF": "You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))",
+            "noFact": "Cannot find that fact!"
         }
     }
 }
