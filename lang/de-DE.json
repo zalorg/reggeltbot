@@ -46,17 +46,17 @@
         "help": {
             "title": "Reggeltbot hilfen",
             "f1": "%!PREFIX%!count",
-            "f11": "Es sagen du wieviel mal grüßen in %!CHANNEL%! Kanal, oder schau in der [Webseite](https://reggeltbot.com/count?i=%!DCID%!).",
+            "f11": "Es sagt dir, weieviel du in den %!CHANNEL%! Kanal gegrüßt hast, oder du kannst auch [hier](https://reggeltbot.com/count?i=%!DCID%!) ansehen",
             "f2": "%!PREFIX%!invite",
-            "f21": "Bot einladen",
-            "f3": "%!CHANNEL%! Kanal einstellung",
-            "f31": "Named der Kannal an **%!CHANNEL%!** und fertig",
+            "f21": "laden Bot ein",
+            "f3": "stellen den Kanal %!CHANNEL%! ein",
+            "f31": "Nenne einen Kanal für **%!CHANNEL%!** und das wird fertig",
             "f4": "top.gg",
-            "f41": "Du kann finde diese Bot in [top.gg](https://top.gg/bot/749037285621628950) seite",
-            "f5": "Fehler und Problem melden",
-            "f51": "Du wenn findest ein bug in der bot , bitte schicke [hier ein GitHub Issue](https://github.com/zal1000/reggeltbot/issues).",
-            "ping": "Bot Reaktionszeit",
-            "uptime": "Betriebszeit"
+            "f41": "Wenn jemand es braucht, ist hier die Seite [top.gg](https://top.gg/bot/749037285621628950) von Bot",
+            "f5": "berichten das Problem",
+            "f51": "Wenn du ein Problem erkennst (während du Bot benutzt), kannst du [hier](https://github.com/zal1000/reggeltbot/issues) berichten",
+            "ping": "Reaktionszeit von Bot",
+            "uptime": "Laufzeit"
         }
     }
 }
