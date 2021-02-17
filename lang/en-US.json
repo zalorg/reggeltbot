@@ -50,13 +50,13 @@
             "f2": "%!PREFIX%!invite",
             "f21": "Invite the bot",
             "f3": "Setting up the %!CHANNEL%! channel",
-            "f31": "Nevezz el egy csatornát **%!KEYWORD%!**-nek és kész",
+            "f31": "Name a chennel **%!CHANNEL%!** and you're done",
             "f4": "top.gg",
-            "f41": "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala",
+            "f41": "Heres the bots [top.gg](https://top.gg/bot/749037285621628950) page",
             "f5": "Probléma jelentése",
             "f51": "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
-            "ping": "Bot válaszidő",
-            "uptime": "Üzemidő"
+            "ping": "Bot ping",
+            "uptime": "Uptime"
         }
     }
 }
