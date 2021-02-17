@@ -7,8 +7,8 @@ module.exports = {
     execute(message: any, prefix: string, bot: any) {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
-
-        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+    
+        const currentLang = langcode.guilds[message.guild.id]
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.help;
 
