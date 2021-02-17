@@ -75,6 +75,7 @@ for (const file of wseventFiles) {
 
 }
 console.log(bot.events.get('ready'))
+
 bot.events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
 bot.events.get('msgUpdate').execute(bot);
@@ -165,6 +166,11 @@ bot.on("message", async (message: any) => {
     } else if (cmd === `${prefix}github`) {
 
         await bot.commands.get('github').execute(message, args, bot);
+
+    } else if(cmd === `${prefix}setlang`) {
+        console.log(bot.commands.get('setlang'))
+
+        bot.commands.get('setlang').execute(message, args);
 
     }
 });
