@@ -11,3 +11,4 @@ dist/
 out/
 test.js
 asd.txt
+cache/guilds.json
