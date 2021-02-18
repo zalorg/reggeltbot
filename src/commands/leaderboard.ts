@@ -5,11 +5,11 @@ import fs = require('fs');
 module.exports = {
     name: 'leaderboard',
     async execute(message: any, args: any) {
-        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+        const currentLang = langcode.guilds[message.guild.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.leaderboard;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.leaderboard;
 
         if(!args[0]) {
             await axios.default.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=10`).then(res => {

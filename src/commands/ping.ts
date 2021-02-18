@@ -6,11 +6,11 @@ module.exports = {
     name: 'ping',
     async execute(bot: any, args: any, message: any) {
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+        const currentLang = langcode.guilds[message.guild.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.ping;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.ping;
 
         axios.default.defaults.headers.common['Authorization'] = `Bot ${(await botlogin())}`;
         await axios.default.post(`https://discord.com/api/v8/channels/${message.channel.id}/typing`).catch(err => {

@@ -6,11 +6,11 @@ module.exports = {
     async execute(message: any, args: any) {
 
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+        const currentLang = langcode.guilds[message.guild.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.link;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.link;
 
         if(!args[0]){
             message.reply(`${lang.noMail}`);
@@ -34,11 +34,11 @@ module.exports = {
 
 async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string) => void; guild: { id: string } } ) {
 
-    const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-    const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+    const currentLang = langcode.guilds[message.guild.id]
 
-    const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.link;
+    const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.link;
     
     const db = admin.firestore();
     let messageArray = message.content.split(" ");

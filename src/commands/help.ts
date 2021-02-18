@@ -6,13 +6,13 @@ module.exports = {
     name: 'help',
     execute(message: any, prefix: string, bot: any) {
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
+        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
         const currentLang = langcode.guilds[message.guild.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).commands.help;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.help;
 
-        const reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).events.reggelt;
+        const reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
 
         console.log(reggeltconfig)
 
