@@ -68,6 +68,10 @@
             "add": "Add your fact",
             "addF": "You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))",
             "noFact": "Cannot find that fact!"
+        },
+        "count": {
+            "f1": "You sad %!KEYWORD%! %!COUNT%! times",
+            "f2": "[Click here to open on web](https://reggeltbot.com/count?i=%!ID%!)"
         }
     }
 }
