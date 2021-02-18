@@ -74,8 +74,7 @@ for (const file of wseventFiles) {
     bot.wsevents.get(event.name).execute(bot);
 
 }
-console.log(bot.events.get('ready'))
-
+bot.events.get('updatecache').execute();
 bot.events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
 bot.events.get('msgUpdate').execute(bot);
