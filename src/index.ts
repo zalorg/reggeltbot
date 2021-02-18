@@ -167,9 +167,12 @@ bot.on("message", async (message: any) => {
         await bot.commands.get('github').execute(message, args, bot);
 
     } else if(cmd === `${prefix}setlang`) {
-        console.log(bot.commands.get('setlang'))
 
         bot.commands.get('setlang').execute(message, args);
+
+    } else if(cmd === `${prefix}say`) {
+
+        bot.commands.get('say').execute(message, args. bot);
 
     }
 });
