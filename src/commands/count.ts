@@ -1,9 +1,18 @@
 import * as admin from 'firebase-admin';
 import * as Discord from 'discord.js';
+import fs = require('fs');
 
 module.exports = {
     name: 'count',
     async execute(message: any) {
+        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    
+        const currentLang = langcode.guilds[message.guild.id]
+
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.count;
+
+        const reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
+
         let db = admin.firestore();
         let dcid = message.author.id;
         const cityRef = db.collection("dcusers").doc(dcid);
@@ -15,7 +24,7 @@ module.exports = {
             let upmbed = new Discord.MessageEmbed()
                 .setTitle(`${message.author.username}`)
                 .setColor("#FFCB5C")
-                .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data()!.reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
+                .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
                 .setFooter(message.author.username)
                 .setThumbnail(message.author.avatarURL())
                 .setTimestamp(message.createdAt);
