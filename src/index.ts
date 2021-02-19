@@ -3,7 +3,7 @@ import axios from "axios";
 import * as Discord from 'discord.js';
 import fs = require('fs');
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
-const bot: any = new Discord.Client();
+const bot = new Discord.Client();
 import DBL = require("dblapi.js");
 import * as admin from 'firebase-admin';
 import express = require('express');
@@ -24,7 +24,7 @@ function rdbupdate(){
     const db = admin.database();
 
     const ref = db.ref(`bots/status`);
-    const time = msToTime(bot.uptime);
+    const time = msToTime(Number(bot.uptime));
     ref.update({
         reggeltbotPing: `${bot.ws.ping}`,
         reggeltbotUp: `${bot.uptime}`,
@@ -37,9 +37,9 @@ if(!process.env.PROD) {
     rdbupdate();
 }
 
-bot.events = new Discord.Collection();
-bot.commands = new Discord.Collection();
-bot.wsevents = new Discord.Collection();
+const events: any = new Discord.Collection();
+const commands: any = new Discord.Collection();
+const wsevents: any = new Discord.Collection();
 
 let dblRef = rdb.ref("bots/reggeltbot/dblToken");
 dblRef.once("value", function(snapshot: { val: () => any; }) {
@@ -54,7 +54,7 @@ for (const file of commandFiles) {
     const m = file.split(".", 1)
     const command = require(`./commands/${m[0]}`);
     console.log(command)
-    bot.commands.set(command.name, command)
+    commands.set(command.name, command)
 }
 
 const eventFiles = fs.readdirSync('./dist/events/').filter(file => file.endsWith('.js'));
@@ -62,7 +62,7 @@ for (const file of eventFiles) {
     const m = file.split(".", 1)
     const event = require(`./events/${m[0]}`);
     console.log(event)
-    bot.events.set(event.name, event)
+    events.set(event.name, event)
 }
 
 const wseventFiles = fs.readdirSync('./dist/events/ws/').filter(file => file.endsWith('.js'));
@@ -70,14 +70,14 @@ for (const file of wseventFiles) {
     const m = file.split(".", 1)
     const event = require(`./events/ws/${m[0]}`);
     console.log(event)
-    bot.wsevents.set(event.name, event)
-    bot.wsevents.get(event.name).execute(bot);
+    wsevents.set(event.name, event)
+    wsevents.get(event.name).execute(bot);
 
 }
-bot.events.get('updatecache').execute();
-bot.events.get('ready').execute(bot);
+events.get('updatecache').execute();
+events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
-bot.events.get('msgUpdate').execute(bot);
+events.get('msgUpdate').execute(bot);
 
 
 
@@ -97,7 +97,7 @@ bot.on('error', async (err: any) => {
 })
 
 
-bot.on("message", async (message: any) => {
+bot.on("message", async message => {
     if(message.author.bot) return;
     let prefix = (await getPrefix()).prefix; 
     let messageArray = message.content.split(" ");
@@ -128,27 +128,27 @@ bot.on("message", async (message: any) => {
     }
 
     // reggelt
-    if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
-        await bot.events.get('reggelt').execute(message);
+    if(message.channel.type === "text" && message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
+        await events.get('reggelt').execute(message);
     }
     
     // help
     else if(message.content === `${prefix}help`){
-        bot.commands.get('help').execute(message, prefix, bot)
+        commands.get('help').execute(message, prefix, bot)
     }
 
     //count 
     else if(message.content === `${prefix}count`){
 
-        await bot.commands.get('count').execute(message);
+        await commands.get('count').execute(message);
     }
     else if(cmd === `${prefix}link`) {
 
-        bot.commands.get('link').execute(message, args);
+        commands.get('link').execute(message, args);
 
     } else if(cmd === `${prefix}fact`) {
 
-        bot.commands.get('fact').execute(message, args);
+        commands.get('fact').execute(message, args);
 
     } else if (cmd === `${prefix}restart`) {
 
@@ -156,23 +156,23 @@ bot.on("message", async (message: any) => {
 
     } else if (cmd === `${prefix}ping`) {
 
-        bot.commands.get('ping').execute(bot, args, message)
+        commands.get('ping').execute(bot, args, message)
 
     } else if (cmd === `${prefix}leaderboard`) {
 
-        await bot.commands.get('leaderboard').execute(message, args);
+        await commands.get('leaderboard').execute(message, args);
 
     } else if (cmd === `${prefix}github`) {
 
-        await bot.commands.get('github').execute(message, args, bot);
+        await commands.get('github').execute(message, args, bot);
 
     } else if(cmd === `${prefix}setlang`) {
 
-        bot.commands.get('setlang').execute(message, args);
+        commands.get('setlang').execute(message, args);
 
     } else if(cmd === `${prefix}say`) {
 
-        bot.commands.get('say').execute(message, args. bot);
+        commands.get('say').execute(message, args, bot);
 
     }
 });
@@ -292,3 +292,28 @@ function msToTime(duration: number) {
 
 
 app.listen(3000);
+
+
+/*
+interface Command {
+    get(eventname: string): {
+        name: string,
+        execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
+    },
+    set(eventname: string, module: object): {
+        name: string,
+        execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
+    }
+
+    Collection: {
+
+        get(eventname: string): {
+            name: string,
+            execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
+        }
+
+    }
+
+}
+
+*/
