@@ -9,11 +9,11 @@ const translate = new Translate();
 
 module.exports = {
     name: 'fact',
-    async execute(message: any, args: any) {
+    async execute(message: Message, args: Array<string>) {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild.id]
+        const currentLang = langcode.guilds[message.guild!.id]
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
 
@@ -23,14 +23,14 @@ module.exports = {
             var quotes = db.collection("facts");
         
             var key2 = quotes.doc().id;
-                
+            
             quotes.where(admin.firestore.FieldPath.documentId(), '>=', key2).limit(1).get()
                 .then((snapshot: { size: number; forEach: (arg0: (doc: any) => void) => void; }) => {
                     if(snapshot.size > 0) {
                         snapshot.forEach((doc: { id: any; data: () => any; }) => {
                             const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-                            const lcode = langcode.guilds[message.guild.id]
+                            const lcode = langcode.guilds[message.guild!.id]
                             sendRandomFact(doc.id, message, lcode.lang, args);
                         });
                     } else {
@@ -39,7 +39,7 @@ module.exports = {
                                 snapshot.forEach((doc: { id: any; data: () => any; }) => {
                                     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-                                    const lcode = langcode.guilds[message.guild.id]
+                                    const lcode = langcode.guilds[message.guild!.id]
                                     sendRandomFact(doc.id, message, lcode.lang, args);
                                 });
                             })
@@ -63,7 +63,7 @@ module.exports = {
     }
 }
 
-async function sendRandomFact(docid: any, message: Discord.Message, langcode: string, args: Array<string>) {
+async function sendRandomFact(docid: any, message: Message, langcode: string, args: Array<string>) {
     const db = admin.firestore();
     const ref = db.collection("facts").doc(docid);
     const doc = await ref.get();
@@ -77,7 +77,7 @@ async function sendRandomFact(docid: any, message: Discord.Message, langcode: st
     const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
 
     if(args[0] === "say") {
-        const string: string = doc.data()!.fact;
+        const string: string = await translatefact(doc.data()!.fact, langcode);
         const usingSplit = string.split(' ');
         tts(message, usingSplit);
     }
@@ -129,7 +129,7 @@ async function sendRandomFact(docid: any, message: Discord.Message, langcode: st
 
 }
 
-async function getRandomFactWithId(id: any, message: any, args: Array<string>) {
+async function getRandomFactWithId(id: any, message: Message, args: Array<string>) {
     
     const db = admin.firestore();
     const ref = db.collection("facts").doc(id);
@@ -137,7 +137,7 @@ async function getRandomFactWithId(id: any, message: any, args: Array<string>) {
     if(!doc.exists) {
         const lngcode: any = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = lngcode.guilds[message.guild.id]
+        const currentLang = lngcode.guilds[message.guild!.id]
     
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
 
@@ -145,7 +145,7 @@ async function getRandomFactWithId(id: any, message: any, args: Array<string>) {
     } else {
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const lcode = langcode.guilds[message.guild.id]
+        const lcode = langcode.guilds[message.guild!.id]
         sendRandomFact(doc.id, message, lcode.lang, args);
     }
 }
