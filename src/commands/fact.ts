@@ -2,6 +2,8 @@ import * as admin from 'firebase-admin';
 import * as Discord from 'discord.js';
 const {Translate} = require('@google-cloud/translate').v2;
 import fs = require('fs');
+import * as textToSpeech from '@google-cloud/text-to-speech'
+import { Message } from 'discord.js';
 
 const translate = new Translate();
 
@@ -15,7 +17,7 @@ module.exports = {
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
 
-        if(!args[0]) {
+        if(!args[0] || args[0] === "say") {
             const db = admin.firestore();
 
             var quotes = db.collection("facts");
@@ -29,7 +31,7 @@ module.exports = {
                             const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
                             const lcode = langcode.guilds[message.guild.id]
-                            sendRandomFact(doc.id, message, lcode.lang);
+                            sendRandomFact(doc.id, message, lcode.lang, args);
                         });
                     } else {
                         quotes.where(admin.firestore.FieldPath.documentId(), '<', key2).limit(1).get()
@@ -38,7 +40,7 @@ module.exports = {
                                     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
                                     const lcode = langcode.guilds[message.guild.id]
-                                    sendRandomFact(doc.id, message, lcode.lang);
+                                    sendRandomFact(doc.id, message, lcode.lang, args);
                                 });
                             })
                             .catch((err: any) => {
@@ -55,13 +57,13 @@ module.exports = {
             if(!args[1]) {
                 message.reply(lang.noId);
             } else {
-                await getRandomFactWithId(args[1], message);
+                await getRandomFactWithId(args[1], message, args);
             }
         }
     }
 }
 
-async function sendRandomFact(docid: any, message: { createdAt: any; channel: { send: (arg0: any) => void; }; guild: { id: string ;}}, langcode: string) {
+async function sendRandomFact(docid: any, message: Discord.Message, langcode: string, args: Array<string>) {
     const db = admin.firestore();
     const ref = db.collection("facts").doc(docid);
     const doc = await ref.get();
@@ -70,9 +72,16 @@ async function sendRandomFact(docid: any, message: { createdAt: any; channel: { 
 
     const lngcode: any = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-    const currentLang = lngcode.guilds[message.guild.id]
+    const currentLang = lngcode.guilds[message.guild!.id]
 
     const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
+
+    if(args[0] === "say") {
+        const string: string = doc.data()!.fact;
+        const usingSplit = string.split(' ');
+        tts(message, usingSplit);
+    }
+    
     
     if(!doc.data()!.owner){
         let upmbed = new Discord.MessageEmbed()
@@ -120,7 +129,7 @@ async function sendRandomFact(docid: any, message: { createdAt: any; channel: { 
 
 }
 
-async function getRandomFactWithId(id: any, message: any) {
+async function getRandomFactWithId(id: any, message: any, args: Array<string>) {
     
     const db = admin.firestore();
     const ref = db.collection("facts").doc(id);
@@ -137,7 +146,7 @@ async function getRandomFactWithId(id: any, message: any) {
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
         const lcode = langcode.guilds[message.guild.id]
-        sendRandomFact(doc.id, message, lcode.lang);
+        sendRandomFact(doc.id, message, lcode.lang, args);
     }
 }
 
@@ -153,4 +162,38 @@ async function translatefact(text: string, langcode: string) {
         return translations[0];
     }
 
+}
+
+async function tts(message: Message, args: Array<string>,) {
+    //if(!args) return message.reply('I cant say nothing')
+    
+    const client = new textToSpeech.TextToSpeechClient();
+    const text = args.join(' ');
+
+    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    const currentLang = langcode.guilds[message.guild!.id]
+
+    message.reply(`${currentLang.lang}`)
+
+        const [response] = await client.synthesizeSpeech({
+            input: {text: text},
+            voice: {languageCode: `${currentLang.lang}`, ssmlGender: 'NEUTRAL'},
+            audioConfig: {audioEncoding: 'MP3'},
+          });
+
+        fs.writeFileSync(`./cache/${message.author.id}.mp3`, response!.audioContent!, 'binary')
+
+        console.log('Audio content written to file: output.mp3');
+
+        
+        var voiceChannel = message.member!.voice.channel;
+        voiceChannel!.join().then((connection: any) => {
+            message.member!.voice.channel!.join().then((VoiceConnection: any) => {
+                VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => {
+                    VoiceConnection.disconnect();
+                    message.reply('Disconnected')
+                });
+            }).catch((e: any) => console.log(e))
+
+         }).catch((err: any) => console.log(err));
 }
