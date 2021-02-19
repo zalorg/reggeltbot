@@ -4,7 +4,6 @@ import * as Discord from 'discord.js';
 import fs = require('fs');
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
 const bot = new Discord.Client();
-import DBL = require("dblapi.js");
 import * as admin from 'firebase-admin';
 import express = require('express');
 
@@ -18,7 +17,6 @@ admin.initializeApp({
     databaseURL: "https://zal1000.firebaseio.com"
 });
 
-let rdb = admin.database();
 
 function rdbupdate(){
     const db = admin.database();
@@ -40,14 +38,6 @@ if(!process.env.PROD) {
 const events: any = new Discord.Collection();
 const commands: any = new Discord.Collection();
 const wsevents: any = new Discord.Collection();
-
-let dblRef = rdb.ref("bots/reggeltbot/dblToken");
-dblRef.once("value", function(snapshot: { val: () => any; }) {
-    new DBL(snapshot.val(), bot);
-    console.debug(snapshot.val());
-}, function (errorObject: { code: string; }) {
-    console.log("The read failed: " + errorObject.code);
-});
 
 const commandFiles = fs.readdirSync('./dist/commands/').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
@@ -108,7 +98,7 @@ bot.on("message", async message => {
     if(!message.author.bot) {
         updateUser(message);
         const ref = admin.firestore().collection('dcusers').doc(message.author.id);
-        await axios.get(`https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`).then(res => {
+        await axios.get(`https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`).then(() => {
             ref.update({
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`,
                 username: message.author.username,
@@ -116,7 +106,7 @@ bot.on("message", async message => {
             }).catch(err => {
                 console.error(err.code);
             })
-        }).catch(err => {
+        }).catch(() => {
             ref.update({
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`,
                 username: message.author.username,
@@ -126,6 +116,9 @@ bot.on("message", async message => {
             })
         })
     }
+
+    events.get('automod').execute(message);
+
 
     // reggelt
     if(message.channel.type === "text" && message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
