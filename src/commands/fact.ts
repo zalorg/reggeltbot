@@ -173,7 +173,7 @@ async function tts(message: Message, args: Array<string>,) {
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     const currentLang = langcode.guilds[message.guild!.id]
 
-    message.reply(`${currentLang.lang}`)
+    //message.reply(`${currentLang.lang}`)
 
         const [response] = await client.synthesizeSpeech({
             input: {text: text},
@@ -185,7 +185,8 @@ async function tts(message: Message, args: Array<string>,) {
 
         console.log('Audio content written to file: output.mp3');
 
-        
+        message.guild?.me?.voice.setMute(false)
+
         var voiceChannel = message.member!.voice.channel;
         voiceChannel!.join().then((connection: any) => {
             message.member!.voice.channel!.join().then((VoiceConnection: any) => {
