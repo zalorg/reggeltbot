@@ -16,7 +16,7 @@ module.exports = {
                 audioConfig: {audioEncoding: 'MP3'},
               });
 
-            fs.writeFileSync(`./cache/${message.author.id}.mp3`, response.audioContent, 'binary')
+            fs.writeFileSync(`./cache/${message.author.id}.mp3`, response!.audioContent!, 'binary')
 
             console.log('Audio content written to file: output.mp3');
 
