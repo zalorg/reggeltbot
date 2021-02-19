@@ -28,30 +28,32 @@ module.exports = {
             const ref = admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id);
             const doc = await ref.get();
 
-            if(message.guild?.member(message.author.id)?.hasPermission('MANAGE_MESSAGES'))
-
-            if(doc.exists) {
-                ref.update({
-                    lang: args[0],
-                }).then(r => {
-                    message.reply(`Guild language changed to: ${args[0]}!`)
-                }).catch(e => {
-                    message.reply('Error updateing guild language!')
-                    throw e;
-                })
+            if(message.guild?.member(message.author.id)?.hasPermission('MANAGE_MESSAGES') || message.author.id === "423925286350880779") {
+                if(doc.exists) {
+                    ref.update({
+                        lang: args[0],
+                    }).then(r => {
+                        message.channel.send(`Guild language changed to: ${args[0]}!`)
+                    }).catch(e => {
+                        message.reply('Error updateing guild language!')
+                        throw e;
+                    })
+                } else {
+                    ref.set({
+                        lang: args[0],
+                        cd: 6,
+                        premium: false,
+                        disabled: false,
+                        testing:false,
+                    }).then(r => {
+                        message.channel.send(`Guild language changed to: ${args[0]}!`)
+                    }).catch(e => {
+                        message.reply('Error updateing guild language!')
+                        throw e;
+                    })
+                }
             } else {
-                ref.set({
-                    lang: args[0],
-                    cd: 6,
-                    premium: false,
-                    disabled: false,
-                    testing:false,
-                }).then(r => {
-                    message.reply(`Guild language changed to: ${args[0]}!`)
-                }).catch(e => {
-                    message.reply('Error updateing guild language!')
-                    throw e;
-                })
+                message.reply('You are not authorized to change the bot language!')
             }
 
         }
