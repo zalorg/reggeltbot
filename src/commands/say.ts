@@ -1,6 +1,6 @@
 import * as textToSpeech from '@google-cloud/text-to-speech'
 import fs = require('fs');
-import { Message } from 'discord.js'
+//import { Message } from 'discord.js'
 
 module.exports = {
     name: 'say',
