@@ -76,7 +76,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
 
     const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
 
-    if(args[0] === "say") {
+    if(args[0] === "say" || args[2] === "say") {
         const string: string = await translatefact(doc.data()!.fact, langcode);
         const usingSplit = string.split(' ');
         tts(message, usingSplit);
@@ -188,13 +188,13 @@ async function tts(message: Message, args: Array<string>,) {
         message.guild?.me?.voice.setMute(false)
 
         var voiceChannel = message.member!.voice.channel;
-        voiceChannel!.join().then((connection: any) => {
-            message.member!.voice.channel!.join().then((VoiceConnection: any) => {
+        voiceChannel!.join().then(connection => {
+            message.member!.voice.channel!.join().then(VoiceConnection => {
                 VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => {
                     VoiceConnection.disconnect();
                     message.reply('Disconnected')
                 });
-            }).catch((e: any) => console.log(e))
+            }).catch(e => console.log(e))
 
-         }).catch((err: any) => console.log(err));
+         }).catch(err => console.log(err));
 }
