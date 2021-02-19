@@ -1,13 +1,14 @@
 import * as admin from 'firebase-admin';
-import * as Discord from 'discord.js';
 import fs = require('fs');
+import { Message, MessageEmbed } from 'discord.js'
+
 
 module.exports = {
     name: 'count',
-    async execute(message: any) {
+    async execute(message: Message) {
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
-        const currentLang = langcode.guilds[message.guild.id]
+        const currentLang = langcode.guilds[message.guild!.id]
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.count;
 
@@ -21,12 +22,12 @@ module.exports = {
             console.log("No such document!");
             message.reply("Error reading document!");
         } else {
-            let upmbed = new Discord.MessageEmbed()
+            let upmbed = new MessageEmbed()
                 .setTitle(`${message.author.username}`)
                 .setColor("#FFCB5C")
                 .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
                 .setFooter(message.author.username)
-                .setThumbnail(message.author.avatarURL())
+                .setThumbnail(message.author.avatarURL()!)
                 .setTimestamp(message.createdAt);
             console.log(upmbed);
     

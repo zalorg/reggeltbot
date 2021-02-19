@@ -1,10 +1,11 @@
 import fs = require('fs');
 import * as admin from 'firebase-admin';
 import * as Discord from 'discord.js';
+import { Message } from 'discord.js'
 
 module.exports = {
     name: 'setlang',
-    async execute(message: any, args: any[]) {
+    async execute(message: Message, args: any[]) {
         const langs: any = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).langs;
 
         if(!args[0]) { 
@@ -24,10 +25,10 @@ module.exports = {
 
 
 
-            const ref = admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild.id);
+            const ref = admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id);
             const doc = await ref.get();
 
-            if(message.guild.member(message.author.id).hasPermission('MANAGE_MESSAGES'))
+            if(message.guild?.member(message.author.id)?.hasPermission('MANAGE_MESSAGES'))
 
             if(doc.exists) {
                 ref.update({
@@ -54,6 +55,6 @@ module.exports = {
             }
 
         }
-
+        return;
     }
 }

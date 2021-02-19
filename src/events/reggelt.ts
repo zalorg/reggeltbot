@@ -1,14 +1,14 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
-
+import { Message } from 'discord.js'
 module.exports = {
     name: 'reggelt',
-    async execute(message: any) {
+    async execute(message: Message) {
         const db = admin.firestore();
 
         const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
 
-        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild.id)
+        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild!.id)
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8'));
 
@@ -91,7 +91,7 @@ module.exports = {
                 message.delete();
                 console.log(lang)
                 let nReggelt: string = lang.notReggelt;
-                let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild.name}`).replace('**%!KEYWORD%**', `**${lang.keyWord}**`)
+                let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild!.name}`).replace('**%!KEYWORD%**', `**${lang.keyWord}**`)
                 console.log(replyMSG)
                 message.author.send(replyMSG)
                     .catch(function(error: string) {
@@ -115,7 +115,7 @@ async function reggeltupdateall() {
     });
 }
 
-async function reggeltupdatefs(message: { author: { id: string; tag: string; username: string; avatarURL: () => string; }; }, decreased = false) {
+async function reggeltupdatefs(message: Message, decreased = false) {
     let db = admin.firestore();
     const reggeltRef = db.collection("dcusers").doc(message.author.id);
     const doc = await reggeltRef.get();

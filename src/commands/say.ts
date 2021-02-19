@@ -1,9 +1,10 @@
 import * as textToSpeech from '@google-cloud/text-to-speech'
 import fs = require('fs');
+import { Message } from 'discord.js'
 
 module.exports = {
     name: 'say',
-    async execute(message: any, args: Array<string>,) {
+    async execute(message: Message, args: Array<string>,) {
         if(!args) return message.reply('I cant say nothing')
         
         const client = new textToSpeech.TextToSpeechClient();
@@ -20,12 +21,14 @@ module.exports = {
             console.log('Audio content written to file: output.mp3');
 
             
-            var voiceChannel = message.member.voice.channel;
-            voiceChannel.join().then((connection: any) => {
-                message.member.voice.channel.join().then((VoiceConnection: { play: (arg0: string) => { (): any; new(): any; on: { (arg0: string, arg1: () => any): void; new(): any; }; }; disconnect: () => any; }) => {
+            var voiceChannel = message.member?.voice.channel;
+            voiceChannel?.join().then((connection: any) => {
+                message.member?.voice.channel?.join().then(VoiceConnection => {
                     VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => VoiceConnection.disconnect());
                 }).catch((e: any) => console.log(e))
 
              }).catch((err: any) => console.log(err));
+
+             return;
     }
 }

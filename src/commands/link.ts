@@ -1,14 +1,15 @@
 import * as admin from 'firebase-admin';
 import https = require('https');
 import fs = require('fs');
+import { Message } from 'discord.js'
 module.exports = {
     name: 'link',
-    async execute(message: any, args: any) {
+    async execute(message: Message, args: Array<string>) {
 
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild.id]
+        const currentLang = langcode.guilds[message.guild!.id]
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.link;
 
@@ -32,11 +33,11 @@ module.exports = {
     }
 }
 
-async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string) => void; guild: { id: string } } ) {
+async function accountLink(userRecord: { uid: any; }, message: Message ) {
 
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-    const currentLang = langcode.guilds[message.guild.id]
+    const currentLang = langcode.guilds[message.guild!.id]
 
     const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.link;
     

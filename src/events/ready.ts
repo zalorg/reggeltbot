@@ -1,10 +1,11 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import DBL = require('dblapi.js');
+import { Client } from 'discord.js'
 
 module.exports = {
     name: 'ready',
-    execute(bot: any) {
+    execute(bot: Client) {
         bot.on("ready", async () => {
             const dblToken = (await admin.firestore().collection('bots').doc('reggeltbot').get()).data()?.dblToken
             const dbl = new DBL(dblToken, bot);
@@ -31,10 +32,10 @@ module.exports = {
             console.log(`${bot.user!.username} has started`);
             const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
             doc.onSnapshot((docSnapshot: any) => {
-                bot.user.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
+                bot.user?.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
             }, (err: any) => {
                 console.log(`Encountered error: ${err}`);
-                bot.user.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
+                bot.user?.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
             });
         
         });

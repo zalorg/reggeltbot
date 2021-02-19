@@ -1,14 +1,15 @@
 import axios = require('axios');
 import * as Discord from 'discord.js';
 import * as admin from 'firebase-admin';
-import fs = require('fs');
+import fs = require('fs')
+import { Client, Message } from 'discord.js';
 module.exports = {
     name: 'ping',
-    async execute(bot: any, args: any, message: any) {
+    async execute(bot: Client, args: any, message: Message) {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild.id]
+        const currentLang = langcode.guilds[message.guild!.id]
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.ping;
 

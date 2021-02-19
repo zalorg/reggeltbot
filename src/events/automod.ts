@@ -1,10 +1,11 @@
 import language = require('@google-cloud/language');
 const client = new language.LanguageServiceClient();
+import { Message } from 'discord.js'
 
 
 module.exports = {
     name: 'automod',
-    async execute(message:any) {
+    async execute(message: Message) {
         const text = message.content;
 
         const document: any = {

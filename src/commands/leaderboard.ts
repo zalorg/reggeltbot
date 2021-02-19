@@ -1,13 +1,14 @@
 import * as axios from 'axios';
 import * as Discord from 'discord.js';
 import fs = require('fs');
+import { Message } from 'discord.js'
 
 module.exports = {
     name: 'leaderboard',
-    async execute(message: any, args: any) {
+    async execute(message: Message, args: Array<string>) {
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild.id]
+        const currentLang = langcode.guilds[message.guild!.id]
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.leaderboard;
 

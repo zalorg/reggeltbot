@@ -2,13 +2,15 @@
 import ms = require('ms');
 import * as Discord from 'discord.js';
 import fs = require('fs');
+import { Message, Client } from 'discord.js'
+
 module.exports = {
     name: 'help',
-    execute(message: any, prefix: string, bot: any) {
+    execute(message: Message, prefix: string, bot: Client) {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
-        const currentLang = langcode.guilds[message.guild.id]
+        const currentLang = langcode.guilds[message.guild!.id]
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.help;
 
@@ -26,7 +28,7 @@ module.exports = {
         .addField(lang.f5, lang.f51)
         .addField('\u200B', '\u200B')
         .addField(lang.ping, `${bot.ws.ping}ms`)
-        .addField(lang.uptime, `${ms(bot.uptime)}`)
+        .addField(lang.uptime, `${ms(bot.uptime!)}`)
         .setFooter(message.author.username)
         .setThumbnail(bot.user!.avatarURL()!)
         .setTimestamp(Date.now());
