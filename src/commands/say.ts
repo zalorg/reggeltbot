@@ -15,15 +15,16 @@ module.exports = {
                 audioConfig: {audioEncoding: 'MP3'},
               });
 
-            fs.writeFileSync(`./cache/audio/${message.author.id}.mp3`, response.audioContent, 'binary')
+            fs.writeFileSync(`./cache/${message.author.id}.mp3`, `${response.audioContent}`, 'binary')
 
             console.log('Audio content written to file: output.mp3');
 
             
             var voiceChannel = message.member.voice.channel;
             voiceChannel.join().then((connection: any) => {
+                console.log(connection)
                 message.member.voice.channel.join().then((VoiceConnection: { play: (arg0: string) => { (): any; new(): any; on: { (arg0: string, arg1: () => any): void; new(): any; }; }; disconnect: () => any; }) => {
-                    VoiceConnection.play(`./cache/audio/${message.author.id}.mp3`).on("finish", () => VoiceConnection.disconnect());
+                    VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => VoiceConnection.disconnect());
                 }).catch((e: any) => console.log(e))
 
              }).catch((err: any) => console.log(err));
