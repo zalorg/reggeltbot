@@ -171,7 +171,7 @@ bot.on("message", async message => {
 });
 
 async function updateUser(message: any) {
-    const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
+    const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild?.id);
     //const doc = await ref.get();
     const gme = message.guild.member(message.author.id);
     //console.log(gme.permissions.toArray());
