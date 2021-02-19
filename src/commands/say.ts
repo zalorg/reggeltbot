@@ -24,7 +24,9 @@ module.exports = {
             voiceChannel.join().then((connection: any) => {
                 console.log(connection)
                 message.member.voice.channel.join().then((VoiceConnection: { play: (arg0: string) => { (): any; new(): any; on: { (arg0: string, arg1: () => any): void; new(): any; }; }; disconnect: () => any; }) => {
-                    VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => VoiceConnection.disconnect());
+                    VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => {
+                        
+                    });
                 }).catch((e: any) => console.log(e))
 
              }).catch((err: any) => console.log(err));
