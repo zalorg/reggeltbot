@@ -9,9 +9,9 @@ module.exports = {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild!.id]
+        const guildsettings: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.ping;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${guildsettings.lang}.json`, 'utf8')).commands.ping;
 
         axios.default.defaults.headers.common['Authorization'] = `Bot ${(await botlogin())}`;
         await axios.default.post(`https://discord.com/api/v8/channels/${message.channel.id}/typing`).catch(err => {
@@ -202,4 +202,13 @@ async function botlogin() {
     } else {
         return doc.data()!.token;
     }
+}
+
+interface Guildconfig {
+    cd: number,
+    disabled: boolean,
+    lang: string,
+    premium: boolean,
+    reggeltlang: string,
+    testing: boolean,
 }
