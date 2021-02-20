@@ -9,9 +9,9 @@ module.exports = {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild!.id]
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.link;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.link;
 
         if(!args[0]){
             message.reply(`${lang.noMail}`);
@@ -37,9 +37,9 @@ async function accountLink(userRecord: { uid: any; }, message: Message ) {
 
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-    const currentLang = langcode.guilds[message.guild!.id]
+    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-    const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.link;
+    const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.link;
     
     const db = admin.firestore();
     let messageArray = message.content.split(" ");
@@ -121,4 +121,13 @@ async function getBotToken(PROD: string | undefined) {
             token: doc.data()!.token,
         };
     } 
+}
+
+interface Guildconfig {
+    cd: number,
+    disabled: boolean,
+    lang: string,
+    premium: boolean,
+    reggeltlang: string,
+    testing: boolean,
 }
