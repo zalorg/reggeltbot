@@ -10,11 +10,11 @@ module.exports = {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
-        const currentLang = langcode.guilds[message.guild!.id]
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.help;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.help;
 
-        const reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
+        const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
 
         console.log(reggeltconfig)
 
@@ -37,4 +37,22 @@ module.exports = {
 
         
     }
+}
+
+interface Regggeltconfig {
+    channel: string,
+    keyWord: string,
+    onCooldown: string,    
+    noPrems: string,
+    noSend: string,
+    notReggelt: string,
+}
+
+interface Guildconfig {
+    cd: number,
+    disabled: boolean,
+    lang: string,
+    premium: boolean,
+    reggeltlang: string,
+    testing: boolean,
 }
