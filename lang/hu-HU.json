@@ -68,6 +68,10 @@
             "add": "Add hozzá a saját tényed",
             "addF": "[Ide](https://facts.zal1000.com/) kattintva tudod hozzáadni a saját tényedet (Ha azt szeretnéd, hogy a Discordos profilképed és nevedet mutassa akkor kattints ide [here](https://dclink.zal1000.com/))",
             "noFact": "Tény nem található!"
+        },
+        "count": {
+            "f1": "Ennyiszer köszöntél be a %!CHANNEL%! csatornába",
+            "f2": "%!COUNT%! [Megnyitás a weboldalon](https://reggeltbot.com/count?i=%!ID%!)"
         }
     }
 }
