@@ -46,15 +46,15 @@
         "help": {
             "title": "Reggeltbot help",
             "f1": "%!PREFIX%!count",
-            "f11": "This commands shows you  (vagy [itt](https://reggeltbot.com/count?i=%!DCID%!) is megnézheted)",
+            "f11": "It tells you how many times you greeted the #reggelt channel (or [here] (https://reggeltbot.com/count?i=%!DCID%!) You can also view it)",
             "f2": "%!PREFIX%!invite",
             "f21": "Invite the bot",
             "f3": "Setting up the %!CHANNEL%! channel",
             "f31": "Name a chennel **%!CHANNEL%!** and you're done",
             "f4": "top.gg",
             "f41": "Heres the bots [top.gg](https://top.gg/bot/749037285621628950) page",
-            "f5": "Probléma jelentése",
-            "f51": "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
+            "f5": "Report a problem",
+            "f51": "If you encounter any problems while using the bot you can report [here] (https://github.com/zal1000/reggeltbot/issues)",
             "ping": "Bot ping",
             "uptime": "Uptime"
         },
