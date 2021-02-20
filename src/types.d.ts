@@ -83,6 +83,8 @@ export interface Guildconfig {
     premium: boolean,
     reggeltlang: string,
     testing: boolean,
+    saylang: string,
+    verified: boolean,
 }
 
 export interface Regggeltconfig {
