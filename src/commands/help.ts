@@ -3,7 +3,7 @@ import ms = require('ms');
 import * as Discord from 'discord.js';
 import fs = require('fs');
 import { Message, Client } from 'discord.js'
-import { Guildconfig, Regggeltconfig } from '../types'
+import { Guildconfig, Regggeltconfig, Langtypes } from '../types'
 
 module.exports = {
     name: 'help',
@@ -11,9 +11,11 @@ module.exports = {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
-        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.help;
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+
+        const lang = langfull.commands.help;
 
         const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
 
