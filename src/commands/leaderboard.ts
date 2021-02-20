@@ -8,9 +8,9 @@ module.exports = {
     async execute(message: Message, args: Array<string>) {
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild!.id]
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.leaderboard;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.leaderboard;
 
         if(!args[0]) {
             await axios.default.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=10`).then(res => {
@@ -19,6 +19,7 @@ module.exports = {
                 .setColor('#FFCA5C')
                 .setURL(`https://reggeltbot.com/leaderboard?m=10`)
                 .setThumbnail(res.data[0].pp)
+                
                 res.data.forEach((lb: any) => {
                     embed.addField(lb.name, lb.reggeltcount)
                 });
@@ -72,4 +73,13 @@ async function apiurl() {
             ip: "http://localhost:8080",
         };
     }
+}
+
+interface Guildconfig {
+    cd: number,
+    disabled: boolean,
+    lang: string,
+    premium: boolean,
+    reggeltlang: string,
+    testing: boolean,
 }
