@@ -20,7 +20,7 @@ module.exports = {
             return;
         }
 
-        if(message.content.toLowerCase().includes(lang.events.reggelt.keyWord)){
+        if(message.content.toLowerCase().includes(lang.events.reggelt.keyWord) || message.content.toLowerCase().includes("reggelt")){
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
 
