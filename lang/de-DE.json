@@ -59,15 +59,19 @@
             "uptime": "Laufzeit"
         },
         "fact": {
-            "errorGF": "Error geting fact",
-            "noId": "Please add fact id!",
-            "title1": "Random fact",
-            "title2": "Random fact by.: %!AUTHOR%!",
-            "fact": "Fact",
-            "factid":"Fact id",
+            "errorGF": "Fehler beim Abrufen der Tatsache",
+            "noId": "Bitte Fakten-ID hinzufügen!",
+            "title1": "Zufälliger Fakt",
+            "title2": "Zufällige Tatsache von.: %!AUTHOR%!",
+            "fact": "Tatsache",
+            "factid":"Fakten-ID",
             "add": "Add your fact",
-            "addF": "You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))",
-            "noFact": "Cannot find that fact!"
+            "addF": "Sie können Ihre Fakten [hier] hinzufügen (https://facts.zal1000.com/) (um Informationen zu Zwietracht anzuzeigen, verknüpfen Sie Ihr Zwietrachtkonto [hier] (https://dclink.zal1000.com/)",
+            "noFact": "Kann diese Tatsache nicht finden!"
+        },
+        "count": {
+            "f1": "Du trauriger %!KEYWORD%! %!COUNT%! mal",
+            "f2": "[Klicken Sie hier, um im Web zu öffnen](https://reggeltbot.com/count?i=%!ID%!)"
         }
     }
 }
