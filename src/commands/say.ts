@@ -1,6 +1,8 @@
 import * as textToSpeech from '@google-cloud/text-to-speech'
 import fs = require('fs');
 import { Message } from 'discord.js'
+//import { Langtypes } from '../types'
+
 
 module.exports = {
     name: 'say',
@@ -11,6 +13,7 @@ module.exports = {
         const text = args.join(' ');
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+
         const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
         message.reply(`${guildconfig.lang}`)

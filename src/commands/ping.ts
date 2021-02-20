@@ -3,6 +3,8 @@ import * as Discord from 'discord.js';
 import * as admin from 'firebase-admin';
 import fs = require('fs')
 import { Client, Message } from 'discord.js';
+import { Langtypes } from '../types'
+
 module.exports = {
     name: 'ping',
     async execute(bot: Client, args: any, message: Message) {
@@ -11,7 +13,9 @@ module.exports = {
 
         const guildsettings: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${guildsettings.lang}.json`, 'utf8')).commands.ping;
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildsettings.lang}.json`, 'utf8'));
+
+        const lang = langfull.commands.ping;
 
         axios.default.defaults.headers.common['Authorization'] = `Bot ${(await botlogin())}`;
         await axios.default.post(`https://discord.com/api/v8/channels/${message.channel.id}/typing`).catch(err => {

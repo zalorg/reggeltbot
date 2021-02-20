@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import { Message } from 'discord.js'
+import { Langtypes, Guildconfig } from '../types'
 module.exports = {
     name: 'reggelt',
     async execute(message: Message) {
@@ -8,9 +9,9 @@ module.exports = {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
 
-        const currentLang = langcode.guilds.find((element: any) => element.id === message.guild!.id)
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8'));
+        const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
 
         const data = JSON.parse(fs.readFileSync('./cache/global-bans.json', 'utf8'));
         if(data.bans.find((element: any) => element === message.author.id)) {
@@ -19,7 +20,7 @@ module.exports = {
             return;
         }
 
-        if(message.content.toLowerCase().includes(lang.keyWord)){
+        if(message.content.toLowerCase().includes(lang.events.reggelt.keyWord)){
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
 
@@ -39,7 +40,7 @@ module.exports = {
                 console.log(cddoc.data()!.reggeltcount);
                 if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
                     message.delete();
-                    message.author.send(lang.onCooldown);
+                    message.author.send(lang.events.reggelt.onCooldown);
                 } else {
                     if(!process.env.PROD) {
                         await reggeltupdateall();
@@ -90,8 +91,8 @@ module.exports = {
             } else {
                 message.delete();
                 console.log(lang)
-                let nReggelt: string = lang.notReggelt;
-                let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild!.name}`).replace('**%!KEYWORD%**', `**${lang.keyWord}**`)
+                let nReggelt: string = lang.events.reggelt.notReggelt;
+                let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild!.name}`).replace('**%!KEYWORD%**', `**${lang.events.reggelt.keyWord}**`)
                 console.log(replyMSG)
                 message.author.send(replyMSG)
                     .catch(function(error: string) {
@@ -139,3 +140,5 @@ async function reggeltupdatefs(message: Message, decreased = false) {
         });
     }
 }
+
+

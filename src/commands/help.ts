@@ -3,6 +3,7 @@ import ms = require('ms');
 import * as Discord from 'discord.js';
 import fs = require('fs');
 import { Message, Client } from 'discord.js'
+import { Guildconfig, Regggeltconfig } from '../types'
 
 module.exports = {
     name: 'help',
@@ -39,20 +40,3 @@ module.exports = {
     }
 }
 
-interface Regggeltconfig {
-    channel: string,
-    keyWord: string,
-    onCooldown: string,    
-    noPrems: string,
-    noSend: string,
-    notReggelt: string,
-}
-
-interface Guildconfig {
-    cd: number,
-    disabled: boolean,
-    lang: string,
-    premium: boolean,
-    reggeltlang: string,
-    testing: boolean,
-}

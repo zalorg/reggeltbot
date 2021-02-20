@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import { Client, Message, PartialMessage } from 'discord.js'
+import { Langtypes } from '../types'
 
 module.exports =  {
     name: 'msgUpdate',
@@ -10,18 +11,20 @@ module.exports =  {
         bot.on("messageUpdate", async (_, newMsg) => {
             if(newMsg.author!.bot) return;
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+            const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[newMsg.guild!.id]
+            const currentLang = langcode.guilds[newMsg.guild!.id]
             
-            const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).events.reggelt;
+            const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).events.reggelt;
+
+            const lang = langfull.events.reggelt;
         
-            if(newMsg.channel.type === "text" && newMsg.channel.name === lang.events.reggelt.channel){
-                if(!newMsg.content!.toLowerCase().includes(lang.events.reggelt.keyWord)) {
+            if(newMsg.channel.type === "text" && newMsg.channel.name === lang.channel){
+                if(!newMsg.content!.toLowerCase().includes(lang.keyWord)) {
                     await reggeltUpdateEdit(newMsg);
                     if(newMsg.deletable){
                         newMsg.delete();
-                        newMsg.author!.send(lang.editSend.replace('%!GUILD%!', `${newMsg.guild!.name}`));
+                        newMsg.author!.send(langfull.events.reggeltUpdate.editSend.replace('%!GUILD%!', `${newMsg.guild!.name}`));
                     }
                 }
             }

@@ -2,6 +2,8 @@ import * as admin from 'firebase-admin';
 import https = require('https');
 import fs = require('fs');
 import { Message } from 'discord.js'
+import { Langtypes } from '../types'
+
 module.exports = {
     name: 'link',
     async execute(message: Message, args: Array<string>) {
@@ -11,7 +13,9 @@ module.exports = {
 
         const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.link;
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+
+        const lang = langfull.commands.link;
 
         if(!args[0]){
             message.reply(`${lang.noMail}`);

@@ -2,6 +2,7 @@ import * as axios from 'axios';
 import * as Discord from 'discord.js';
 import fs = require('fs');
 import { Message } from 'discord.js'
+import { Langtypes, Guildconfig } from '../types'
 
 module.exports = {
     name: 'leaderboard',
@@ -10,7 +11,9 @@ module.exports = {
 
         const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.leaderboard;
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+
+        const lang = langfull.commands.leaderboard
 
         if(!args[0]) {
             await axios.default.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=10`).then(res => {
@@ -73,13 +76,4 @@ async function apiurl() {
             ip: "http://localhost:8080",
         };
     }
-}
-
-interface Guildconfig {
-    cd: number,
-    disabled: boolean,
-    lang: string,
-    premium: boolean,
-    reggeltlang: string,
-    testing: boolean,
 }
