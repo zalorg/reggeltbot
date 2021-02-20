@@ -9,6 +9,10 @@ module.exports = {
     name: 'help',
     execute(message: Message, prefix: string, bot: Client) {
 
+        //console.log('asd')
+
+        //message.channel.startTyping()
+
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
         const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
@@ -19,10 +23,25 @@ module.exports = {
 
         const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
 
-        console.log(reggeltconfig)
+        const rawbadges: Array<string> = [];
+
+        if(guildconfig.verified) {
+            rawbadges.push("<:greenTick:809931766642245663>")
+        }
+
+        if(guildconfig.premium) {
+            rawbadges.push("<:premium:812821285197447178>")
+        }
+
+        if(guildconfig.testing) {
+            rawbadges.push("<:test:812821214019190795>")
+        }
+
+        const badges = rawbadges.join(' ');
 
         const embed = new Discord.MessageEmbed()
         .setTitle(lang.title)
+        .setDescription(`${badges}`)
         .setColor("#FFCB2B")
         .addField(lang.f1.replace('%!PREFIX%!', prefix), lang.f11.replace('%!DCID%!', message.author.id).replace('%!CHANNEL%!', reggeltconfig.channel))
         .addField(lang.f2.replace('%!PREFIX%!', prefix), lang.f21)
