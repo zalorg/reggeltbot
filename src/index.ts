@@ -6,6 +6,7 @@ import fs = require('fs');
 const bot = new Discord.Client();
 import * as admin from 'firebase-admin';
 import express = require('express');
+import { Guildconfig, Regggeltconfig } from './types'
 
 const app = express();
 
@@ -38,6 +39,16 @@ if(!process.env.PROD) {
 const events: any = new Discord.Collection();
 const commands: any = new Discord.Collection();
 const wsevents: any = new Discord.Collection();
+const api: any = new Discord.Collection();
+
+const apiFiles = fs.readdirSync('./dist/api/').filter(file => file.endsWith('.js'));
+for (const file of apiFiles) {
+    const m = file.split(".", 1)
+    const command = require(`./api/${m[0]}`);
+    console.log(command)
+    api.set(command.name, command)
+    //api.get(command.name).execute(bot);
+}
 
 const commandFiles = fs.readdirSync('./dist/commands/').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
@@ -71,11 +82,11 @@ events.get('msgUpdate').execute(bot);
 
 
 
-app.get('/', (req: any, res: any) => {
+app.get('/', (req, res) => {
     res.sendStatus(200);
 })
 
-app.get('/ping', async (req: any, res: any) => {
+app.get('/ping', async (req, res) => {
     res.status(200).send({
         ping: bot.ws.ping,
     });
@@ -87,13 +98,20 @@ bot.on('error', async (err: any) => {
 })
 
 
+
+
+
 bot.on("message", async message => {
     if(message.author.bot) return;
     let prefix = (await getPrefix()).prefix; 
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
-    
+
+    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
+    //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+    const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
 
     if(!message.author.bot) {
         updateUser(message);
@@ -117,16 +135,19 @@ bot.on("message", async message => {
         })
     }
 
-    events.get('automod').execute(message);
+    //events.get('automod').execute(message);
 
 
     // reggelt
-    if(message.channel.type === "text" && message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
-        await events.get('reggelt').execute(message);
+    if(message.channel.type === "text") {
+        if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel || message.channel.name === reggeltconfig.channel) {
+            await events.get('reggelt').execute(message);
+        }
     }
+
     
     // help
-    else if(message.content === `${prefix}help`){
+    if(message.content === `${prefix}help`){
         commands.get('help').execute(message, prefix, bot)
     }
 
