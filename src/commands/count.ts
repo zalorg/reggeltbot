@@ -12,7 +12,7 @@ module.exports = {
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.count;
 
-        const reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
+        const reggeltconfig: Reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
 
         let db = admin.firestore();
         let dcid = message.author.id;
@@ -25,7 +25,7 @@ module.exports = {
             let upmbed = new MessageEmbed()
                 .setTitle(`${message.author.username}`)
                 .setColor("#FFCB5C")
-                .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
+                .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace('%!CHANNEL%!', `${reggeltconfig.channel}`), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
                 .setFooter(message.author.username)
                 .setThumbnail(message.author.avatarURL()!)
                 .setTimestamp(message.createdAt);
@@ -34,4 +34,14 @@ module.exports = {
             message.channel.send(upmbed);
         }
     }
+}
+
+interface Reggeltconfig {
+    channel: string,
+    keyWord: string,
+    onCooldown: string,    
+    noPrems: string,
+    noSend: string,
+    notReggelt: string,
+
 }
