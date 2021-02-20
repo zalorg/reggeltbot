@@ -11,13 +11,13 @@ module.exports = {
         const text = args.join(' ');
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-        const currentLang = langcode.guilds[message.guild!.id]
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        message.reply(`${currentLang.lang}`)
+        message.reply(`${guildconfig.lang}`)
 
             const [response] = await client.synthesizeSpeech({
                 input: {text: text},
-                voice: {languageCode: `${currentLang.lang}`, ssmlGender: 'NEUTRAL'},
+                voice: {languageCode: `${guildconfig.lang}`, ssmlGender: 'NEUTRAL'},
                 audioConfig: {audioEncoding: 'MP3'},
               });
 
@@ -38,3 +38,13 @@ module.exports = {
              }).catch((err: any) => console.log(err));
     }
 }
+
+interface Guildconfig {
+    cd: number,
+    disabled: boolean,
+    lang: string,
+    premium: boolean,
+    reggeltlang: string,
+    testing: boolean,
+}
+
