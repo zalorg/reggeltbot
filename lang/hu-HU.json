@@ -11,7 +11,7 @@
         "reggelt": {
             "channel": "reggelt",
             "keyWord": "reggelt",
-            "onCooldown": "Túl gyorsan próbálsz beköszönni!",
+            "onCooldown": "Túl gyorsan próbálsz beköszönni! Kérlek várj eddig: %!CD%!",
             "noPrems": "Hiányos jogosultságok!",
             "noSend": "Hiányos jogosultságok! A rendes működésemhez kell a **Send Messages** jogosultság",
             "notReggelt": "Ide csak **%!KEYWORD%** lehet írni! (%!GUILD%!)"
