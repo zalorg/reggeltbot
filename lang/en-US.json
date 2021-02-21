@@ -11,7 +11,7 @@
         "reggelt": {
             "channel": "morning",
             "keyWord": "morning",
-            "onCooldown": "You are on cooldown!",
+            "onCooldown": "You are on cooldown! Please wait until %!CD%!.",
             "noPrems": "Missing permission!",
             "noSend": "Missing permission! I need **Send Messages** to function correctly",
             "notReggelt": "You can only type **%!KEYWORD%** here! (%!GUILD%!)"

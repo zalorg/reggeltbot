@@ -40,7 +40,8 @@ module.exports = {
                 console.log(cddoc.data()!.reggeltcount);
                 if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
                     message.delete();
-                    message.author.send(lang.events.reggelt.onCooldown);
+                    let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString()); 
+                    message.author.send(cdmsg);
                 } else {
                     if(!process.env.PROD) {
                         await reggeltupdateall();
