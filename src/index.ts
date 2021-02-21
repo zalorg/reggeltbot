@@ -110,6 +110,19 @@ bot.on("message", async message => {
 
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
+
+    if(message.channel.type != "dm" && !guildconfig.lang) {
+        admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id).set({
+            lang: "en-US",
+            reggeltlang: "en-US",
+            saylang: "en-US",
+            cd: 6,
+            premium: false,
+            disabled: false,
+            testing:false,
+            verified: false,
+        })
+    }
     //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
     const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
 
