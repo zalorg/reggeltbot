@@ -11,7 +11,7 @@
         "reggelt": {
             "channel": "morgen",
             "keyWord": "morgen",
-            "onCooldown": "Du wille zu schnell grüßen!",
+            "onCooldown": "Du wille zu schnell grüßen! Bitte warten bis %!CD%!.",
             "noPrems": "Vermisst Berechtigungen!",
             "noSend": "Vermisst Berechtigungen Der Bot müssen der der  **Send Messages** Berechtigung",
             "notReggelt": "In dieser Kanal kann du nur **%!KEYWORD%** schicken. (%!GUILD%!)"
