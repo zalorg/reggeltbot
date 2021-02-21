@@ -1,7 +1,7 @@
 import * as textToSpeech from '@google-cloud/text-to-speech'
 import fs = require('fs');
 import { Message } from 'discord.js'
-//import { Langtypes } from '../types'
+import { Guildconfig } from '../types'
 
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
 
             fs.writeFileSync(`./cache/${message.author.id}.mp3`, response!.audioContent!, 'binary')
 
-            console.log('Audio content written to file: output.mp3');
+            //console.log('Audio content written to file: output.mp3');
 
             
             var voiceChannel = message.member!.voice.channel;
@@ -36,18 +36,12 @@ module.exports = {
                         VoiceConnection.disconnect();
                         message.reply('Disconnected')
                     });
-                }).catch((e: any) => console.log(e))
+                }).catch((e: any) => {
+                    throw e;
+                })
 
-             }).catch((err: any) => console.log(err));
+             }).catch((err: any) => {
+                 throw err;
+             });
     }
 }
-
-interface Guildconfig {
-    cd: number,
-    disabled: boolean,
-    lang: string,
-    premium: boolean,
-    reggeltlang: string,
-    testing: boolean,
-}
-
