@@ -33,6 +33,8 @@ module.exports = {
                         if(args[0] === "full"){
                             ref.update({
                                 lang: args[1],
+                                reggeltlang: args[1],
+                                saylang: args[1],
                             }).then(r => {
                                 message.channel.send(`Guild language changed to: ${args[1]}!`)
                             }).catch(e => {
