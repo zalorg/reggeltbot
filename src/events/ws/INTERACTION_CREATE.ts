@@ -28,7 +28,6 @@ module.exports = {
                         .setFooter(interaction.member.user.username)
                         .setThumbnail(doc.data()!.pp)
                         .setTimestamp(Date.now());
-                    console.log(upmbed);
             
                     interactionResponse(interaction, {
                         type: 4,
@@ -52,6 +51,7 @@ module.exports = {
                     .setFooter(interaction.member.user.username)
                     .setThumbnail(bot.user!.avatarURL()!)
                     .setTimestamp(Date.now());
+
                 interactionResponse(interaction, {
                     type: 4,
                     data: {
@@ -65,8 +65,14 @@ module.exports = {
 
 
 async function interactionResponse(interaction: { id: any; token: any; }, data: { type: number; data: { content: string; } | { embeds: any[]; } | { embeds: any[]; }; }) {
-    await axios.default.post(`https://discord.com/api/v8/interactions/${interaction.id}/${interaction.token}/callback`, {
+
+    axios.default.post(`https://discord.com/api/v8/interactions/${interaction.id}/${interaction.token}/callback`, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
         data: data
+    }).catch(e => {
+        console.log(e)
     })
 }
 
