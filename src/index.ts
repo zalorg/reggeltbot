@@ -72,13 +72,12 @@ for (const file of wseventFiles) {
     const event = require(`./events/ws/${m[0]}`);
     console.log(event)
     wsevents.set(event.name, event)
-    wsevents.get(event.name).execute(bot);
-
 }
 events.get('updatecache').execute();
 events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
 events.get('msgUpdate').execute(bot);
+wsevents.get("INTERACTION_CREATE").execute(bot);
 
 
 
@@ -112,16 +111,11 @@ bot.on("message", async message => {
     const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
 
     if(message.channel.type != "dm" && !guildconfig.lang) {
-        admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id).set({
-            lang: "en-US",
-            reggeltlang: "en-US",
-            saylang: "en-US",
-            cd: 6,
-            premium: false,
-            disabled: false,
-            testing:false,
-            verified: false,
-        })
+        const ref = admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc('default');
+        const doc = await ref.get();
+
+
+        admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id).set(doc.data()!);
     }
     //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
     const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
@@ -157,7 +151,6 @@ bot.on("message", async message => {
             await events.get('reggelt').execute(message);
         }
     }
-
     
     // help
     if(message.content === `${prefix}help`){
@@ -165,7 +158,7 @@ bot.on("message", async message => {
     }
 
     //count 
-    else if(message.content === `${prefix}count`){
+    else if(cmd === `${prefix}count`){
 
         await commands.get('count').execute(message);
     }
@@ -277,7 +270,6 @@ async function restartRequest(message: { author: { id: any; }; reply: (arg0: str
         }).then(() => {
             process.exit();
         });
-        
         
     } else {
         message.reply('Nope <3',);
