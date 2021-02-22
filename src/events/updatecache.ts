@@ -1,5 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
+const db = admin.firestore();
+
 module.exports = {
     name: 'updatecache',
     async execute() {
@@ -7,8 +9,6 @@ module.exports = {
             langs: ["hu-HU", "en-US", "de-DE"],
             guilds: {},
         }
-
-        const db = admin.firestore();
 
         const ref = db.collection('bots').doc('reggeltbot').collection('config');
     
