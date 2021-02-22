@@ -1,8 +1,7 @@
 //import * as admin from 'firebase-admin';
 import ms = require('ms');
-import * as Discord from 'discord.js';
 import fs = require('fs');
-import { Message, Client } from 'discord.js'
+import { Message, Client, MessageEmbed } from 'discord.js'
 import { Guildconfig, Regggeltconfig, Langtypes } from '../types'
 
 module.exports = {
@@ -39,7 +38,7 @@ module.exports = {
 
         const badges = rawbadges.join(' ');
 
-        const embed = new Discord.MessageEmbed()
+        const embed = new MessageEmbed()
         .setTitle(lang.title)
         .setDescription(`${badges}`)
         .setColor("#FFCB2B")

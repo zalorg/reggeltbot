@@ -3,7 +3,7 @@ import * as Discord from 'discord.js';
 import * as admin from 'firebase-admin';
 import fs = require('fs')
 import { Client, Message } from 'discord.js';
-import { Langtypes } from '../types'
+import { Langtypes, Guildconfig } from '../types'
 
 module.exports = {
     name: 'ping',
@@ -206,13 +206,4 @@ async function botlogin() {
     } else {
         return doc.data()!.token;
     }
-}
-
-interface Guildconfig {
-    cd: number,
-    disabled: boolean,
-    lang: string,
-    premium: boolean,
-    reggeltlang: string,
-    testing: boolean,
 }

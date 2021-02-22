@@ -70,7 +70,7 @@
             "noFact": "Tény nem található!"
         },
         "count": {
-            "f1": "Ennyiszer köszöntél be a %!CHANNEL%! csatornába",
+            "f1": "%!USERNAME%! ennyiszer köszönt be a %!CHANNEL%! csatornába",
             "f2": "%!COUNT%! [Megnyitás a weboldalon](https://reggeltbot.com/count?i=%!ID%!)"
         }
     }

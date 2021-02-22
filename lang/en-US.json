@@ -54,7 +54,7 @@
             "f4": "top.gg",
             "f41": "Heres the bots [top.gg](https://top.gg/bot/749037285621628950) page",
             "f5": "Report a problem",
-            "f51": "If you encounter any problems while using the bot you can report [here] (https://github.com/zal1000/reggeltbot/issues)",
+            "f51": "If you encounter any problems while using the bot you can report [here](https://github.com/zal1000/reggeltbot/issues)",
             "ping": "Bot ping",
             "uptime": "Uptime"
         },
@@ -70,7 +70,7 @@
             "noFact": "Cannot find that fact!"
         },
         "count": {
-            "f1": "You sad %!KEYWORD%! %!COUNT%! times",
+            "f1": "%!USERNAME%! sad %!KEYWORD%! %!COUNT%! times",
             "f2": "[Click here to open on web](https://reggeltbot.com/count?i=%!ID%!)"
         }
     }

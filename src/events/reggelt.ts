@@ -7,9 +7,7 @@ module.exports = {
     async execute(message: Message) {
         const db = admin.firestore();
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/langs.json', 'utf8'));
-
-        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+        const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
 
         const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
 
@@ -27,17 +25,22 @@ module.exports = {
             const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild!.id);
             const cddoc = await cdref.get();
 
-            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
-            const configDoc = await configref.get();
-            const cdval = configDoc.data()!.cd * 3600;
-            const cd = Math.floor(Date.now() / 1000) + cdval;
+            const defconfigref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
+            const defconfigDoc = await defconfigref.get();
 
-            console.log(`Cooldown ends: ${cd}`);
-            console.log(Math.floor(Date.now() / 1000));
+            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id);
+            const configDoc = await configref.get();
+
+            const rawcd = configDoc.exists ? configDoc.data()!.cd : defconfigDoc.data()!.cd;
+
+            const cdval = rawcd * 3600;
+
+            const cd = Math.floor(Date.now() / 1000) + cdval;
 
             if(cddoc.exists) {
                 console.log('');
                 console.log(cddoc.data()!.reggeltcount);
+
                 if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
                     message.delete();
                     let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString()); 
@@ -50,10 +53,7 @@ module.exports = {
                     cdref.update({
                         reggeltcount: cd,
                     });
-                    console.log(2);
                 }
-
-                console.log(1);
             } else {
                 cdref.set({
                     reggeltcount: cd,
@@ -62,10 +62,7 @@ module.exports = {
                     await reggeltupdateall();
                     await reggeltupdatefs(message);
                 }
-                console.log('doc created');
             }
-
-
 
             if(doc.exists) {
                 ref.update({
@@ -94,13 +91,11 @@ module.exports = {
                 console.log(lang)
                 let nReggelt: string = lang.events.reggelt.notReggelt;
                 let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild!.name}`).replace('**%!KEYWORD%**', `**${lang.events.reggelt.keyWord}**`)
-                console.log(replyMSG)
                 message.author.send(replyMSG)
                     .catch(function(error: string) {
                         message.reply("Error: " + error);
                         console.log("Error:", error);
                     });
-    
             }
             await reggeltupdatefs(message, true);
         }
@@ -141,5 +136,3 @@ async function reggeltupdatefs(message: Message, decreased = false) {
         });
     }
 }
-
-
