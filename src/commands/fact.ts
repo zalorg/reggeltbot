@@ -4,6 +4,7 @@ const {Translate} = require('@google-cloud/translate').v2;
 import fs = require('fs');
 import * as textToSpeech from '@google-cloud/text-to-speech'
 import { Message } from 'discord.js';
+import { Guildconfig, Langtypes } from '../types'
 
 const translate = new Translate();
 
@@ -13,9 +14,11 @@ module.exports = {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = langcode.guilds[message.guild!.id]
+        const currentLang: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
+        const fulllang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8'));
+
+        const lang = fulllang.commands.fact;
 
         if(!args[0] || args[0] === "say") {
             const db = admin.firestore();
@@ -137,9 +140,11 @@ async function getRandomFactWithId(id: any, message: Message, args: Array<string
     if(!doc.exists) {
         const lngcode: any = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang = lngcode.guilds[message.guild!.id]
+        const currentLang: Guildconfig = lngcode.guilds[message.guild!.id]
     
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8'));
+
+        const lang = langfull.commands.fact;
 
         message.reply(lang.noFact);
     } else {
@@ -171,28 +176,29 @@ async function tts(message: Message, args: Array<string>,) {
     const text = args.join(' ');
 
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-    const currentLang = langcode.guilds[message.guild!.id]
+    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
     //message.reply(`${currentLang.lang}`)
 
         const [response] = await client.synthesizeSpeech({
             input: {text: text},
-            voice: {languageCode: `${currentLang.lang}`, ssmlGender: 'NEUTRAL'},
+            voice: {languageCode: `${guildconfig.lang}`, ssmlGender: 'NEUTRAL'},
             audioConfig: {audioEncoding: 'MP3'},
           });
 
         fs.writeFileSync(`./cache/${message.author.id}.mp3`, response!.audioContent!, 'binary')
 
-        console.log('Audio content written to file: output.mp3');
+        //console.log('Audio content written to file: output.mp3');
 
         message.guild?.me?.voice.setMute(false)
 
-        var voiceChannel = message.member!.voice.channel;
+        const voiceChannel = message.member!.voice.channel;
+
         voiceChannel!.join().then(connection => {
             message.member!.voice.channel!.join().then(VoiceConnection => {
                 VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => {
                     VoiceConnection.disconnect();
-                    message.reply('Disconnected')
+                    //message.reply('Disconnected')
                 });
             }).catch(e => console.log(e))
 
