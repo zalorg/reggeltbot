@@ -70,7 +70,7 @@
             "noFact": "Cannot find that fact!"
         },
         "count": {
-            "f1": "You sad %!KEYWORD%! %!COUNT%! times",
+            "f1": "%!USERNAME%! sad %!KEYWORD%! %!COUNT%! times",
             "f2": "[Click here to open on web](https://reggeltbot.com/count?i=%!ID%!)"
         }
     }
