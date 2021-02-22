@@ -38,7 +38,6 @@ if(!process.env.PROD) {
 
 const events: any = new Discord.Collection();
 const commands: any = new Discord.Collection();
-const wsevents: any = new Discord.Collection();
 const api: any = new Discord.Collection();
 
 const apiFiles = fs.readdirSync('./dist/api/').filter(file => file.endsWith('.js'));
@@ -66,18 +65,10 @@ for (const file of eventFiles) {
     events.set(event.name, event)
 }
 
-const wseventFiles = fs.readdirSync('./dist/events/ws/').filter(file => file.endsWith('.js'));
-for (const file of wseventFiles) {
-    const m = file.split(".", 1)
-    const event = require(`./events/ws/${m[0]}`);
-    console.log(event)
-    wsevents.set(event.name, event)
-}
 events.get('updatecache').execute();
 events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
 events.get('msgUpdate').execute(bot);
-wsevents.get("INTERACTION_CREATE").execute(bot);
 
 
 
