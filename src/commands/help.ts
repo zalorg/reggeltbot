@@ -55,7 +55,6 @@ module.exports = {
         .setTimestamp(Date.now());
 
         message.channel.send(embed)
-
         
     }
 }
