@@ -46,7 +46,7 @@
         "help": {
             "title": "Reggeltbot információk",
             "f1": "%!PREFIX%!count",
-            "f11": "Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=%!DCID%!) is megnézheted)",
+            "f11": "Megmondja, hogy hányszor köszöntél be a %!CHANNEL%! csatornába (vagy [itt](https://reggeltbot.com/count?i=%!DCID%!) is megnézheted)",
             "f2": "%!PREFIX%!invite",
             "f21": "Bot meghívása",
             "f3": "%!CHANNEL%! csatorna beállítása",
