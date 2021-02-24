@@ -87,9 +87,11 @@ bot.on('error', async (err: any) => {
     console.log(err);
 })
 
+bot.on('guildCreate', async (guild) => {
+    const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
 
-
-
+    admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(guild.id).set(defdata);
+})
 
 bot.on("message", async message => {
     if(message.author.bot) return;
@@ -101,12 +103,10 @@ bot.on("message", async message => {
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
 
-    if(message.channel.type != "dm" && !guildconfig.lang) {
-        const ref = admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc('default');
-        const doc = await ref.get();
+    if(message.channel.type === "text" && !guildconfig) {
+        const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
 
-
-        admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id).set(doc.data()!);
+        await admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild?.id!).set(defdata);
     }
     //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
     const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
@@ -119,17 +119,13 @@ bot.on("message", async message => {
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`,
                 username: message.author.username,
                 tag: message.author.tag,
-            }).catch(err => {
-                console.error(err.code);
-            })
+            }).catch(err => console.error(err.code))
         }).catch(() => {
             ref.update({
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`,
                 username: message.author.username,
                 tag: message.author.tag,
-            }).catch(err => {
-                console.error(err.code);
-            })
+            }).catch(err => console.error(err.code))
         })
     }
 
@@ -185,6 +181,23 @@ bot.on("message", async message => {
 
         commands.get('say').execute(message, args, bot);
 
+    } else if(cmd === `${prefix}updateall`) {
+        message.guild?.members.cache.forEach(async member => {
+            const ref = admin.firestore().doc(`/dcusers/${member.id}/guilds/${message.guild?.id}`);
+            const doc = await ref.get();
+
+            if(member.user.bot){ 
+                console.log('bot ignored')
+            } else if(doc.exists) {
+                ref.update({
+                    joinedTimestamp: member.joinedTimestamp,
+                }).catch(e => console.log(e));
+            } else {
+                ref.set({
+                    joinedTimestamp: member.joinedTimestamp,
+                }).catch(e => console.log(e));
+            }
+        });
     }
 });
 
