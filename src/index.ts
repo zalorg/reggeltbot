@@ -192,6 +192,7 @@ bot.on("message", async message => {
             } else if(doc.exists) {
                 ref.update({
                     joinedTimestamp: member.joinedTimestamp,
+                    joinedAt: member.joinedAt,
                     name: message.guild!.name,
                     owner: message.guild!.ownerID,
                     icon: message.guild!.iconURL(),
@@ -201,11 +202,15 @@ bot.on("message", async message => {
                         MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
                         MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
                     },
-                    allpermissions: gme.permissions.toArray()
+                    allpermissions: gme.permissions.toArray(),
+                    color: member.displayColor,
+                    colorHEX: member.displayHexColor,
+                    nick: member.nickname,
                 }).then(d => console.log(`${member.user.username} updated`)).catch(e => console.log(e));
             } else {
                 ref.set({
                     joinedTimestamp: member.joinedTimestamp,
+                    joinedAt: member.joinedAt,
                     name: message.guild!.name,
                     owner: message.guild!.ownerID,
                     icon: message.guild!.iconURL(),
@@ -215,7 +220,10 @@ bot.on("message", async message => {
                         MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
                         MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
                     },
-                    allpermissions: gme.permissions.toArray()
+                    allpermissions: gme.permissions.toArray(),
+                    color: member.displayColor,
+                    colorHEX: member.displayHexColor,
+                    nick: member.nickname,
                 }).then(d => console.log(`${member.user.username} added`)).catch(e => console.log(e));
             }
         })
