@@ -7,7 +7,6 @@ module.exports =  {
     name: 'msgUpdate',
     execute(bot: Client) {
 
-
         bot.on("messageUpdate", async (_, newMsg) => {
             if(newMsg.author!.bot) return;
 
