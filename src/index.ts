@@ -192,13 +192,13 @@ bot.on("message", async message => {
             } else if(doc.exists) {
                 ref.update({
                     joinedTimestamp: member.joinedTimestamp,
-                }).catch(e => console.log(e));
+                }).then(d => console.log(`${member.user.username} updated`)).catch(e => console.log(e));
             } else {
                 ref.set({
                     joinedTimestamp: member.joinedTimestamp,
-                }).catch(e => console.log(e));
+                }).then(d => console.log(`${member.user.username} added`)).catch(e => console.log(e));
             }
-        });
+        })
     }
 });
 
