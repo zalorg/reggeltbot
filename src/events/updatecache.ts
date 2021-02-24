@@ -5,6 +5,12 @@ const db = admin.firestore();
 module.exports = {
     name: 'updatecache',
     async execute() {
+
+        const refDef = admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc('default');
+        const docDef = await refDef.get();
+
+        fs.writeFileSync('./cache/default-guild.json', JSON.stringify(docDef.data()), 'utf8')
+
         var my: Interface = {
             langs: ["hu-HU", "en-US", "de-DE"],
             guilds: {},
