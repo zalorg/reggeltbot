@@ -186,16 +186,36 @@ bot.on("message", async message => {
         message.guild?.members.cache.forEach(async member => {
             const ref = admin.firestore().doc(`/dcusers/${member.id}/guilds/${message.guild?.id}`);
             const doc = await ref.get();
-
+            const gme = member
             if(member.user.bot){ 
                 console.log('bot ignored')
             } else if(doc.exists) {
                 ref.update({
                     joinedTimestamp: member.joinedTimestamp,
+                    name: message.guild!.name,
+                    owner: message.guild!.ownerID,
+                    icon: message.guild!.iconURL(),
+                    permissions: {
+                        ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
+                        MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
+                        MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
+                        MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
+                    },
+                    allpermissions: gme.permissions.toArray()
                 }).then(d => console.log(`${member.user.username} updated`)).catch(e => console.log(e));
             } else {
                 ref.set({
                     joinedTimestamp: member.joinedTimestamp,
+                    name: message.guild!.name,
+                    owner: message.guild!.ownerID,
+                    icon: message.guild!.iconURL(),
+                    permissions: {
+                        ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
+                        MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
+                        MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
+                        MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
+                    },
+                    allpermissions: gme.permissions.toArray()
                 }).then(d => console.log(`${member.user.username} added`)).catch(e => console.log(e));
             }
         })
