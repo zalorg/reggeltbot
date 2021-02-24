@@ -182,6 +182,7 @@ bot.on("message", async message => {
         commands.get('say').execute(message, args, bot);
 
     } else if(cmd === `${prefix}updateall`) {
+        message.channel.send('Updateing all user...')
         message.guild?.members.cache.forEach(async member => {
             const ref = admin.firestore().doc(`/dcusers/${member.id}/guilds/${message.guild?.id}`);
             const doc = await ref.get();
