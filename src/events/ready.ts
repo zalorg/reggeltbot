@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import fs = require('fs');
 import DBL = require('dblapi.js');
 import { Client } from 'discord.js'
-import * as axios from 'axios';
+//import * as axios from 'axios';
 
 module.exports = {
     name: 'ready',
@@ -47,7 +47,7 @@ module.exports = {
 }
 
 function sendCommands() {
-
+/*
     send({
         "name": "count",
         "description": "Ennyiszer köszöntél be a #reggelt csatornába",
@@ -60,10 +60,12 @@ function sendCommands() {
             }
         ]
     })
+    */
     
 }
-
+/*
 async function send(data: any) {
+    
     axios.default.post('', {
         data: data,
         headers: {
@@ -91,3 +93,5 @@ async function getBotToken() {
         };
     } 
 }
+
+*/
