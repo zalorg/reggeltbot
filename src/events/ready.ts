@@ -17,17 +17,13 @@ module.exports = {
                 const m6 = 6 * 2.628e+9;
                 const y1 = 1 * 3.154e+10;
                 const y2 = 2 * 3.154e+10;
-                const y3 = 3 * 3.154e+10;
                 const now = Date.now();
                 //const channel = waik.channels.cache.find(e => e.name === "bot-testing");
                 
                 console.log(m6 + join)
                 console.log(Date.now())
 
-                if(join + y3 < now) {
-                    waik.member(member.id)?.roles.add('814266693585076284')
-                    console.log(3);
-                } else if(join + y2 < now) {
+                if(join + y2 < now) {
                     waik.member(member.id)?.roles.add('814266813470605312')
                     console.log(2)
                 } else if(join + y1 < now) {
