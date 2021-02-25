@@ -69,6 +69,7 @@ events.get('updatecache').execute();
 events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
 events.get('msgUpdate').execute(bot);
+events.get('guildMemberAdd').execute(bot)
 
 
 
@@ -245,8 +246,11 @@ async function updateUser(message: any) {
             MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
             MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
         },
-        allpermissions: gme.permissions.toArray()
-    }).then(() => {
+        allpermissions: gme.permissions.toArray(),
+        color: gme.displayColor,
+        colorHEX: gme.displayHexColor,
+        nick: gme.nickname,
+    }, {merge: true}).then(() => {
         //message.reply('Server added/updated succesfuly!');
     }).catch(err => {
         //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
