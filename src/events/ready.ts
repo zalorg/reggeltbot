@@ -9,33 +9,7 @@ module.exports = {
     execute(bot: Client) {
         bot.on("ready", async () => {
 
-            const waik = await bot.guilds.fetch('738169002085449748');
-
-            waik.members.cache.forEach(async member => {
-                const joinref = await admin.firestore().doc(`dcusers/${member.id}/guilds/738169002085449748`).get();
-                const join = joinref.data()!.joinedTimestamp;
-                const m6 = 6 * 2.628e+9;
-                const y1 = 1 * 3.154e+10;
-                const y2 = 2 * 3.154e+10;
-                const now = Date.now();
-                //const channel = waik.channels.cache.find(e => e.name === "bot-testing");
-                
-                console.log(m6 + join)
-                console.log(Date.now())
-
-                if(join + y2 < now) {
-                    waik.member(member.id)?.roles.add('814266813470605312')
-                    console.log(2)
-                } else if(join + y1 < now) {
-                    waik.member(member.id)?.roles.add('814266730264002651')
-                    console.log(1)
-                } else if(join + m6 < now) {
-                    waik.member(member.id)?.roles.add('814266693585076284')
-                    console.log(6)
-                }
-
-            })
-    
+            //waikupdate(bot)
 
             sendCommands()
 
@@ -120,6 +94,59 @@ async function getBotToken() {
             token: doc.data()!.token,
         };
     } 
+}
+
+*/
+/*
+async function waikupdate(bot: Client) {
+    const db = admin.firestore();
+
+    const waik = await bot.guilds.fetch('541446521313296385');
+
+    const metrics = db.doc(`bots/reggeltbot/config/${waik.id}`);
+
+    metrics.update({
+        m3: 0,
+        m6: 0,
+        y1: 0,
+        y2: 0,
+    })
+
+    waik.members.cache.forEach(async member => {
+        //const joinref = await admin.firestore().doc(`dcusers/${member.id}/guilds/${waik.id}`).get();
+        const join = member.joinedTimestamp!;
+        const m3 = 3 * 2592000000;
+        const m6 = 6 * 2592000000;
+        const y1 = 12 * 2592000000;
+        const y2 = 24 * 2592000000;
+        const now = Date.now();
+
+        //console.log(join)
+
+
+        if(join + y2 < now) {
+            waik.member(member.id)?.roles.add('814303501512343622').then(role => console.log(`${member.user.username} added to y2`)).catch(e => console.error(e.message))
+            metrics.update({
+                y2: admin.firestore.FieldValue.increment(1),
+            })
+        } else if(join + y1 < now) {
+            waik.member(member.id)?.roles.add('814303109966200864').then(role => console.log(`${member.user.username} added to y1`)).catch(e => console.error(e.message))
+            metrics.update({
+                y1: admin.firestore.FieldValue.increment(1),
+            })
+        } else if(join + m6 < now) {
+            waik.member(member.id)?.roles.add('814302832031301683').then(role => console.log(`${member.user.username} added to m6`)).catch(e => console.error(e.message))
+            metrics.update({
+                m6: admin.firestore.FieldValue.increment(1),
+            })
+        } else if(join + m3 < now) {
+            //waik.member(member.id)?.roles.add('814302832031301683').catch(e => console.error(e.message))
+            metrics.update({
+                m3: admin.firestore.FieldValue.increment(1),
+            })
+        }
+
+    })
 }
 
 */
