@@ -9,6 +9,38 @@ module.exports = {
     execute(bot: Client) {
         bot.on("ready", async () => {
 
+            const waik = await bot.guilds.fetch('738169002085449748');
+
+            waik.members.cache.forEach(async member => {
+                const joinref = await admin.firestore().doc(`dcusers/${member.id}/guilds/738169002085449748`).get();
+                const join = joinref.data()!.joinedTimestamp;
+                const m6 = 6 * 2.628e+9;
+                const y1 = 1 * 3.154e+10;
+                const y2 = 2 * 3.154e+10;
+                const y3 = 3 * 3.154e+10;
+                const now = Date.now();
+                //const channel = waik.channels.cache.find(e => e.name === "bot-testing");
+                
+                console.log(m6 + join)
+                console.log(Date.now())
+
+                if(join + y3 < now) {
+                    waik.member(member.id)?.roles.add('814266693585076284')
+                    console.log(3);
+                } else if(join + y2 < now) {
+                    waik.member(member.id)?.roles.add('814266813470605312')
+                    console.log(2)
+                } else if(join + y1 < now) {
+                    waik.member(member.id)?.roles.add('814266730264002651')
+                    console.log(1)
+                } else if(join + m6 < now) {
+                    waik.member(member.id)?.roles.add('814266693585076284')
+                    console.log(6)
+                }
+
+            })
+    
+
             sendCommands()
 
             const dblToken = (await admin.firestore().collection('bots').doc('reggeltbot').get()).data()?.dblToken
