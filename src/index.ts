@@ -217,7 +217,7 @@ async function updateUser(message: any) {
             MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
         },
         allpermissions: gme.permissions.toArray()
-    }).then(() => {
+    }, {merge: true}).then(() => {
         //message.reply('Server added/updated succesfuly!');
     }).catch(err => {
         //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
