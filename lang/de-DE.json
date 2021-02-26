@@ -49,6 +49,8 @@
             "f11": "Es sagt dir, weieviel du in den %!CHANNEL%! Kanal gegrüßt hast, oder du kannst auch [hier](https://reggeltbot.com/count?i=%!DCID%!) ansehen",
             "f2": "%!PREFIX%!invite",
             "f21": "laden Bot ein",
+            "setlang1": "%!PREFIX%!setlang [OPTIONEN] [LANG]",
+            "setlang2": "Optionen: say, reggelt, full | Lang: Dein sprachcode. Zum Beispiel: (%!ALLLANG%!)",
             "f3": "stellen den Kanal %!CHANNEL%! ein",
             "f31": "Nenne einen Kanal für **%!CHANNEL%!** und das wird fertig",
             "f4": "top.gg",
