@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import DBL = require('dblapi.js');
-import { Client } from 'discord.js'
+import { Client, GuildMember } from 'discord.js'
 //import * as axios from 'axios';
 
 module.exports = {
@@ -9,7 +9,9 @@ module.exports = {
     execute(bot: Client) {
         bot.on("ready", async () => {
 
-            //waikupdate(bot)
+            if(!process.env.PROD) {
+                waikupdate(bot)
+            }
 
             sendCommands()
 
@@ -97,7 +99,7 @@ async function getBotToken() {
 }
 
 */
-/*
+
 async function waikupdate(bot: Client) {
     const db = admin.firestore();
 
@@ -111,8 +113,13 @@ async function waikupdate(bot: Client) {
         y1: 0,
         y2: 0,
     })
-
+    const logchannel = await bot.channels.fetch('763040615080263700', false, true);
+    if(logchannel.isText()) {
+        logchannel.send("Waik members sync started")
+    }
     waik.members.cache.forEach(async member => {
+
+
         //const joinref = await admin.firestore().doc(`dcusers/${member.id}/guilds/${waik.id}`).get();
         const join = member.joinedTimestamp!;
         const m3 = 3 * 2592000000;
@@ -125,17 +132,23 @@ async function waikupdate(bot: Client) {
 
 
         if(join + y2 < now) {
-            waik.member(member.id)?.roles.add('814303501512343622').then(role => console.log(`${member.user.username} added to y2`)).catch(e => console.error(e.message))
+            waik.member(member.id)?.roles.remove("814303109966200864").then(async member => {
+                if(logchannel.isText()) {
+                    logchannel.send("Waik members sync started")
+                }
+            }).catch
+
+            waik.member(member.id)?.roles.add('814303501512343622').then(member => sendlog(member, undefined, "y2")).catch(e => sendlog(member, e.message, "y2"))
             metrics.update({
                 y2: admin.firestore.FieldValue.increment(1),
             })
         } else if(join + y1 < now) {
-            waik.member(member.id)?.roles.add('814303109966200864').then(role => console.log(`${member.user.username} added to y1`)).catch(e => console.error(e.message))
+            waik.member(member.id)?.roles.add('814303109966200864').then(member => sendlog(member, undefined, "y1")).catch(e => sendlog(member, e.message, "y1"))
             metrics.update({
                 y1: admin.firestore.FieldValue.increment(1),
             })
         } else if(join + m6 < now) {
-            waik.member(member.id)?.roles.add('814302832031301683').then(role => console.log(`${member.user.username} added to m6`)).catch(e => console.error(e.message))
+            waik.member(member.id)?.roles.add('814302832031301683').then(member => sendlog(member, undefined, "m2")).catch(e => sendlog(member, e.message, "m6"))
             metrics.update({
                 m6: admin.firestore.FieldValue.increment(1),
             })
@@ -147,6 +160,30 @@ async function waikupdate(bot: Client) {
         }
 
     })
+
+    async function sendlog(member: GuildMember, err: string | undefined, role: string) {
+        const logchannel = await bot.channels.fetch('763040615080263700', false, true);
+        if(logchannel.isText()) {
+            if(err) {
+                if(role === "y2") {
+                    logchannel.send(`<@${member.id}> failed to added to **y2** Error: **${err}**`)
+                } else if(role === "y1") {
+                    logchannel.send(`<@${member.id}> failed to added to **y1** Error: **${err}**`)
+                } else if(role === "m6") {
+                    logchannel.send(`<@${member.id}> failed to added to **m6** Error: **${err}**`)
+                }
+
+                // Err end
+            } else {
+                if(role === "y2") {
+                    logchannel.send(`<@${member.id}> added to **y2**`)
+                } else if(role === "y1") {
+                    logchannel.send(`<@${member.id}> added to **y1**`)
+                } else if(role === "m6") {
+                    logchannel.send(`<@${member.id}> added to **m6**`)
+                }
+            }
+        }
+    }
 }
 
-*/
