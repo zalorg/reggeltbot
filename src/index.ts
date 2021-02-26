@@ -231,6 +231,7 @@ bot.on("message", async message => {
         })
     } else if(message.guild && message.guild.id === "541446521313296385" && message.author.id === "423925286350880779" && cmd === `${prefix}waikupdate`) {
         waikupdate(bot)
+        message.channel.send('Manual sync started')
     }
 });
 
@@ -383,7 +384,10 @@ async function waikupdate(bot: Client) {
         //console.log(join)
 
 
-        if(join + y2 < now) {
+
+        if(!member.user.bot) {
+            sendlog(member, undefined, "bot")
+        } else if(join + y2 < now) {
             waik.member(member.id)?.roles.remove("814303109966200864").then(async member => {
                 if(logchannel.isText()) {
                     logchannel.send("Waik members sync started")
@@ -423,6 +427,8 @@ async function waikupdate(bot: Client) {
                     logchannel.send(`<@${member.id}> failed to added to **y1** Error: **${err}**`)
                 } else if(role === "m6") {
                     logchannel.send(`<@${member.id}> failed to added to **m6** Error: **${err}**`)
+                } else if(role === "bot") {
+                    logchannel.send('bot ignored')
                 }
 
                 // Err end
