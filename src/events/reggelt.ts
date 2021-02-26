@@ -1,38 +1,52 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
-
+import { Message } from 'discord.js'
+import { Langtypes, Guildconfig } from '../types'
 module.exports = {
     name: 'reggelt',
-    async execute(message: any) {
+    async execute(message: Message) {
         const db = admin.firestore();
+
+        
+
+        const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
+
+        const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
 
         const data = JSON.parse(fs.readFileSync('./cache/global-bans.json', 'utf8'));
         if(data.bans.find((element: any) => element === message.author.id)) {
             message.delete();
-            message.author.send('You are banned!')
+            message.author.send(lang.root.bans.reggeltGlobal)
             return;
         }
-        if(message.content.toLowerCase().includes("reggelt")){
+
+        if(message.content.toLowerCase().includes(lang.events.reggelt.keyWord) || message.content.toLowerCase().includes("reggelt")){
             const ref = db.collection('dcusers').doc(message.author.id);
             const doc = await ref.get();
 
             const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild!.id);
             const cddoc = await cdref.get();
 
-            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
-            const configDoc = await configref.get();
-            const cdval = configDoc.data()!.cd * 3600;
-            const cd = Math.floor(Date.now() / 1000) + cdval;
+            const defconfigref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
+            const defconfigDoc = await defconfigref.get();
 
-            console.log(`Cooldown ends: ${cd}`);
-            console.log(Math.floor(Date.now() / 1000));
+            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id);
+            const configDoc = await configref.get();
+
+            const rawcd = configDoc.exists ? configDoc.data()!.cd : defconfigDoc.data()!.cd;
+
+            const cdval = rawcd * 3600;
+
+            const cd = Math.floor(Date.now() / 1000) + cdval;
 
             if(cddoc.exists) {
                 console.log('');
                 console.log(cddoc.data()!.reggeltcount);
+
                 if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
                     message.delete();
-                    message.author.send('You are on cooldown!');
+                    let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString()); 
+                    message.author.send(cdmsg);
                 } else {
                     if(!process.env.PROD) {
                         await reggeltupdateall();
@@ -41,10 +55,7 @@ module.exports = {
                     cdref.update({
                         reggeltcount: cd,
                     });
-                    console.log(2);
                 }
-
-                console.log(1);
             } else {
                 cdref.set({
                     reggeltcount: cd,
@@ -53,10 +64,7 @@ module.exports = {
                     await reggeltupdateall();
                     await reggeltupdatefs(message);
                 }
-                console.log('doc created');
             }
-
-
 
             if(doc.exists) {
                 ref.update({
@@ -72,27 +80,24 @@ module.exports = {
                 });
             }
 
-            console.log(`message passed in: "${message.guild}, by.: ${message.author.username} (id: "${message.guild!.id}")"(HUN)`);
             message.react("☕");     
         } else {
             if(!message.deletable) {
-                message.channel.send('Missing permission!')
+                message.channel.send(lang.events.reggelt.noPerms)
                     .catch((err: any) => {
-                        message.guild!.owner!.send('Missing permission! I need **Send Messages** to function correctly');
+                        message.guild!.owner!.send(lang.events.reggelt.noSend);
                         console.log(err);
                     });
-                message.guild!.owner!.send('Missing permission! I need **Manage Messages** to function correctly')
-                    .catch(
-                        
-                    );
             } else {
                 message.delete();
-                message.author.send(`Ide csak reggelt lehet írni! (${message.guild})`)
+                console.log(lang)
+                let nReggelt: string = lang.events.reggelt.notReggelt;
+                let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild!.name}`).replace('**%!KEYWORD%**', `**${lang.events.reggelt.keyWord}**`)
+                message.author.send(replyMSG)
                     .catch(function(error: string) {
                         message.reply("Error: " + error);
                         console.log("Error:", error);
                     });
-    
             }
             await reggeltupdatefs(message, true);
         }
@@ -109,7 +114,7 @@ async function reggeltupdateall() {
     });
 }
 
-async function reggeltupdatefs(message: { author: { id: string; tag: string; username: string; avatarURL: () => string; }; }, decreased = false) {
+async function reggeltupdatefs(message: Message, decreased = false) {
     let db = admin.firestore();
     const reggeltRef = db.collection("dcusers").doc(message.author.id);
     const doc = await reggeltRef.get();

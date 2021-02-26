@@ -1,0 +1,77 @@
+{
+    "root": {
+        "bans": {
+            "gloabl": "A bot adminisztrátorai eltiltottak a bot használatótól!",
+            "guild": "A %!GUILD%! adminisztrátorai eltiltottak a bot használatótól!",
+            "reggeltGlobal": "A bot adminisztrátorai eltiltottak a reggelt funkció használatától!",
+            "reggeltGuild": "A %!GUILD%! adminisztrátorai eltiltottak a reggelt funkció használatától!"
+        }
+    },
+    "events" : {
+        "reggelt": {
+            "channel": "reggelt",
+            "keyWord": "reggelt",
+            "onCooldown": "Túl gyorsan próbálsz beköszönni! Kérlek várj eddig: %!CD%!",
+            "noPrems": "Hiányos jogosultságok!",
+            "noSend": "Hiányos jogosultságok! A rendes működésemhez kell a **Send Messages** jogosultság",
+            "notReggelt": "Ide csak **%!KEYWORD%** lehet írni! (%!GUILD%!)"
+        },
+        "reggeltUpdate": {
+            "editSend": "Ebben a csatornában nem módosíthatod az uzeneted"
+        }
+    },
+    "commands": {
+        "ping": {
+            "gateway": "Discord",
+            "internal": "Belső",
+            "status": "Státusz",
+            "error": "Hiba",
+            "po": "Részleges leállás",
+            "mo": "Jelentős  leállás",
+            "dp": "Csökkent teljesítmény",
+            "aso": "Minden rendszer működőképes"
+        },
+        "link": {
+            "aal": "Ez a fiók már öszze van kapcsolva!",
+            "als": "Fiók sikeresen összekötve!",
+            "ela": "Hiba örtént a fiók összekapcsolása közben",
+            "noMail": "Adj meg egy emailt!",
+            "noCode": "Add meg az összekapcsolási kódot!"
+        },
+        "leaderboard": {
+            "leaderboard": "Toplista",
+            "numberNaN": "Adj meg egy számot!",
+            "notOneTwenty": "Adj meg egy számot 1 és 20 között!"
+        },
+        "help": {
+            "title": "Reggeltbot információk",
+            "f1": "%!PREFIX%!count",
+            "f11": "Megmondja, hogy hányszor köszöntél be a %!CHANNEL%! csatornába (vagy [itt](https://reggeltbot.com/count?i=%!DCID%!) is megnézheted)",
+            "f2": "%!PREFIX%!invite",
+            "f21": "Bot meghívása",
+            "f3": "%!CHANNEL%! csatorna beállítása",
+            "f31": "Nevezz el egy csatornát **%!CHANNEL%!**-nek és kész",
+            "f4": "top.gg",
+            "f41": "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala",
+            "f5": "Probléma jelentése",
+            "f51": "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni",
+            "ping": "Bot válaszidő",
+            "uptime": "Üzemidő"
+        },
+        "fact": {
+            "errorGF": "Hiba történt a tény lekérése közben",
+            "noId": "Adj meg egy tény ID-t!",
+            "title1": "Random tény",
+            "title2": "Random tény %!AUTHOR%! által",
+            "fact": "Tény",
+            "factid":"Tény ID",
+            "add": "Add hozzá a saját tényed",
+            "addF": "[Ide](https://facts.zal1000.com/) kattintva tudod hozzáadni a saját tényedet (Ha azt szeretnéd, hogy a Discordos profilképed és nevedet mutassa akkor kattints ide [here](https://dclink.zal1000.com/))",
+            "noFact": "Tény nem található!"
+        },
+        "count": {
+            "f1": "%!USERNAME%! ennyiszer köszönt be a %!CHANNEL%! csatornába",
+            "f2": "%!COUNT%! [Megnyitás a weboldalon](https://reggeltbot.com/count?i=%!ID%!)"
+        }
+    }
+}

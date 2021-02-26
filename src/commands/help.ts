@@ -1,24 +1,61 @@
 //import * as admin from 'firebase-admin';
 import ms = require('ms');
-import * as Discord from 'discord.js';
+import fs = require('fs');
+import { Message, Client, MessageEmbed } from 'discord.js'
+import { Guildconfig, Regggeltconfig, Langtypes } from '../types'
+
 module.exports = {
     name: 'help',
-    execute(message: any, prefix: string, bot: any) {
-        const embed = new Discord.MessageEmbed()
-        .setTitle('Reggeltbot help')
+    execute(message: Message, prefix: string, bot: Client) {
+
+        //console.log('asd')
+
+        //message.channel.startTyping()
+
+        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
+
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+
+        const lang = langfull.commands.help;
+
+        const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
+
+        const rawbadges: Array<string> = [];
+
+        if(guildconfig.verified) {
+            rawbadges.push("<:greenTick:809931766642245663>")
+        }
+
+        if(guildconfig.premium) {
+            rawbadges.push("<:premium:812821285197447178>")
+        }
+
+        if(guildconfig.testing) {
+            rawbadges.push("<:test:812821214019190795>")
+        }
+
+        const badges = rawbadges.join(' ');
+
+        const embed = new MessageEmbed()
+        .setTitle(lang.title)
+        .setDescription(`${badges}`)
         .setColor("#FFCB2B")
-        .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=${message.author.id}) is megnézheted)`)
-        .addField(`${prefix}invite`, "Bot meghívása")
-        .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
-        .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
-        .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
+        .addField(lang.f1.replace('%!PREFIX%!', prefix), lang.f11.replace('%!DCID%!', message.author.id).replace('%!CHANNEL%!', reggeltconfig.channel))
+        .addField(lang.f2.replace('%!PREFIX%!', prefix), lang.f21)
+        .addField(lang.f3.replace('%!CHANNEL%!', reggeltconfig.channel), lang.f31.replace('%!CHANNEL%!', reggeltconfig.channel))
+        .addField(lang.f4, lang.f41)
+        .addField(lang.f5, lang.f51)
         .addField('\u200B', '\u200B')
-        .addField("Bot ping", `${bot.ws.ping}ms`)
-        .addField("Uptime", `${ms(bot.uptime)}`)
+        .addField(lang.ping, `${bot.ws.ping}ms`)
+        .addField(lang.uptime, `${ms(bot.uptime!)}`)
         .setFooter(message.author.username)
         .setThumbnail(bot.user!.avatarURL()!)
         .setTimestamp(Date.now());
 
-        message.channel.send(embed);
+        message.channel.send(embed)
+        
     }
 }
+

@@ -1,9 +1,7 @@
 FROM node:latest
 RUN mkdir -p /usr/src/reggeltbot
 WORKDIR /usr/src/reggeltbot
-RUN apt update
-RUN apt install ffmpeg -y
-RUN ffmpeg -version
+RUN mkdir cache
 COPY package.json /usr/src/reggeltbot
 RUN npm install\
         && npm install typescript -g

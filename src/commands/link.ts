@@ -1,12 +1,26 @@
 import * as admin from 'firebase-admin';
 import https = require('https');
+import fs = require('fs');
+import { Message } from 'discord.js'
+import { Langtypes } from '../types'
+
 module.exports = {
     name: 'link',
-    async execute(message: any, args: any) {
+    async execute(message: Message, args: Array<string>) {
+
+
+        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+
+        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+
+        const lang = langfull.commands.link;
+
         if(!args[0]){
-            message.reply("Please provide your email");
+            message.reply(`${lang.noMail}`);
         } else if(!args[1]) {
-            message.reply("Please provide your link code");
+            message.reply(`${lang.noCode}`);
         } else {
             botTypeing(message.channel.id);
             admin
@@ -23,7 +37,14 @@ module.exports = {
     }
 }
 
-async function accountLink(userRecord: { uid: any; }, message: { content: string; author: { id: any; }; reply: (arg0: string, arg1: undefined) => void; }) {
+async function accountLink(userRecord: { uid: any; }, message: Message ) {
+
+    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+
+    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+
+    const lang = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).commands.link;
+    
     const db = admin.firestore();
     let messageArray = message.content.split(" ");
     //let cmd = messageArray[0];
@@ -36,7 +57,8 @@ async function accountLink(userRecord: { uid: any; }, message: { content: string
     //const dcUserDoc = await dcUserRef.get();
 
     if(userDoc.data()!.dclinked) {
-        message.reply("This account is already linked!", args[1]);
+        console.log(lang.aal, args[1])
+        message.reply(`${lang.aal}`);
     } else if(`${userDoc.data()!.dclink}` === args[1]) {
         dcUserRef.update({
             uid: message.author.id,
@@ -46,13 +68,14 @@ async function accountLink(userRecord: { uid: any; }, message: { content: string
             dclinked: true,
             dcid: message.author.id,
         });
-        message.reply("Account linked succesfuly!", undefined);
+        message.reply(`${lang.als}`);
     } else {
-        message.reply("Error linking account", undefined);
+        message.reply(`${lang.ela}`);
     }
 }
 
 async function botTypeing(channel: any) {
+
     const data = JSON.stringify({});
     console.log((await getBotToken(process.env.PROD)).token);
       
@@ -102,4 +125,13 @@ async function getBotToken(PROD: string | undefined) {
             token: doc.data()!.token,
         };
     } 
+}
+
+interface Guildconfig {
+    cd: number,
+    disabled: boolean,
+    lang: string,
+    premium: boolean,
+    reggeltlang: string,
+    testing: boolean,
 }

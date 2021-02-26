@@ -3,11 +3,10 @@ import axios from "axios";
 import * as Discord from 'discord.js';
 import fs = require('fs');
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
-const bot: any = new Discord.Client();
-import DBL = require("dblapi.js");
-let ms = require("ms");
+const bot = new Discord.Client();
 import * as admin from 'firebase-admin';
 import express = require('express');
+import { Guildconfig, Regggeltconfig } from './types'
 
 const app = express();
 
@@ -19,13 +18,12 @@ admin.initializeApp({
     databaseURL: "https://zal1000.firebaseio.com"
 });
 
-let rdb = admin.database();
 
 function rdbupdate(){
     const db = admin.database();
 
     const ref = db.ref(`bots/status`);
-    const time = msToTime(bot.uptime);
+    const time = msToTime(Number(bot.uptime));
     ref.update({
         reggeltbotPing: `${bot.ws.ping}`,
         reggeltbotUp: `${bot.uptime}`,
@@ -38,23 +36,25 @@ if(!process.env.PROD) {
     rdbupdate();
 }
 
-bot.events = new Discord.Collection();
-bot.commands = new Discord.Collection();
+const events: any = new Discord.Collection();
+const commands: any = new Discord.Collection();
+const api: any = new Discord.Collection();
 
-let dblRef = rdb.ref("bots/reggeltbot/dblToken");
-dblRef.once("value", function(snapshot: { val: () => any; }) {
-    new DBL(snapshot.val(), bot);
-    console.debug(snapshot.val());
-}, function (errorObject: { code: string; }) {
-    console.log("The read failed: " + errorObject.code);
-});
+const apiFiles = fs.readdirSync('./dist/api/').filter(file => file.endsWith('.js'));
+for (const file of apiFiles) {
+    const m = file.split(".", 1)
+    const command = require(`./api/${m[0]}`);
+    console.log(command)
+    api.set(command.name, command)
+    //api.get(command.name).execute(bot);
+}
 
 const commandFiles = fs.readdirSync('./dist/commands/').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
     const m = file.split(".", 1)
     const command = require(`./commands/${m[0]}`);
     console.log(command)
-    bot.commands.set(command.name, command)
+    commands.set(command.name, command)
 }
 
 const eventFiles = fs.readdirSync('./dist/events/').filter(file => file.endsWith('.js'));
@@ -62,20 +62,22 @@ for (const file of eventFiles) {
     const m = file.split(".", 1)
     const event = require(`./events/${m[0]}`);
     console.log(event)
-    bot.events.set(event.name, event)
+    events.set(event.name, event)
 }
-console.log(bot.events.get('ready'))
-bot.events.get('ready').execute(bot);
+
+events.get('updatecache').execute();
+events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
-bot.events.get('msgUpdate').execute(bot);
+events.get('msgUpdate').execute(bot);
+events.get('guildMemberAdd').execute(bot)
 
 
 
-app.get('/', (req: any, res: any) => {
+app.get('/', (req, res) => {
     res.sendStatus(200);
 })
 
-app.get('/ping', async (req: any, res: any) => {
+app.get('/ping', async (req, res) => {
     res.status(200).send({
         ping: bot.ws.ping,
     });
@@ -86,143 +88,177 @@ bot.on('error', async (err: any) => {
     console.log(err);
 })
 
+bot.on('guildCreate', async (guild) => {
+    const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
 
-bot.ws.on('INTERACTION_CREATE', async (interaction: any) => {
-    let prefix = (await getPrefix()).prefix; 
-    const cmd = interaction.data.name;
-    if(cmd === "count" || cmd === "ciunt") {
-        let db = admin.firestore();
-        let dcid = interaction.member.user.id;
-        const cityRef = db.collection("dcusers").doc(dcid);
-        const doc = await cityRef.get();
-        if (!doc.exists) {
-            interactionResponse(interaction, {
-                type: 4,
-                data: {
-                    content: 'Error reading document!'
-                }
-            });
-        } else {
-            let upmbed = new Discord.MessageEmbed()
-                .setTitle(`${interaction.member.user.username}`)
-                .setColor("#FFCB5C")
-                .addField("Ennyiszer köszöntél be a #reggelt csatornába", `${doc.data()!.reggeltcount} [(Megnyitás a weboldalon)](https://reggeltbot.com/count?i=${dcid})`)
-                .setFooter(interaction.member.user.username)
-                .setThumbnail(doc.data()!.pp)
-                .setTimestamp(Date.now());
-            console.log(upmbed);
-    
-            interactionResponse(interaction, {
-                type: 4,
-                data: {
-                    embeds: [upmbed]
-                }
-            });
-        }
-    } else if(cmd === "help") {
-        let upmbed = new Discord.MessageEmbed()
-            .setTitle(interaction.member.user.username)
-            .setColor("#FFCB2B")
-            .addField(`${prefix}count`, `Megmondja, hogy hányszor köszöntél be a #reggelt csatornába (vagy [itt](https://reggeltbot.com/count?i=${interaction.member.user.id}) is megnézheted)`)
-            .addField(`${prefix}invite`, "Bot meghívása")
-            .addField("Reggelt csatorna beállítása", "Nevezz el egy csatornát **reggelt**-nek és kész")
-            .addField("top.gg", "Ha bárkinek is kéne akkor itt van a bot [top.gg](https://top.gg/bot/749037285621628950) oldala")
-            .addField("Probléma jelentése", "Ha bármi problémát észlelnél a bot használata közben akkor [itt](https://github.com/zal1000/reggeltbot/issues) tudod jelenteni")
-            .addField('\u200B', '\u200B')
-            .addField("Bot ping", `${bot.ws.ping}ms`)
-            .addField("Uptime", `${ms(bot.uptime)}`)
-            .setFooter(interaction.member.user.username)
-            .setThumbnail(bot.user!.avatarURL()!)
-            .setTimestamp(Date.now());
-        interactionResponse(interaction, {
-            type: 4,
-            data: {
-                embeds: [upmbed]
-            }
-        });
-    }
-});
+    admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(guild.id).set(defdata);
+})
 
-bot.on("message", async (message: any) => {
+bot.on("message", async message => {
     if(message.author.bot) return;
     let prefix = (await getPrefix()).prefix; 
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
-    
+
+    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
+
+    if(message.guild && !guildconfig) {
+        const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
+
+        await admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild.id).set(defdata);
+    }
+    //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+    const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
 
     if(!message.author.bot) {
         updateUser(message);
         const ref = admin.firestore().collection('dcusers').doc(message.author.id);
-        await axios.get(`https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`).then(res => {
+        await axios.get(`https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`).then(() => {
             ref.update({
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`,
                 username: message.author.username,
                 tag: message.author.tag,
-            }).catch(err => {
-                console.error(err.code);
-            })
-        }).catch(err => {
+            }).catch(err => console.error(err.code))
+        }).catch(() => {
             ref.update({
                 pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`,
                 username: message.author.username,
                 tag: message.author.tag,
-            }).catch(err => {
-                console.error(err.code);
-            })
+            }).catch(err => console.error(err.code))
         })
     }
 
+    //events.get('automod').execute(message);
+
+
     // reggelt
-    if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel) {
-        await bot.events.get('reggelt').execute(message);
+    if(message.channel.type === "text") {
+        if(message.channel.name === (await getReggeltChannel(process.env.PROD)).channel || message.channel.name === reggeltconfig.channel) {
+            await events.get('reggelt').execute(message);
+        }
     }
     
     // help
-    else if(message.content === `${prefix}help`){
-        bot.commands.get('help').execute(message, prefix, bot)
+    if(message.content === `${prefix}help`){
+        commands.get('help').execute(message, prefix, bot)
     }
 
     //count 
-    else if(message.content === `${prefix}count`){
-        await bot.commands.get('count').execute(message);
+    else if(cmd === `${prefix}count`){
+
+        await commands.get('count').execute(message);
     }
     else if(cmd === `${prefix}link`) {
-        bot.commands.get('link').execute(message, args)
-    } else if(cmd === `${prefix}fact`) {
-        bot.commands.get('fact').execute(message, args)
-    } else if (cmd === `${prefix}restart`) {
-        await restartRequest(message);
-    } else if (cmd === `${prefix}ping`) {
-        bot.commands.get('ping').execute(bot, args, message)
-    } else if (cmd === `${prefix}leaderboard`) {
-        await bot.commands.get('leaderboard').execute(message, args);
 
+        commands.get('link').execute(message, args);
+
+    } else if(cmd === `${prefix}fact`) {
+
+        commands.get('fact').execute(message, args);
+
+    } else if (cmd === `${prefix}restart`) {
+
+        await restartRequest(message);
+
+    } else if (cmd === `${prefix}ping`) {
+
+        commands.get('ping').execute(bot, args, message)
+
+    } else if (cmd === `${prefix}leaderboard`) {
+
+        await commands.get('leaderboard').execute(message, args);
+
+    } else if (cmd === `${prefix}github`) {
+
+        await commands.get('github').execute(message, args, bot);
+
+    } else if(cmd === `${prefix}setlang`) {
+
+        commands.get('setlang').execute(message, args);
+
+    } else if(cmd === `${prefix}say`) {
+
+        commands.get('say').execute(message, args, bot);
+
+    } else if(cmd === `${prefix}updateall`) {
+        message.channel.send('Updateing all user...')
+        message.guild?.members.cache.forEach(async member => {
+            const ref = admin.firestore().doc(`/dcusers/${member.id}/guilds/${message.guild?.id}`);
+            const doc = await ref.get();
+            const gme = member
+            if(member.user.bot){ 
+                console.log('bot ignored')
+            } else if(doc.exists) {
+                ref.update({
+                    joinedTimestamp: member.joinedTimestamp,
+                    joinedAt: member.joinedAt,
+                    name: message.guild!.name,
+                    owner: message.guild!.ownerID,
+                    icon: message.guild!.iconURL(),
+                    permissions: {
+                        ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
+                        MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
+                        MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
+                        MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
+                    },
+                    allpermissions: gme.permissions.toArray(),
+                    color: member.displayColor,
+                    colorHEX: member.displayHexColor,
+                    nick: member.nickname,
+                }).then(d => console.log(`${member.user.username} updated`)).catch(e => console.log(e));
+            } else {
+                ref.set({
+                    joinedTimestamp: member.joinedTimestamp,
+                    joinedAt: member.joinedAt,
+                    name: message.guild!.name,
+                    owner: message.guild!.ownerID,
+                    icon: message.guild!.iconURL(),
+                    permissions: {
+                        ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
+                        MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
+                        MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
+                        MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
+                    },
+                    allpermissions: gme.permissions.toArray(),
+                    color: member.displayColor,
+                    colorHEX: member.displayHexColor,
+                    nick: member.nickname,
+                }).then(d => console.log(`${member.user.username} added`)).catch(e => console.log(e));
+            }
+        })
     }
 });
 
-async function updateUser(message: any) {
-    const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild.id);
-    //const doc = await ref.get();
-    const gme = message.guild.member(message.author.id);
-    //console.log(gme.permissions.toArray());
-    ref.set({
-        name: message.guild.name,
-        owner: message.guild.ownerID,
-        icon: message.guild.iconURL(),
-        permissions: {
-            ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
-            MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
-            MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
-            MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
-        },
-        allpermissions: gme.permissions.toArray()
-    }, {merge: true}).then(() => {
-        //message.reply('Server added/updated succesfuly!');
-    }).catch(err => {
-        //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
-        throw err;
-    });
+async function updateUser(message: Discord.Message) {
+    if(message.guild) {
+        const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild?.id);
+        //const doc = await ref.get();
+        const gme = message.guild.member(message.author.id)!;
+        //console.log(gme.permissions.toArray());
+        ref.set({
+            name: message.guild.name,
+            owner: message.guild.ownerID,
+            icon: message.guild.iconURL(),
+            permissions: {
+                ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
+                MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
+                MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
+                MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
+            },
+            allpermissions: gme.permissions.toArray(),
+            color: gme.displayColor,
+            colorHEX: gme.displayHexColor,
+            nick: gme.nickname,
+        }, {merge: true}).then(() => {
+            //message.reply('Server added/updated succesfuly!');
+        }).catch(err => {
+            //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
+            throw err;
+        });
+    }
+
 }
 
 async function getReggeltChannel(PROD: string | undefined) {
@@ -264,7 +300,7 @@ async function getPrefix() {
     }
 }
 
-async function restartRequest(message: { author: { id: any; }; reply: (arg0: string) => Promise<any>; }) {
+async function restartRequest(message: Discord.Message) {
     const ref = admin.firestore().collection("bots").doc("reggeltbot");
     const doc = await ref.get();
 
@@ -274,7 +310,6 @@ async function restartRequest(message: { author: { id: any; }; reply: (arg0: str
         }).then(() => {
             process.exit();
         });
-        
         
     } else {
         message.reply('Nope <3',);
@@ -301,12 +336,6 @@ async function botlogin(PROD: string | undefined) {
     }
 }
 
-async function interactionResponse(interaction: { id: any; token: any; }, data: { type: number; data: { content: string; } | { embeds: any[]; } | { embeds: any[]; }; }) {
-    await axios.post(`https://discord.com/api/v8/interactions/${interaction.id}/${interaction.token}/callback`, {
-        data: data
-    })
-}
-
 function msToTime(duration: number) {
     //var milliseconds = (duration % 1000) / 100
     const seconds1 = Math.floor((duration / 1000) % 60)
@@ -322,3 +351,28 @@ function msToTime(duration: number) {
 
 
 app.listen(3000);
+
+
+/*
+interface Command {
+    get(eventname: string): {
+        name: string,
+        execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
+    },
+    set(eventname: string, module: object): {
+        name: string,
+        execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
+    }
+
+    Collection: {
+
+        get(eventname: string): {
+            name: string,
+            execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
+        }
+
+    }
+
+}
+
+*/

@@ -11,3 +11,5 @@ dist/
 out/
 test.js
 asd.txt
+cache/
+*.log

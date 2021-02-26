@@ -1,0 +1,77 @@
+{
+    "root": {
+        "bans": {
+            "gloabl": "You are banned from useing this bot!",
+            "guild": "You cant use this bot on this server!",
+            "reggeltGlobal": "You are banned from useing the morning feature! (globaly)",
+            "reggeltGuild": "You are banned from useing the morning feature! (%!GUILD%!)"
+        }
+    },
+    "events" : {
+        "reggelt": {
+            "channel": "morning",
+            "keyWord": "morning",
+            "onCooldown": "You are on cooldown! Please wait until %!CD%!.",
+            "noPrems": "Missing permission!",
+            "noSend": "Missing permission! I need **Send Messages** to function correctly",
+            "notReggelt": "You can only type **%!KEYWORD%** here! (%!GUILD%!)"
+        },
+        "reggeltUpdate": {
+            "editSend": "You cannot edit messages in this channel"
+        }
+    },
+    "commands": {
+        "ping": {
+            "gateway": "Gateway",
+            "internal": "Internal",
+            "status": "Status",
+            "error": "Error",
+            "po": "Partial outage",
+            "mo": "Major outage",
+            "dp": "Degraded performance",
+            "aso": "All Systems Operational"
+        },
+        "link": {
+            "aal": "This account is already linked!",
+            "als": "Account linked succesfuly!",
+            "ela": "Error linking account",
+            "noMail": "Please provide your email",
+            "noCode": "Please provide your link code"
+        },
+        "leaderboard": {
+            "leaderboard": "Leaderboard",
+            "numberNaN": "Please use a number!",
+            "notOneTwenty": "Please use a number between 1 and 20"
+        },
+        "help": {
+            "title": "Reggeltbot help",
+            "f1": "%!PREFIX%!count",
+            "f11": "It tells you how many times you greeted the #reggelt channel (or [here](https://reggeltbot.com/count?i=%!DCID%!) You can also view it)",
+            "f2": "%!PREFIX%!invite",
+            "f21": "Invite the bot",
+            "f3": "Setting up the %!CHANNEL%! channel",
+            "f31": "Name a chennel **%!CHANNEL%!** and you're done",
+            "f4": "top.gg",
+            "f41": "Heres the bots [top.gg](https://top.gg/bot/749037285621628950) page",
+            "f5": "Report a problem",
+            "f51": "If you encounter any problems while using the bot you can report [here](https://github.com/zal1000/reggeltbot/issues)",
+            "ping": "Bot ping",
+            "uptime": "Uptime"
+        },
+        "fact": {
+            "errorGF": "Error geting fact",
+            "noId": "Please add fact id!",
+            "title1": "Random fact",
+            "title2": "Random fact by.: %!AUTHOR%!",
+            "fact": "Fact",
+            "factid":"Fact id",
+            "add": "Add your fact",
+            "addF": "You can add your fact [here](https://facts.zal1000.com/) (to display discord info, link your discord account [here](https://dclink.zal1000.com/))",
+            "noFact": "Cannot find that fact!"
+        },
+        "count": {
+            "f1": "%!USERNAME%! sad %!KEYWORD%! %!COUNT%! times",
+            "f2": "[Click here to open on web](https://reggeltbot.com/count?i=%!ID%!)"
+        }
+    }
+}
