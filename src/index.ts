@@ -104,10 +104,10 @@ bot.on("message", async message => {
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
 
-    if(message.channel.type === "text" && !guildconfig) {
+    if(message.guild && !guildconfig) {
         const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
 
-        await admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild?.id!).set(defdata);
+        await admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild.id).set(defdata);
     }
     //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
     const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
@@ -231,31 +231,34 @@ bot.on("message", async message => {
     }
 });
 
-async function updateUser(message: any) {
-    const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild?.id);
-    //const doc = await ref.get();
-    const gme = message.guild.member(message.author.id);
-    //console.log(gme.permissions.toArray());
-    ref.set({
-        name: message.guild.name,
-        owner: message.guild.ownerID,
-        icon: message.guild.iconURL(),
-        permissions: {
-            ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
-            MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
-            MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
-            MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
-        },
-        allpermissions: gme.permissions.toArray(),
-        color: gme.displayColor,
-        colorHEX: gme.displayHexColor,
-        nick: gme.nickname,
-    }, {merge: true}).then(() => {
-        //message.reply('Server added/updated succesfuly!');
-    }).catch(err => {
-        //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
-        throw err;
-    });
+async function updateUser(message: Discord.Message) {
+    if(message.guild) {
+        const ref = admin.firestore().collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild?.id);
+        //const doc = await ref.get();
+        const gme = message.guild.member(message.author.id)!;
+        //console.log(gme.permissions.toArray());
+        ref.set({
+            name: message.guild.name,
+            owner: message.guild.ownerID,
+            icon: message.guild.iconURL(),
+            permissions: {
+                ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
+                MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
+                MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
+                MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
+            },
+            allpermissions: gme.permissions.toArray(),
+            color: gme.displayColor,
+            colorHEX: gme.displayHexColor,
+            nick: gme.nickname,
+        }, {merge: true}).then(() => {
+            //message.reply('Server added/updated succesfuly!');
+        }).catch(err => {
+            //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
+            throw err;
+        });
+    }
+
 }
 
 async function getReggeltChannel(PROD: string | undefined) {
@@ -297,7 +300,7 @@ async function getPrefix() {
     }
 }
 
-async function restartRequest(message: { author: { id: any; }; reply: (arg0: string) => Promise<any>; }) {
+async function restartRequest(message: Discord.Message) {
     const ref = admin.firestore().collection("bots").doc("reggeltbot");
     const doc = await ref.get();
 
