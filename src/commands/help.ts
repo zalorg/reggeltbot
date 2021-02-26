@@ -38,21 +38,33 @@ module.exports = {
 
         const badges = rawbadges.join(' ');
 
+        const alllang = langcode.langs.join(', ')
+
         const embed = new MessageEmbed()
         .setTitle(lang.title)
         .setDescription(`${badges}`)
         .setColor("#FFCB2B")
         .addField(lang.f1.replace('%!PREFIX%!', prefix), lang.f11.replace('%!DCID%!', message.author.id).replace('%!CHANNEL%!', reggeltconfig.channel))
         .addField(lang.f2.replace('%!PREFIX%!', prefix), lang.f21)
+        .addField(lang.setlang1.replace('%!PREFIX%!', prefix), lang.setlang2.replace('%!ALLLANG%!', alllang))
         .addField(lang.f3.replace('%!CHANNEL%!', reggeltconfig.channel), lang.f31.replace('%!CHANNEL%!', reggeltconfig.channel))
         .addField(lang.f4, lang.f41)
         .addField(lang.f5, lang.f51)
-        .addField('\u200B', '\u200B')
+        .addField('\u200B', '\u200B');
+
+        if(guildconfig.lang != "en-US") {
+            embed
+            .addField(`${prefix} setlang [OPTION] [LANG]`, `Options: say, reggelt, full | Lang: Your laungage code.  For example: (${alllang})`)
+            .addField('\u200B', '\u200B')
+        }
+
+        embed
         .addField(lang.ping, `${bot.ws.ping}ms`)
         .addField(lang.uptime, `${ms(bot.uptime!)}`)
         .setFooter(message.author.username)
         .setThumbnail(bot.user!.avatarURL()!)
         .setTimestamp(Date.now());
+
 
         message.channel.send(embed)
         

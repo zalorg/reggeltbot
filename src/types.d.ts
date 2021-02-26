@@ -57,6 +57,8 @@ export interface Langtypes {
             f51: string,
             ping: string,
             uptime: string,
+            setlang1: string,
+            setlang2: string,
         },
         fact: {
             errorGF: string,
