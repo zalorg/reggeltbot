@@ -48,7 +48,7 @@ module.exports = {
                     let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString()); 
                     message.author.send(cdmsg);
                 } else {
-                    if(!process.env.PROD) {
+                    if(!process.env.PROD && rawcd <= 6) {
                         await reggeltupdateall();
                         await reggeltupdatefs(message);
                     }
