@@ -7,8 +7,6 @@ module.exports = {
     async execute(message: Message) {
         const db = admin.firestore();
 
-        
-
         const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
 
         const guildlang = guildconfig.lang || "en-US"
