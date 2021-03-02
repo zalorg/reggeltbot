@@ -16,11 +16,13 @@ module.exports = {
     
         const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
 
-        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+        const guildlang = guildconfig.lang || "en-US"
+
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
         const lang = langfull.commands.help;
 
-        const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
+        const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).events.reggelt;
 
         const rawbadges: Array<string> = [];
 
