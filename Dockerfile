@@ -7,4 +7,4 @@ RUN npm install\
         && npm install typescript -g
 COPY . /usr/src/reggeltbot
 RUN tsc
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/manager.js"]
