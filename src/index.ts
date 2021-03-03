@@ -45,7 +45,7 @@ const apiFiles = fs.readdirSync('./dist/api/').filter(file => file.endsWith('.js
 for (const file of apiFiles) {
     const m = file.split(".", 1)
     const command = require(`./api/${m[0]}`);
-    console.log(command)
+    //console.log(command)
     api.set(command.name, command)
     //api.get(command.name).execute(bot);
 }
@@ -54,7 +54,7 @@ const commandFiles = fs.readdirSync('./dist/commands/').filter(file => file.ends
 for (const file of commandFiles) {
     const m = file.split(".", 1)
     const command = require(`./commands/${m[0]}`);
-    console.log(command)
+    //console.log(command)
     commands.set(command.name, command)
 }
 
@@ -62,7 +62,7 @@ const eventFiles = fs.readdirSync('./dist/events/').filter(file => file.endsWith
 for (const file of eventFiles) {
     const m = file.split(".", 1)
     const event = require(`./events/${m[0]}`);
-    console.log(event)
+    //console.log(event)
     events.set(event.name, event)
 }
 
@@ -445,7 +445,6 @@ async function waikupdate(bot: Client) {
     }
 }
 
-app.listen(3000);
 
 
 /*
