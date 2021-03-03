@@ -1,18 +1,20 @@
-import * as admin from 'firebase-admin';
+//import * as admin from 'firebase-admin';
 import { Client, Message, MessageEmbed} from 'discord.js'
-import { Guildconfig, Langtypes} from '../types'
-import * as fs from 'fs';
+//import { Guildconfig, Langtypes} from '../types'
+//import * as fs from 'fs';
 
 module.exports = {
     name: 'cooldown',
     async execute(bot: Client, message: Message, args: Array<string>) {
         if(!args) {
+            /*
             const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
 
             const guildlang = guildconfig.lang || "en-US"
     
             const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
-
+            */
+            /*
             const db = admin.firestore();
 
             const ref = db.collection('dcusers').doc(message.author.id);
@@ -35,6 +37,7 @@ module.exports = {
 
 
             let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString());
+            */
 
             let embed = new MessageEmbed()
 
