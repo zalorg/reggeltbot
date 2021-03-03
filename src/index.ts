@@ -232,6 +232,8 @@ bot.on("message", async message => {
     } else if(message.guild && message.guild.id === "541446521313296385" && message.author.id === "423925286350880779" && cmd === `${prefix}waikupdate`) {
         waikupdate(bot)
         message.channel.send('Manual sync started')
+    } else if(cmd === `${prefix}cooldown`) {
+        commands.get('cooldown').execute(bot, message, args)
     }
 });
 
