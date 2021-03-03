@@ -16,7 +16,7 @@ module.exports = {
         const lang = langfull.commands.leaderboard
 
         if(!args[0]) {
-            await axios.default.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=10`).then(res => {
+            await axios.default.get(`${process.env.RAPIURL}/leaderboard?m=10`).then(res => {
                 const embed = new Discord.MessageEmbed()
                 .setTitle(lang.leaderboard)
                 .setColor('#FFCA5C')
@@ -45,7 +45,7 @@ module.exports = {
 
                 message.reply(lang.notOneTwenty)
             } else {
-                await axios.default.get(`${(await apiurl()).ip}/reggeltbot/leaderboard?m=${number}`).then(res => {
+                await axios.default.get(`${process.env.RAPIURL}/leaderboard?m=${number}`).then(res => {
                     const embed = new Discord.MessageEmbed()
                     .setTitle(lang.leaderboard)
                     .setColor('#FFCA5C')
@@ -62,18 +62,5 @@ module.exports = {
                 })
             }
         }
-    }
-}
-
-async function apiurl() {
-    const prodenv = process.env.PROD;
-    if(!prodenv || prodenv === "beta") {
-        return {
-            ip: "http://10.8.2.188:8080",
-        };
-    } else {
-        return {
-            ip: "http://localhost:8080",
-        };
     }
 }
