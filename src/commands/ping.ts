@@ -135,6 +135,26 @@ async function pings(bot: any, lang: any) {
         })
     })
 
+    let date5 = Date.now();
+
+    await axios.default.get(`${process.env.RAPIURL}/ping`).then(res => {
+        array.push({
+            name: `${lang.internal} 2`,
+            status: res.status,
+            err: null,
+            ping: Date.now() - date5,
+            data: res.data,
+        })
+    }).catch(err => {
+        array.push({
+            name: `${lang.internal} 2`,
+            status: err.status,
+            err: err.message,
+            ping: null,
+            data: err.data,
+        })
+    })
+
     let date3 = Date.now();
 
     await axios.default.get(`https://zal1000.ew.r.appspot.com/ping`).then(res => {
@@ -153,25 +173,6 @@ async function pings(bot: any, lang: any) {
             ping: null,
             data: err.data,
 
-        })
-    })
-    let date4 = Date.now();
-
-    await axios.default.get(`https://api-zd72hz742a-uc.a.run.app/ping`).then(res => {
-        array.push({
-            name: 'Cloud Run',
-            status: res.status,
-            err: null,
-            ping: Date.now() - date4,
-            data: res.data,
-        })
-    }).catch(err => {
-        array.push({
-            name: 'Cloud Run',
-            status: err.status,
-            err: err.message,
-            ping: null,
-            data: err.data,
         })
     })
 
