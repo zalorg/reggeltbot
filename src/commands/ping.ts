@@ -106,7 +106,6 @@ module.exports = {
 async function pings(bot: any, lang: any) {
     const array: { name: string; status: any; err: any; ping: any; data: any; }[] = [];
 
-    const internalapi = await apiurl();
 
     array.push({
         name: lang.gateway,
@@ -118,7 +117,7 @@ async function pings(bot: any, lang: any) {
     
     let date2 = Date.now();
 
-    await axios.default.get(`${internalapi.ip}/ping`).then(res => {
+    await axios.default.get(`${process.env.APIURL}/ping`).then(res => {
         array.push({
             name: lang.internal,
             status: res.status,
@@ -179,19 +178,6 @@ async function pings(bot: any, lang: any) {
     console.log(array);
     return array;
 
-}
-
-async function apiurl() {
-    const prodenv = process.env.PROD;
-    if(!prodenv || prodenv === "beta") {
-        return {
-            ip: "http://10.8.2.188:8080",
-        };
-    } else {
-        return {
-            ip: "http://localhost:8080",
-        };
-    }
 }
 
 async function botlogin() {
