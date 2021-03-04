@@ -169,7 +169,7 @@ bot.on("message", async message => {
 
     } else if (cmd === `${prefix}leaderboard`) {
 
-        await commands.get('leaderboard').execute(message, args);
+        await commands.get('leaderboard').execute(message, args, bot);
 
     } else if (cmd === `${prefix}github`) {
 
