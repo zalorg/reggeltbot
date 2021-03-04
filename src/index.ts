@@ -131,8 +131,9 @@ bot.on("message", async message => {
         })
     }
 
-    //events.get('automod').execute(message);
-
+    if(process.env.PROD === "false" && !message.content.startsWith(prefix)) {
+        events.get('automod').execute(message);
+    }
 
     // reggelt
     if(message.channel.type === "text") {
