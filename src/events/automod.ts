@@ -1,6 +1,7 @@
 import language = require('@google-cloud/language');
 const client = new language.LanguageServiceClient();
 import { Message } from 'discord.js'
+import * as admin from 'firebase-admin'
 
 
 module.exports = {
@@ -15,9 +16,15 @@ module.exports = {
       
         // Detects the sentiment of the text
         const [result] = await client.analyzeSentiment({document: document});
-        const sentiment = result.documentSentiment;
+        //const sentiment = result.documentSentiment;
 
-        console.log(sentiment)
+        //console.log(sentiment)
+
+        admin.firestore().collection('bots').doc('reggeltbot').collection('messageanalytics').add({
+          result: result,
+          author: message.author.id,
+          guild: message.guild?.id
+        })
 /*
         message.reply(`Text: ${text}`);
         message.reply(`Sentiment score: ${sentiment?.score}`);
