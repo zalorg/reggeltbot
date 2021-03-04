@@ -33,6 +33,9 @@ module.exports = {
             }).catch(err => {
                 message.reply('API Error')
                 console.error(err);
+                if(errchannel?.isText()) {
+                    errchannel.send(`Error: ${err.message}`)
+                }
             })
         } else {
             const number = parseInt(args[0]);
