@@ -1,12 +1,11 @@
 import * as axios from 'axios';
 import * as Discord from 'discord.js';
 import fs = require('fs');
-import { Message } from 'discord.js'
 import { Langtypes, Guildconfig } from '../types'
 
 module.exports = {
     name: 'leaderboard',
-    async execute(message: Message, args: Array<string>) {
+    async execute(message: Discord.Message, args: Array<string>, bot: Discord.Client) {
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
         const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
@@ -14,6 +13,9 @@ module.exports = {
         const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
 
         const lang = langfull.commands.leaderboard
+
+        const errchannel = bot.channels.cache.get('816824859958968350')
+
 
         if(!args[0]) {
             await axios.default.get(`${process.env.RAPIURL}/leaderboard?m=10`).then(res => {
@@ -59,6 +61,9 @@ module.exports = {
                 }).catch(err => {
                     message.reply('API Error')
                     console.error(err);
+                    if(errchannel?.isText()) {
+                        errchannel.send(`Error: ${err.message}`)
+                    }
                 })
             }
         }
