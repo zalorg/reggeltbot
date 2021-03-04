@@ -106,6 +106,7 @@ module.exports = {
 async function pings(bot: any, lang: any) {
     const array: { name: string; status: any; err: any; ping: any; data: any; }[] = [];
 
+    const errchannel = bot.channels.cache.get('816824859958968350')
 
     array.push({
         name: lang.gateway,
@@ -133,6 +134,9 @@ async function pings(bot: any, lang: any) {
             ping: null,
             data: err.data,
         })
+        if(errchannel?.isText()) {
+            errchannel.send(`Error: ${err.message} **ping**`)
+        }
     })
 
     let date5 = Date.now();
@@ -153,6 +157,9 @@ async function pings(bot: any, lang: any) {
             ping: null,
             data: err.data,
         })
+        if(errchannel?.isText()) {
+            errchannel.send(`Error: ${err.message} **ping**`)
+        }
     })
 
     let date3 = Date.now();
@@ -172,8 +179,10 @@ async function pings(bot: any, lang: any) {
             err: err.message,
             ping: null,
             data: err.data,
-
         })
+        if(errchannel?.isText()) {
+            errchannel.send(`Error: ${err.message} **ping**`)
+        }
     })
 
     console.log(array);
