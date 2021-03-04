@@ -8,6 +8,29 @@ metadata:
       fieldsType: FieldsV1
       fieldsV1:
         'f:metadata':
+          'f:annotations':
+            'f:gcb-build-id': {}
+            'f:kubectl.kubernetes.io/last-applied-configuration': {}
+          'f:labels':
+            'f:app.kubernetes.io/version': {}
+        'f:spec':
+          'f:template':
+            'f:metadata':
+              'f:annotations':
+                'f:gcb-build-id': {}
+              'f:labels':
+                'f:app.kubernetes.io/version': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"reggeltbot-1"}':
+                  'f:image': {}
+      manager: kubectl-client-side-apply
+      operation: Update
+      time: '2021-03-04T00:15:04Z'
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
           'f:labels':
             .: {}
             'f:app': {}
@@ -36,6 +59,15 @@ metadata:
                   .: {}
                   'f:env':
                     .: {}
+                    'k:{"name":"APIURL"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
                     'k:{"name":"GOOGLE_APPLICATION_CREDENTIALS"}':
                       .: {}
                       'f:name': {}
@@ -54,7 +86,15 @@ metadata:
                           .: {}
                           'f:key': {}
                           'f:name': {}
-                  'f:image': {}
+                    'k:{"name":"RAPIURL"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef':
+                          .: {}
+                          'f:key': {}
+                          'f:name': {}
                   'f:imagePullPolicy': {}
                   'f:name': {}
                   'f:resources': {}
@@ -82,7 +122,7 @@ metadata:
                     'f:secretName': {}
       manager: GoogleCloudConsole
       operation: Update
-      time: '2020-12-31T00:40:43Z'
+      time: '2021-03-04T00:19:42Z'
     - apiVersion: apps/v1
       fieldsType: FieldsV1
       fieldsV1:
@@ -109,7 +149,7 @@ metadata:
           'f:updatedReplicas': {}
       manager: kube-controller-manager
       operation: Update
-      time: '2020-12-31T00:40:45Z'
+      time: '2021-03-04T00:19:43Z'
   name: reggeltbot-beta
   namespace: default
 spec:
@@ -139,6 +179,16 @@ spec:
                 configMapKeyRef:
                   key: GOOGLE_APPLICATION_CREDENTIALS
                   name: reggeltbot-beta-config-7ea9
+            - name: RAPIURL
+              valueFrom:
+                configMapKeyRef:
+                  key: RAPIURL
+                  name: reggeltbot-beta-config-7ea9
+            - name: APIURL
+              valueFrom:
+                configMapKeyRef:
+                  key: APIURL
+                  name: reggeltbot-beta-config-7ea9
           image: gcr.io/zal1000/github.com/zal1000/reggeltbot
           imagePullPolicy: IfNotPresent
           name: reggeltbot-1
@@ -150,3 +200,48 @@ spec:
           secret:
             defaultMode: 420
             secretName: firebase-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: reggeltbot-beta
+  managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:app.kubernetes.io/managed-by': {}
+            'f:app.kubernetes.io/name': {}
+            'f:app.kubernetes.io/version': {}
+        'f:spec':
+          'f:ports':
+            .: {}
+            'k:{"port":3000,"protocol":"TCP"}':
+              .: {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+          'f:selector':
+            .: {}
+            'f:app': {}
+          'f:sessionAffinity': {}
+          'f:type': {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: '2021-01-27T02:46:59Z'
+  name: reggeltbot-beta-service
+  namespace: default
+spec:
+  clusterIP: 10.8.6.142
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: reggeltbot-beta
+  sessionAffinity: None
+  type: ClusterIP
