@@ -32,7 +32,7 @@ manager.on('shardCreate', async shard => {
     console.log(`Shard created (${shard.id})`)
 });
 
-manager.spawn("auto");
+manager.spawn('auto');
 
 }
 
