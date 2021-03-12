@@ -28,6 +28,8 @@ spec:
               value: 10.8.6.76:8080
             - name: APIURL
               value: 10.8.2.188:8080
+            - name: GOOGLEAPIKEY
+              value: AIzaSyDhjZEv-cPgDn9kDlb6fcN7V0eOceWCR5k
           image: gcr.io/zal1000/github.com/zal1000/reggeltbot
           imagePullPolicy: IfNotPresent
           name: reggeltbot-1
