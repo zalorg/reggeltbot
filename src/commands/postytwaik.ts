@@ -5,7 +5,7 @@ import { google } from 'googleapis';
 const db = admin.firestore();
 const yt = google.youtube({
     version: 'v3',
-    auth: process.env.GOOGLE_APPLICATION_CREDENTIALS
+    auth: process.env.GOOGLEAPIKEY
 });
 
 
