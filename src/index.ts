@@ -111,7 +111,8 @@ bot.on("message", async message => {
         await admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild.id).set(defdata);
     }
     //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
-    const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
+    const guildlang = guildconfig.lang || "en-US";
+    const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).events.reggelt;
 
     if(!message.author.bot) {
         updateUser(message);
@@ -234,7 +235,9 @@ bot.on("message", async message => {
         waikupdate(bot)
         message.channel.send('Manual sync started')
     } else if(cmd === `${prefix}cooldown`) {
-        commands.get('cooldown').execute(bot, message, args)
+        commands.get('cooldown').execute(bot, message, args);
+    } else if(cmd === `${prefix}postvideo`) {
+        commands.get('postwaikyt').execute(bot, message, args);
     }
 });
 
