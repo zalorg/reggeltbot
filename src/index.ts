@@ -45,7 +45,7 @@ const apiFiles = fs.readdirSync('./dist/api/').filter(file => file.endsWith('.js
 for (const file of apiFiles) {
     const m = file.split(".", 1)
     const command = require(`./api/${m[0]}`);
-    console.log(command)
+    //console.log(command)
     api.set(command.name, command)
     //api.get(command.name).execute(bot);
 }
@@ -54,7 +54,7 @@ const commandFiles = fs.readdirSync('./dist/commands/').filter(file => file.ends
 for (const file of commandFiles) {
     const m = file.split(".", 1)
     const command = require(`./commands/${m[0]}`);
-    console.log(command)
+    //console.log(command)
     commands.set(command.name, command)
 }
 
@@ -62,7 +62,7 @@ const eventFiles = fs.readdirSync('./dist/events/').filter(file => file.endsWith
 for (const file of eventFiles) {
     const m = file.split(".", 1)
     const event = require(`./events/${m[0]}`);
-    console.log(event)
+    //console.log(event)
     events.set(event.name, event)
 }
 
@@ -111,7 +111,8 @@ bot.on("message", async message => {
         await admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(message.guild.id).set(defdata);
     }
     //const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
-    const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8')).events.reggelt;
+    const guildlang = guildconfig.lang || "en-US";
+    const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).events.reggelt;
 
     if(!message.author.bot) {
         updateUser(message);
@@ -131,8 +132,9 @@ bot.on("message", async message => {
         })
     }
 
-    //events.get('automod').execute(message);
-
+    if(process.env.PROD === "false" && !message.content.startsWith(prefix)) {
+        events.get('automod').execute(message);
+    }
 
     // reggelt
     if(message.channel.type === "text") {
@@ -169,7 +171,7 @@ bot.on("message", async message => {
 
     } else if (cmd === `${prefix}leaderboard`) {
 
-        await commands.get('leaderboard').execute(message, args);
+        await commands.get('leaderboard').execute(message, args, bot);
 
     } else if (cmd === `${prefix}github`) {
 
@@ -232,6 +234,10 @@ bot.on("message", async message => {
     } else if(message.guild && message.guild.id === "541446521313296385" && message.author.id === "423925286350880779" && cmd === `${prefix}waikupdate`) {
         waikupdate(bot)
         message.channel.send('Manual sync started')
+    } else if(cmd === `${prefix}cooldown`) {
+        commands.get('cooldown').execute(bot, message, args);
+    } else if(cmd === `${prefix}postvideo`) {
+        commands.get('postwaikyt').execute(bot, message, args);
     }
 });
 
@@ -445,7 +451,6 @@ async function waikupdate(bot: Client) {
     }
 }
 
-app.listen(3000);
 
 
 /*

@@ -74,6 +74,10 @@ export interface Langtypes {
         count: {
             f1: string,
             f2: string,
+        },
+        cooldown: {
+            title: string,
+            
         }
     }
 }

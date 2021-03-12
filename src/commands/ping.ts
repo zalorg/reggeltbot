@@ -106,7 +106,7 @@ module.exports = {
 async function pings(bot: any, lang: any) {
     const array: { name: string; status: any; err: any; ping: any; data: any; }[] = [];
 
-    const internalapi = await apiurl();
+    const errchannel = bot.channels.cache.get('816824859958968350')
 
     array.push({
         name: lang.gateway,
@@ -118,7 +118,7 @@ async function pings(bot: any, lang: any) {
     
     let date2 = Date.now();
 
-    await axios.default.get(`${internalapi.ip}/ping`).then(res => {
+    await axios.default.get(`${process.env.APIURL}/ping`).then(res => {
         array.push({
             name: lang.internal,
             status: res.status,
@@ -134,6 +134,32 @@ async function pings(bot: any, lang: any) {
             ping: null,
             data: err.data,
         })
+        if(errchannel?.isText()) {
+            errchannel.send(`Error: ${err.message} **ping**`)
+        }
+    })
+
+    let date5 = Date.now();
+
+    await axios.default.get(`${process.env.RAPIURL}/ping`).then(res => {
+        array.push({
+            name: `${lang.internal} 2`,
+            status: res.status,
+            err: null,
+            ping: Date.now() - date5,
+            data: res.data,
+        })
+    }).catch(err => {
+        array.push({
+            name: `${lang.internal} 2`,
+            status: err.status,
+            err: err.message,
+            ping: null,
+            data: err.data,
+        })
+        if(errchannel?.isText()) {
+            errchannel.send(`Error: ${err.message} **ping**`)
+        }
     })
 
     let date3 = Date.now();
@@ -153,45 +179,15 @@ async function pings(bot: any, lang: any) {
             err: err.message,
             ping: null,
             data: err.data,
-
         })
-    })
-    let date4 = Date.now();
-
-    await axios.default.get(`https://api-zd72hz742a-uc.a.run.app/ping`).then(res => {
-        array.push({
-            name: 'Cloud Run',
-            status: res.status,
-            err: null,
-            ping: Date.now() - date4,
-            data: res.data,
-        })
-    }).catch(err => {
-        array.push({
-            name: 'Cloud Run',
-            status: err.status,
-            err: err.message,
-            ping: null,
-            data: err.data,
-        })
+        if(errchannel?.isText()) {
+            errchannel.send(`Error: ${err.message} **ping**`)
+        }
     })
 
     console.log(array);
     return array;
 
-}
-
-async function apiurl() {
-    const prodenv = process.env.PROD;
-    if(!prodenv || prodenv === "beta") {
-        return {
-            ip: "http://10.8.2.188:8080",
-        };
-    } else {
-        return {
-            ip: "http://localhost:8080",
-        };
-    }
 }
 
 async function botlogin() {

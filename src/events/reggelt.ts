@@ -7,11 +7,11 @@ module.exports = {
     async execute(message: Message) {
         const db = admin.firestore();
 
-        
-
         const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
 
-        const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+        const guildlang = guildconfig.lang || "en-US"
+
+        const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
         const data = JSON.parse(fs.readFileSync('./cache/global-bans.json', 'utf8'));
         if(data.bans.find((element: any) => element === message.author.id)) {
