@@ -5,7 +5,7 @@ import { google } from 'googleapis';
 const db = admin.firestore();
 const yt = google.youtube({
     version: 'v3',
-    auth: "AIzaSyDhjZEv-cPgDn9kDlb6fcN7V0eOceWCR5k"
+    auth: process.env.GOOGLE_APPLICATION_CREDENTIALS
 });
 
 
