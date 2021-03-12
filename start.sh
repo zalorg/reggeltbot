@@ -2,4 +2,4 @@ export GOOGLE_APPLICATION_CREDENTIALS="C:\Users\pityu\Downloads\zal1000-20bc518d
 export PROD=false
 export APIURL="http://localhost:8080"
 export RAPIURL="http://localhost:8081"
-nodemon dist/manager.js
+nodemon dist/index.js
