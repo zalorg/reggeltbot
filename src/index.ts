@@ -71,8 +71,9 @@ events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
 events.get('msgUpdate').execute(bot);
 events.get('guildMemberAdd').execute(bot)
+events.get('guildAdd').execute(bot)
 
-
+//guildAdd
 
 app.get('/', (req, res) => {
     res.sendStatus(200);

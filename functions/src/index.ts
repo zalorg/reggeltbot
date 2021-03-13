@@ -11,13 +11,11 @@ const client = new Discord.Client()
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 
-export const senddcmessage = functions.firestore.document('bots/reggeltbot/sendmessages/{docId}').onCreate(async (snapshot, context) => {
+export const senddcmessage = functions.firestore.document('/bots/reggeltbot/sendmessage/{docID}').onCreate(async (snapshot, context) => {
 
     const channel = client.channels.cache.find(channel => channel.id === snapshot.data().id)
 
     console.log(channel);
-
-
 
     const db = admin.firestore()
     const botRef = db.collection("bots").doc("reggeltbot");
@@ -27,6 +25,7 @@ export const senddcmessage = functions.firestore.document('bots/reggeltbot/sendm
 
     console.log(snapshot.data());
     console.log(context);
+
 });
 
 
