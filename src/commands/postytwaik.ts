@@ -8,7 +8,7 @@ const yt = google.youtube({
     auth: process.env.GOOGLEAPIKEY
 });
 
-console.log(process.env.GOOGLEAPIKEY)
+//console.log(process.env.GOOGLEAPIKEY)
 
 module.exports = {
     name: 'postwaikyt',
@@ -18,6 +18,7 @@ module.exports = {
             if(message.guild?.member(message.author.id)?.hasPermission('MANAGE_MESSAGES')) {
                 const query = db.collection('waikyt').where('Url', '==', args[0]);
                 const queryres = await query.get();
+                console.log(queryres);
                 if(queryres.empty) {
                     postvid(bot, message, args, "542003224090116096");
                 } else {
@@ -28,7 +29,18 @@ module.exports = {
                 message.reply('Nope :)')
             }
         } else if(message.guild && message.guild.id === "738169002085449748" && message.guild.member(message.author.id)?.hasPermission('MANAGE_MESSAGES')) {
-            postvid(bot, message, args, '763040615080263700');
+            if(message.guild?.member(message.author.id)?.hasPermission('MANAGE_MESSAGES')) {
+                const query = db.collection('waikyt').where('Url', '==', args[0]);
+                const queryres = await query.get();
+                if(queryres.empty) {
+                    postvid(bot, message, args, '763040615080263700');
+                } else {
+                    message.reply('This video is already sent to the channel!')
+                }
+            }
+            else {
+                message.reply('Nope :)')
+            }
         }
     }
 }
@@ -60,10 +72,13 @@ async function postvid(bot: Discord.Client, message: Discord.Message, args: Arra
                     Url: `${args[0]}`,
                     AuthorName: `${vdata.snippet?.channelTitle}`,
                     messageid: m.id,
+                }).then(d => {
+                    message.channel.send('Video record saved')
+                }).catch(e => {
+                    message.channel.send('Error saveing video record')
                 })
-
                 m.crosspost().catch(e => {
-                    throw e;
+
                 })
             }).catch(e => {
                 message.reply(`Error posting video: ${e.message}`)
