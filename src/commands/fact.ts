@@ -16,7 +16,9 @@ module.exports = {
 
         const currentLang: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const fulllang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8'));
+        const guildlang = currentLang.lang || "en-US"
+        
+        const fulllang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
         const lang = fulllang.commands.fact;
 
@@ -77,7 +79,9 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
 
     const currentLang = lngcode.guilds[message.guild!.id]
 
-    const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.fact;
+    const guildlang = currentLang.lang || "en-US"
+
+    const lang = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).commands.fact;
 
     if(args[0] === "say" || args[2] === "say") {
         const string: string = await translatefact(doc.data()!.fact, langcode);
@@ -142,7 +146,9 @@ async function getRandomFactWithId(id: any, message: Message, args: Array<string
 
         const currentLang: Guildconfig = lngcode.guilds[message.guild!.id]
     
-        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8'));
+        const guildlang = currentLang.lang || "en-US"
+
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
         const lang = langfull.commands.fact;
 
@@ -180,9 +186,11 @@ async function tts(message: Message, args: Array<string>,) {
 
     //message.reply(`${currentLang.lang}`)
 
+    const guildlang = guildconfig.lang || "en-US";
+
         const [response] = await client.synthesizeSpeech({
             input: {text: text},
-            voice: {languageCode: `${guildconfig.lang}`, ssmlGender: 'NEUTRAL'},
+            voice: {languageCode: `${guildlang}`, ssmlGender: 'NEUTRAL'},
             audioConfig: {audioEncoding: 'MP3'},
           });
 

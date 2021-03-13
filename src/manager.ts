@@ -51,7 +51,7 @@ async function start() {
     })
 
     app.delete('/shard', async (req, res) => {
-        manager
+
     })
 
 }

@@ -71,8 +71,9 @@ events.get('ready').execute(bot);
 //bot.events.get('rAdd').execute(bot);
 events.get('msgUpdate').execute(bot);
 events.get('guildMemberAdd').execute(bot)
+events.get('guildAdd').execute(bot)
 
-
+//guildAdd
 
 app.get('/', (req, res) => {
     res.sendStatus(200);
@@ -238,6 +239,8 @@ bot.on("message", async message => {
         commands.get('cooldown').execute(bot, message, args);
     } else if(cmd === `${prefix}postvideo`) {
         commands.get('postwaikyt').execute(bot, message, args);
+    } else if(cmd === `${prefix}ytsub`) {
+        commands.get('ytsub').execute(bot, message, args);
     }
 });
 

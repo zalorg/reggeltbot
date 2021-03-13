@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import { Client, Message, PartialMessage } from 'discord.js'
-import { Langtypes } from '../types'
+import { Langtypes, Guildconfig } from '../types'
 
 module.exports =  {
     name: 'msgUpdate',
@@ -12,9 +12,11 @@ module.exports =  {
 
             const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-            const currentLang = langcode.guilds[newMsg.guild!.id]
+            const guild: Guildconfig = langcode.guilds[newMsg.guild!.id]
             
-            const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${currentLang.code}.json`, 'utf8')).events.reggelt;
+            const guildlang = guild.lang || "en-US";
+
+            const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).events.reggelt;
 
             const lang = langfull.events.reggelt;
         
