@@ -118,7 +118,7 @@ async function pings(bot: any, lang: any) {
     
     let date2 = Date.now();
 
-    await axios.default.get(`${process.env.APIURL}/ping`).then(res => {
+    await axios.default.get(`${process.env.RAPIURL}/ping`).then(res => {
         array.push({
             name: lang.internal,
             status: res.status,
