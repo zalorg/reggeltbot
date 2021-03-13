@@ -2,6 +2,8 @@ import * as axios from 'axios';
 import * as Discord from 'discord.js';
 import fs = require('fs');
 import { Langtypes, Guildconfig } from '../types'
+import * as admin from 'firebase-admin';
+const db = admin.firestore();
 
 module.exports = {
     name: 'leaderboard',
@@ -16,9 +18,11 @@ module.exports = {
 
         const errchannel = bot.channels.cache.get('816824859958968350')
 
+        const configref = db.collection('bots').doc('kubeconfig');
+        const configdoc: any = (await configref.get()).data()
 
         if(!args[0]) {
-            await axios.default.get(`${process.env.RAPIURL}/leaderboard?m=10`).then(res => {
+            await axios.default.get(`${process.env.RAPIURL || configdoc.RAPIURL}/leaderboard?m=10`).then(res => {
                 const embed = new Discord.MessageEmbed()
                 .setTitle(lang.leaderboard)
                 .setColor('#FFCA5C')
