@@ -1,4 +1,4 @@
-import * as textToSpeech from '@google-cloud/text-to-speech'
+import { TextToSpeechClient } from '@google-cloud/text-to-speech'
 import fs = require('fs');
 import { Message } from 'discord.js'
 import { Guildconfig } from '../types'
@@ -9,7 +9,7 @@ module.exports = {
     async execute(message: Message, args: Array<string>,) {
         //if(!args) return message.reply('I cant say nothing')
         
-        const client = new textToSpeech.TextToSpeechClient();
+        const client = new TextToSpeechClient();
         const text = args.join(' ');
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
