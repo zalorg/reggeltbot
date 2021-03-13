@@ -238,6 +238,8 @@ bot.on("message", async message => {
         commands.get('cooldown').execute(bot, message, args);
     } else if(cmd === `${prefix}postvideo`) {
         commands.get('postwaikyt').execute(bot, message, args);
+    } else if(cmd === `${prefix}ytsub`) {
+        commands.get('ytsub').execute(bot, message, args);
     }
 });
 
