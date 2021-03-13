@@ -16,7 +16,7 @@ module.exports =  {
             
             const guildlang = guild.lang || "en-US";
 
-            const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).events.reggelt;
+            const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
             const lang = langfull.events.reggelt;
         
