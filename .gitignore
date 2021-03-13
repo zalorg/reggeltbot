@@ -11,5 +11,5 @@ out/
 cache/
 test.js
 asd.txt
-
+.env
 *.log
