@@ -198,7 +198,7 @@ async function tts(message: Message, args: Array<string>,) {
 
         //console.log('Audio content written to file: output.mp3');
 
-        message.guild?.me?.voice.setMute(false)
+        //message.guild?.me?.voice.setMute(false)
 
         const voiceChannel = message.member!.voice.channel;
 
