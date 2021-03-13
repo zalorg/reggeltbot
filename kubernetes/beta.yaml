@@ -179,16 +179,6 @@ spec:
                 configMapKeyRef:
                   key: GOOGLE_APPLICATION_CREDENTIALS
                   name: reggeltbot-beta-config-7ea9
-            - name: RAPIURL
-              valueFrom:
-                configMapKeyRef:
-                  key: RAPIURL
-                  name: reggeltbot-beta-config-7ea9
-            - name: APIURL
-              valueFrom:
-                configMapKeyRef:
-                  key: APIURL
-                  name: reggeltbot-beta-config-7ea9
           image: gcr.io/zal1000/github.com/zal1000/reggeltbot
           imagePullPolicy: IfNotPresent
           name: reggeltbot-1

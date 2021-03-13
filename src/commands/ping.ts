@@ -5,6 +5,9 @@ import fs = require('fs')
 import { Client, Message } from 'discord.js';
 import { Langtypes, Guildconfig } from '../types'
 
+const db = admin.firestore();
+
+
 module.exports = {
     name: 'ping',
     async execute(bot: Client, args: any, message: Message) {
@@ -108,6 +111,9 @@ async function pings(bot: any, lang: any) {
 
     const errchannel = bot.channels.cache.get('816824859958968350')
 
+    const configref = db.collection('bots').doc('kubeconfig');
+    const configdoc: any = (await configref.get()).data()
+
     array.push({
         name: lang.gateway,
         status: 200,
@@ -118,7 +124,7 @@ async function pings(bot: any, lang: any) {
     
     let date2 = Date.now();
 
-    await axios.default.get(`${process.env.RAPIURL}/ping`).then(res => {
+    await axios.default.get(`${process.env.APIURL || configdoc.APIURL}/ping`).then(res => {
         array.push({
             name: lang.internal,
             status: res.status,
@@ -141,7 +147,7 @@ async function pings(bot: any, lang: any) {
 
     let date5 = Date.now();
 
-    await axios.default.get(`${process.env.RAPIURL}/ping`).then(res => {
+    await axios.default.get(`${process.env.RAPIURL || configdoc.RAPIURL}/ping`).then(res => {
         array.push({
             name: `${lang.internal} 2`,
             status: res.status,
