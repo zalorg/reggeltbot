@@ -42,6 +42,7 @@ async function sendissue(bot: Discord.Client, message: Discord.Message, args: Ar
                     time: array[1],
                     issue: array[2],
                     status: 'new',
+                    author: message.author.id,
                 }).then(d => {
                     message.reply(`Probléma elküldve! (id: ${d.id})`)
                 })
