@@ -79,8 +79,11 @@ module.exports = {
                     pp: message.author.avatarURL(),
                 });
             }
-
-            message.react("☕");     
+            if(message.author.id === "183302720030113792") {
+                message.react("🍵").catch(e => {console.log('cant react')});
+            } else {
+                message.react("☕").catch(e => {console.log('cant react')});  
+            }
         } else {
             if(!message.deletable) {
                 message.channel.send(lang.events.reggelt.noPerms)
