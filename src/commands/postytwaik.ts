@@ -60,7 +60,7 @@ async function postvid(bot: Discord.Client, message: Discord.Message, args: Arra
         if(channel?.isText()) {
             const ref = db.doc('waikyt/defaultmessage');
             const doc = await ref.get()
-            const msg = `${doc.data()!.msg}`.replace('%!AUTHOR%!', r.data.items![0].snippet?.channelTitle!).replace('%!URL%!', args[0]);
+            const msg = `${doc.data()!.msg}`.replace('%!AUTHOR%!', r.data.items![0].snippet?.channelTitle!).replace('%!URL%!', args[0]).replace('%!CREATEDAT%!', r.data.items![0].snippet?.publishedAt!).replace('%!DESCRIPTION%!', args[0]).replace('%!URL%!', args[0]).replace('%!TAG%!', '<@&820063378999476265>');
        
             channel.send(msg).then(m => {
                 const vdata = r.data.items![0];
