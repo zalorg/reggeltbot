@@ -3,7 +3,9 @@ import axios from "axios";
 import * as Discord from 'discord.js';
 import fs = require('fs');
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
-const bot = new Discord.Client();
+const bot = new Discord.Client({
+    retryLimit: 10,
+});
 import * as admin from 'firebase-admin';
 import express = require('express');
 import { Guildconfig, Regggeltconfig } from './types'
