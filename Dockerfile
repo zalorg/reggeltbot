@@ -7,4 +7,5 @@ RUN npm install\
         && npm install typescript -g
 COPY . /usr/src/reggeltbot
 RUN tsc
+ENV PORT=3000
 CMD ["node", "dist/index.js"]
