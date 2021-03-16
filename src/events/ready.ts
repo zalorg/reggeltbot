@@ -136,9 +136,15 @@ async function waikupdate(bot: Client) {
 
         //newbee 821417192339275887
 
+
         if(join + 86400000 > now) {
             waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
                 sendlog(member, undefined, "newbee")
+                console.log(member.user.tag);
+
+            }).catch(e => {
+                console.log(`Error adding ${member.user.tag} to newbee Err: ${e}`);
+
             })
         } else {
             waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
