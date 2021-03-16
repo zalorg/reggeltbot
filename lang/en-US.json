@@ -45,7 +45,7 @@
         },
         "help": {
             "title": "Reggeltbot help",
-            "f1": "%!PREFIX%!count",
+            "f1": "%!PREFIX%!count | %!PREFIX%!c",
             "f11": "It tells you how many times you greeted the #reggelt channel (or [here](https://reggeltbot.com/count?i=%!DCID%!) You can also view it)",
             "f2": "%!PREFIX%!invite",
             "f21": "Invite the bot",
