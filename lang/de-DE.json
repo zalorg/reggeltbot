@@ -45,7 +45,7 @@
         },
         "help": {
             "title": "Reggeltbot hilfen",
-            "f1": "%!PREFIX%!count",
+            "f1": "%!PREFIX%!count | %!PREFIX%!c",
             "f11": "Es sagt dir, weieviel du in den %!CHANNEL%! Kanal gegrüßt hast, oder du kannst auch [hier](https://reggeltbot.com/count?i=%!DCID%!) ansehen",
             "f2": "%!PREFIX%!invite",
             "f21": "laden Bot ein",
