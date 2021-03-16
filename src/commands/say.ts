@@ -16,6 +16,8 @@ module.exports = {
 
         const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
+        if(message.member?.voice) return;
+
         //message.reply(`${guildconfig.lang}`)
 
             const [response] = await client.synthesizeSpeech({
