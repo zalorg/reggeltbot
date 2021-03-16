@@ -369,7 +369,6 @@ function msToTime(duration: number) {
 async function waikupdate(bot: Client) {
     const db = admin.firestore();
 
-    //newbee 821417192339275887
 
     const waik = await bot.guilds.fetch('541446521313296385');
 
@@ -400,10 +399,15 @@ async function waikupdate(bot: Client) {
 
         //1 day 86400000 ms
 
+        //newbee 821417192339275887
 
         if(join + 86400000 > now) {
             waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
                 sendlog(member, undefined, "newbee")
+            })
+        } else {
+            waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
+                //sendlog(member, undefined, "newbee")
             })
         }
 
