@@ -147,12 +147,12 @@ bot.on("message", async message => {
     }
     
     // help
-    if(message.content === `${prefix}help`){
+    if(cmd === `${prefix}help` || cmd === `${prefix}help`){
         commands.get('help').execute(message, prefix, bot)
     }
 
     //count 
-    else if(cmd === `${prefix}count`){
+    else if(cmd === `${prefix}count` || cmd === `${prefix}c`){
 
         await commands.get('count').execute(message);
     }
@@ -160,7 +160,7 @@ bot.on("message", async message => {
 
         commands.get('link').execute(message, args);
 
-    } else if(cmd === `${prefix}fact`) {
+    } else if(cmd === `${prefix}fact` || cmd === `${prefix}f`) {
 
         commands.get('fact').execute(message, args);
 
@@ -172,7 +172,7 @@ bot.on("message", async message => {
 
         commands.get('ping').execute(bot, args, message)
 
-    } else if (cmd === `${prefix}leaderboard`) {
+    } else if (cmd === `${prefix}leaderboard` || cmd === `${prefix}l`) {
 
         await commands.get('leaderboard').execute(message, args, bot);
 
@@ -184,7 +184,7 @@ bot.on("message", async message => {
 
         commands.get('setlang').execute(message, args);
 
-    } else if(cmd === `${prefix}say`) {
+    } else if(cmd === `${prefix}say` || `${prefix}s`) {
 
         commands.get('say').execute(message, args, bot);
 
@@ -237,7 +237,7 @@ bot.on("message", async message => {
     } else if(message.guild && message.guild.id === "541446521313296385" && message.author.id === "423925286350880779" && cmd === `${prefix}waikupdate`) {
         waikupdate(bot)
         message.channel.send('Manual sync started')
-    } else if(cmd === `${prefix}cooldown`) {
+    } else if(cmd === `${prefix}cooldown` || cmd === `${prefix}cd`) {
         commands.get('cooldown').execute(bot, message, args);
     } else if(cmd === `${prefix}postvideo`) {
         commands.get('postwaikyt').execute(bot, message, args);
