@@ -152,7 +152,7 @@ bot.on("message", async message => {
     }
     
     // help
-    if(cmd === `${prefix}help` || cmd === `${prefix}help`){
+    if(cmd === `${prefix}help` || cmd === `${prefix}h`){
         commands.get('help').execute(message, prefix, bot)
     }
 
