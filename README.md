@@ -10,7 +10,7 @@ First, add the bot from [here](https://discord.com/api/oauth2/authorize?client_i
 
 - `r!count` to check how many times you wished morning for everyone on the server
 
-- `r!leaderboard` to get the first 10 people (THIS IS STILL IN DEVELOPMENT)
+- `r!leaderboard` to get the first 10 people
 
 - `r!cooldown` to get the current server cooldown (THIS IS STILL IN DEVELOPMENT)
 
