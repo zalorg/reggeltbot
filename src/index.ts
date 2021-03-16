@@ -401,9 +401,15 @@ async function waikupdate(bot: Client) {
 
         //newbee 821417192339275887
 
+
         if(join + 86400000 > now) {
             waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
                 sendlog(member, undefined, "newbee")
+                console.log(`${member.user.tag} added to newbie (${waik.roles.cache.get('821417192339275887')?.members})`);
+
+            }).catch(e => {
+                console.log(`Error adding ${member.user.tag} to newbee Err: ${e}`);
+
             })
         } else {
             waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
@@ -446,6 +452,7 @@ async function waikupdate(bot: Client) {
     async function sendlog(member: GuildMember, err: string | undefined, role: string) {
         const logchannel = await bot.channels.fetch('763040615080263700', false, true);
         if(logchannel.isText()) {
+            /*
             if(err) {
                 if(role === "y2") {
                     logchannel.send(`<@${member.id}> failed to added to **y2** Error: **${err}**`)
@@ -467,11 +474,10 @@ async function waikupdate(bot: Client) {
                     logchannel.send(`<@${member.id}> added to **m6**`)
                 }
             }
+            */
         }
     }
 }
-
-
 
 /*
 interface Command {
