@@ -87,6 +87,11 @@ app.get('/ping', async (req, res) => {
     });
 });
 
+app.patch('/waikroleupdate', async (req, res) => {
+    waikupdate(bot);
+    res.sendStatus(200);
+})
+
 
 bot.on('error', async (err: any) => {
     console.log(err);
