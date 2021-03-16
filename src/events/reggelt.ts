@@ -5,6 +5,8 @@ import { Langtypes, Guildconfig } from '../types'
 module.exports = {
     name: 'reggelt',
     async execute(message: Message) {
+
+        
         const db = admin.firestore();
 
         const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];

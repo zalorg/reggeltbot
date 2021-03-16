@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import DBL = require('dblapi.js');
-import { Client } from 'discord.js'
+import { Client, GuildMember } from 'discord.js'
 //import * as axios from 'axios';
 
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
         bot.on("ready", async () => {
 
             if(!process.env.PROD) {
-                //waikupdate(bot)
+                waikupdate(bot)
             }
 
             sendCommands()
@@ -100,9 +100,10 @@ async function getBotToken() {
 }
 
 */
-/*
+
 async function waikupdate(bot: Client) {
     const db = admin.firestore();
+
 
     const waik = await bot.guilds.fetch('541446521313296385');
 
@@ -131,8 +132,23 @@ async function waikupdate(bot: Client) {
 
         //console.log(join)
 
+        //1 day 86400000 ms
 
-        if(join + y2 < now) {
+        //newbee 821417192339275887
+
+        if(join + 86400000 > now) {
+            waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
+                sendlog(member, undefined, "newbee")
+            })
+        } else {
+            waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
+                //sendlog(member, undefined, "newbee")
+            })
+        }
+
+        if(!member.user.bot) {
+            sendlog(member, undefined, "bot")
+        } else if(join + y2 < now) {
             waik.member(member.id)?.roles.remove("814303109966200864").then(async member => {
                 if(logchannel.isText()) {
                     logchannel.send("Waik members sync started")
@@ -172,6 +188,8 @@ async function waikupdate(bot: Client) {
                     logchannel.send(`<@${member.id}> failed to added to **y1** Error: **${err}**`)
                 } else if(role === "m6") {
                     logchannel.send(`<@${member.id}> failed to added to **m6** Error: **${err}**`)
+                } else if(role === "bot") {
+                    logchannel.send('bot ignored')
                 }
 
                 // Err end
@@ -187,4 +205,3 @@ async function waikupdate(bot: Client) {
         }
     }
 }
-*/
