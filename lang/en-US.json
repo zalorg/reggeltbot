@@ -50,7 +50,7 @@
             "f2": "%!PREFIX%!invite",
             "f21": "Invite the bot",
             "setlang1": "%!PREFIX%!setlang [OPTION] [LANG]",
-            "setlang2": "Options: say, reggelt, full | Lang: Your language code.  For example: (%!ALLLANG)",
+            "setlang2": "Options: say, reggelt, full | Lang: Your language code.  For example: (%!ALLLANG%!)",
             "f3": "Setting up the %!CHANNEL%! channel",
             "f31": "Name a chennel **%!CHANNEL%!** and you're done",
             "f4": "top.gg",
