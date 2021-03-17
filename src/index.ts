@@ -419,7 +419,7 @@ async function waikupdate(bot: Client) {
                 })
             }
         } else {
-            if(!member.roles.cache.has('821417192339275887')) {
+            if(member.roles.cache.has('821417192339275887')) {
                 waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
                     console.log(`${member.user.tag} removed from newbie`)
                 })
