@@ -112,7 +112,7 @@ bot.on("message", async message => {
     let args = messageArray.slice(1);
 
     const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
+    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id] || langcode.guilds['default'];
 
     if(message.guild && !guildconfig) {
         const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
@@ -409,18 +409,22 @@ async function waikupdate(bot: Client) {
 
 
         if(join + 86400000 > now) {
-            waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
-                sendlog(member, undefined, "newbee")
-                console.log(`${member.user.tag} added to newbie (${waik.roles.cache.get('821417192339275887')?.members})`);
-
-            }).catch(e => {
-                console.log(`Error adding ${member.user.tag} to newbee Err: ${e}`);
-
-            })
+            if(!member.roles.cache.has('821417192339275887')) {
+                waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
+                    console.log(`${member.user.tag} added to newbie (${waik.roles.cache.get('821417192339275887')?.members})`);
+    
+                }).catch(e => {
+                    console.log(`Error adding ${member.user.tag} to newbee Err: ${e}`);
+    
+                })
+            }
         } else {
-            waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
-                //sendlog(member, undefined, "newbee")
-            })
+            if(!member.roles.cache.has('821417192339275887')) {
+                waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
+                    console.log(`${member.user.tag} removed from newbie`)
+                })
+            }
+
         }
 
         if(!member.user.bot) {
