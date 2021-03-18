@@ -14,7 +14,7 @@ module.exports = {
 
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const guildsettings: Guildconfig = langcode.guilds[message.guild!.id]
+        const guildsettings: Guildconfig = langcode.guilds[message.guild!.id] || "en-US";
 
         const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildsettings.lang}.json`, 'utf8'));
 
