@@ -9,7 +9,7 @@ const bot = new Discord.Client({
 import * as admin from 'firebase-admin';
 import express = require('express');
 import { Guildconfig, Regggeltconfig } from './types'
-import { Client, GuildMember } from "discord.js";
+import { Client } from "discord.js";
 //import * as qdb from 'quick.db';
 
 const app = express();
@@ -363,7 +363,13 @@ async function waikupdate(bot: Client) {
         const m6 = 6 * 2592000000;
         const y1 = 12 * 2592000000;
         const y2 = 24 * 2592000000;
+        const d1 = 86400000;
         const now = Date.now();
+
+        const ry2 = '814303501512343622';
+        const ry1 = '814303109966200864';
+        const rm6 = '814302832031301683';
+        const rd1 = '821417192339275887';
 
         //console.log(join)
 
@@ -372,54 +378,74 @@ async function waikupdate(bot: Client) {
         //newbee 821417192339275887
 
 
-        if(join + 86400000 > now) {
+        if(join + d1 > now) {
 
             metrics.update({
                 y2: admin.firestore.FieldValue.increment(1),
             });
 
-            if(!member.roles.cache.has('821417192339275887')) {
-                waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
-                    console.log(`${member.user.tag} added to newbie (${waik.roles.cache.get('821417192339275887')?.members.size})`);
-
-
+            if(!member.roles.cache.has(rd1)) {
+                waik.member(member.id)?.roles.add(rd1).then(async member => {
+                    console.log(`${member.user.tag} added to newbie (${waik.roles.cache.get(rd1)?.members.size})`);
                 }).catch(e => {
-                    console.log(`Error adding ${member.user.tag} to newbee Err: ${e}`);
+                    console.log(`Error adding ${member.user.tag} to ${waik.roles.cache.get(rd1)?.members.size} Err: ${e}`);
                 })
             }
 
-
         } else {
-
 
             if(member.roles.cache.has('821417192339275887')) {
                 waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
                     console.log(`${member.user.tag} removed from newbie (${waik.roles.cache.get('821417192339275887')?.members.size})`)
+                }).catch(e => {
+                    console.log(`Error removeing ${member.user.tag} from ${waik.roles.cache.get(rd1)?.members.size} Err: ${e}`);
                 })
             }
 
-
         }
 
+
         //role remove
+        /*
         waik.member(member.id)?.roles.remove('814303501512343622').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303501512343622')?.name}`))
         waik.member(member.id)?.roles.remove('814303109966200864').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
         waik.member(member.id)?.roles.remove('814302832031301683').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
         sendlog(member, undefined, "y2")
+        */
+
         if(member.user.bot) {
             //sendlog(member, undefined, "bot")
             console.log(`${member.user.tag} ignored (bot)`)
+
         } else if(join + y2 < now) {
-            /*
-            if(member.roles.cache.has('814303109966200864') || member.roles.cache.has('814302832031301683')) {
-                waik.member(member.id)?.roles.remove('814303109966200864').then(v => {
-                    console.log(`${member.user.tag} removed from `)
+            
+            if(member.roles.cache.has(rm6)) {
+                waik.member(member.id)?.roles.remove(rm6).then(v => {
+                    const role = waik.roles.cache.get(rm6);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
                 }).catch(e => {
                     console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
                 })
             }
-            */
-            //waik.member(member.id)?.roles.add('814303501512343622').then(member => sendlog(member, undefined, "y2")).catch(e => sendlog(member, e.message, "y2"))
+
+            if(member.roles.cache.has(ry1)) {
+                waik.member(member.id)?.roles.remove(ry1).then(v => {
+                    const role = waik.roles.cache.get(ry1);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
+
+            if(!member.roles.cache.has(ry2)) {
+                waik.member(member.id)?.roles.remove(ry2).then(v => {
+                    const role = waik.roles.cache.get(ry2);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
+            
             metrics.update({
                 y2: admin.firestore.FieldValue.increment(1),
             });
@@ -427,8 +453,33 @@ async function waikupdate(bot: Client) {
 
         } else if(join + y1 < now) {
 
+            if(member.roles.cache.has(rm6)) {
+                waik.member(member.id)?.roles.remove(rm6).then(v => {
+                    const role = waik.roles.cache.get(rm6);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
 
-            //waik.member(member.id)?.roles.add('814303109966200864').then(member => sendlog(member, undefined, "y1")).catch(e => sendlog(member, e.message, "y1"))
+            if(member.roles.cache.has(ry2)) {
+                waik.member(member.id)?.roles.remove(ry2).then(v => {
+                    const role = waik.roles.cache.get(ry2);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
+
+            if(!member.roles.cache.has(ry1)) {
+                waik.member(member.id)?.roles.remove(ry1).then(v => {
+                    const role = waik.roles.cache.get(ry1);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
+
             metrics.update({
                 y1: admin.firestore.FieldValue.increment(1),
             })
@@ -436,8 +487,33 @@ async function waikupdate(bot: Client) {
 
         } else if(join + m6 < now) {
 
+            if(member.roles.cache.has(ry1)) {
+                waik.member(member.id)?.roles.remove(ry1).then(v => {
+                    const role = waik.roles.cache.get(ry1);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
 
-            //waik.member(member.id)?.roles.add('814302832031301683').then(member => sendlog(member, undefined, "m2")).catch(e => sendlog(member, e.message, "m6"))
+            if(member.roles.cache.has(ry2)) {
+                waik.member(member.id)?.roles.remove(ry2).then(v => {
+                    const role = waik.roles.cache.get(ry2);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
+
+            if(!member.roles.cache.has(rm6)) {
+                waik.member(member.id)?.roles.remove(rm6).then(v => {
+                    const role = waik.roles.cache.get(rm6);
+                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
+
             metrics.update({
                 m6: admin.firestore.FieldValue.increment(1),
             })
@@ -445,8 +521,6 @@ async function waikupdate(bot: Client) {
 
         } else if(join + m3 < now) {
 
-
-            //waik.member(member.id)?.roles.add('814302832031301683').catch(e => console.error(e.message))
             metrics.update({
                 m3: admin.firestore.FieldValue.increment(1),
             })
@@ -455,11 +529,11 @@ async function waikupdate(bot: Client) {
         }
 
     })
-
+    /*
     async function sendlog(member: GuildMember, err: string | undefined, role: string) {
         const logchannel = await bot.channels.fetch('763040615080263700', false, true);
         if(logchannel.isText()) {
-            /*
+            
             if(err) {
                 if(role === "y2") {
                     logchannel.send(`<@${member.id}> failed to added to **y2** Error: **${err}**`)
@@ -481,9 +555,10 @@ async function waikupdate(bot: Client) {
                     logchannel.send(`<@${member.id}> added to **m6**`)
                 }
             }
-            */
+            
         }
     }
+    */
 }
 
 /*
