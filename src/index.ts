@@ -405,7 +405,7 @@ async function waikupdate(bot: Client) {
         waik.member(member.id)?.roles.remove('814303501512343622').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303501512343622')?.name}`))
         waik.member(member.id)?.roles.remove('814303109966200864').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
         waik.member(member.id)?.roles.remove('814302832031301683').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
-
+        sendlog(member, undefined, "y2")
         if(member.user.bot) {
             //sendlog(member, undefined, "bot")
             console.log(`${member.user.tag} ignored (bot)`)
