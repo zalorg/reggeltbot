@@ -401,11 +401,16 @@ async function waikupdate(bot: Client) {
 
         }
 
+        //role remove
+        waik.member(member.id)?.roles.remove('814303501512343622').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303501512343622')?.name}`))
+        waik.member(member.id)?.roles.remove('814303109966200864').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
+        waik.member(member.id)?.roles.remove('814302832031301683').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
+
         if(member.user.bot) {
             //sendlog(member, undefined, "bot")
             console.log(`${member.user.tag} ignored (bot)`)
         } else if(join + y2 < now) {
-
+            /*
             if(member.roles.cache.has('814303109966200864') || member.roles.cache.has('814302832031301683')) {
                 waik.member(member.id)?.roles.remove('814303109966200864').then(v => {
                     console.log(`${member.user.tag} removed from `)
@@ -413,8 +418,8 @@ async function waikupdate(bot: Client) {
                     console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
                 })
             }
-
-            waik.member(member.id)?.roles.add('814303501512343622').then(member => sendlog(member, undefined, "y2")).catch(e => sendlog(member, e.message, "y2"))
+            */
+            //waik.member(member.id)?.roles.add('814303501512343622').then(member => sendlog(member, undefined, "y2")).catch(e => sendlog(member, e.message, "y2"))
             metrics.update({
                 y2: admin.firestore.FieldValue.increment(1),
             });
@@ -423,7 +428,7 @@ async function waikupdate(bot: Client) {
         } else if(join + y1 < now) {
 
 
-            waik.member(member.id)?.roles.add('814303109966200864').then(member => sendlog(member, undefined, "y1")).catch(e => sendlog(member, e.message, "y1"))
+            //waik.member(member.id)?.roles.add('814303109966200864').then(member => sendlog(member, undefined, "y1")).catch(e => sendlog(member, e.message, "y1"))
             metrics.update({
                 y1: admin.firestore.FieldValue.increment(1),
             })
@@ -432,7 +437,7 @@ async function waikupdate(bot: Client) {
         } else if(join + m6 < now) {
 
 
-            waik.member(member.id)?.roles.add('814302832031301683').then(member => sendlog(member, undefined, "m2")).catch(e => sendlog(member, e.message, "m6"))
+            //waik.member(member.id)?.roles.add('814302832031301683').then(member => sendlog(member, undefined, "m2")).catch(e => sendlog(member, e.message, "m6"))
             metrics.update({
                 m6: admin.firestore.FieldValue.increment(1),
             })
