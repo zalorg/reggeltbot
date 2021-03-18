@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 const db = admin.firestore();
-
+import * as qdb from 'quick.db';
 module.exports = {
     name: 'updatecache',
     async execute() {
@@ -20,6 +20,7 @@ module.exports = {
     
         ref.onSnapshot(s => {
             updatecache(my).then(() => {
+
                 fs.writeFileSync('./cache/guilds.json', JSON.stringify(my))
             })
         })
@@ -39,6 +40,7 @@ async function updatecache(data: Interface) {
     const doc = await ref.get();
 
     doc.forEach(item => {
+        qdb.set(`guild.${item.id}`, item.data())
         data.guilds[item.id] = item.data();
     })
 }

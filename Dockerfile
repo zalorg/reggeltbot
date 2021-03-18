@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:14.0.0
 RUN mkdir -p /usr/src/reggeltbot
 WORKDIR /usr/src/reggeltbot
 RUN mkdir cache
