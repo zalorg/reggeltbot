@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import { Client, Message, MessageEmbed} from 'discord.js'
+import { Client, Message } from 'discord.js'
 import { Guildconfig, Langtypes} from '../types'
 import * as fs from 'fs';
 // .replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString())
@@ -39,10 +39,10 @@ module.exports = {
             
             message.reply(cdmsg);
 
-            let embed = new MessageEmbed()
+            //let embed = new MessageEmbed()
 
             message.member?.permissions.toArray()
-            message.channel.send(embed)
+            //message.channel.send(embed)
         }
 
     }
