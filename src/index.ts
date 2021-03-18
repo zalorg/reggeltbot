@@ -195,52 +195,6 @@ bot.on("message", async message => {
 
         commands.get('say').execute(message, args, bot);
 
-    } else if(cmd === `${prefix}updateall`) {
-        message.channel.send('Updateing all user...')
-        message.guild?.members.cache.forEach(async member => {
-            const ref = admin.firestore().doc(`/dcusers/${member.id}/guilds/${message.guild?.id}`);
-            const doc = await ref.get();
-            const gme = member
-            if(member.user.bot){ 
-                console.log('bot ignored')
-            } else if(doc.exists) {
-                ref.update({
-                    joinedTimestamp: member.joinedTimestamp,
-                    joinedAt: member.joinedAt,
-                    name: message.guild!.name,
-                    owner: message.guild!.ownerID,
-                    icon: message.guild!.iconURL(),
-                    permissions: {
-                        ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
-                        MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
-                        MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
-                        MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
-                    },
-                    allpermissions: gme.permissions.toArray(),
-                    color: member.displayColor,
-                    colorHEX: member.displayHexColor,
-                    nick: member.nickname,
-                }).then(d => console.log(`${member.user.username} updated`)).catch(e => console.log(e));
-            } else {
-                ref.set({
-                    joinedTimestamp: member.joinedTimestamp,
-                    joinedAt: member.joinedAt,
-                    name: message.guild!.name,
-                    owner: message.guild!.ownerID,
-                    icon: message.guild!.iconURL(),
-                    permissions: {
-                        ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
-                        MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
-                        MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
-                        MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),                
-                    },
-                    allpermissions: gme.permissions.toArray(),
-                    color: member.displayColor,
-                    colorHEX: member.displayHexColor,
-                    nick: member.nickname,
-                }).then(d => console.log(`${member.user.username} added`)).catch(e => console.log(e));
-            }
-        })
     } else if(cmd === `${prefix}cooldown` || cmd === `${prefix}cd`) {
         commands.get('cooldown').execute(bot, message, args);
     } else if(cmd === `${prefix}postvideo`) {
