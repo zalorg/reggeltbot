@@ -445,7 +445,7 @@ async function waikupdate(bot: Client) {
 
         }
 
-        if(!member.user.bot) {
+        if(member.user.bot) {
             //sendlog(member, undefined, "bot")
             console.log(`${member.user.tag} ignored (bot)`)
         } else if(join + y2 < now) {
