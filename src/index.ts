@@ -366,9 +366,9 @@ async function waikupdate(bot: Client) {
         const d1 = 86400000;
         const now = Date.now();
 
-        //const ry2 = '814303501512343622';
-        //const ry1 = '814303109966200864';
-        //const rm6 = '814302832031301683';
+        const ry2 = '814303501512343622';
+        const ry1 = '814303109966200864';
+        const rm6 = '814302832031301683';
         const rd1 = '821417192339275887';
 
         //console.log(join)
@@ -407,9 +407,9 @@ async function waikupdate(bot: Client) {
 
         //role remove
         
-        waik.member(member.id)?.roles.remove('814303501512343622').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303501512343622')?.name}`))
-        waik.member(member.id)?.roles.remove('814303109966200864').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
-        waik.member(member.id)?.roles.remove('814302832031301683').then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get('814303109966200864')?.name}`))
+        waik.member(member.id)?.roles.remove(ry2).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry2)?.name}`))
+        waik.member(member.id)?.roles.remove(ry1).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry1)?.name}`))
+        waik.member(member.id)?.roles.remove(rm6).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(rm6)?.name}`))
         
         /*
         if(member.user.bot) {
