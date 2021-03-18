@@ -206,6 +206,8 @@ bot.on("message", async message => {
     } else if(cmd === `${prefix}gvtest`) {
         console.log('as');
         commands.get('nsfwimagetest').execute(message, args);
+    } else if(cmd  === `${prefix}twitchsub`) {
+        commands.get('twitchsub').execute(bot, message, args);
     }
 });
 
