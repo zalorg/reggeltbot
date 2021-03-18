@@ -10,6 +10,7 @@ import * as admin from 'firebase-admin';
 import express = require('express');
 import { Guildconfig, Regggeltconfig } from './types'
 import { Client, GuildMember } from "discord.js";
+//import * as qdb from 'quick.db';
 
 const app = express();
 
@@ -190,7 +191,7 @@ bot.on("message", async message => {
 
         commands.get('setlang').execute(message, args);
 
-    } else if(cmd === `${prefix}say` || `${prefix}s`) {
+    } else if(cmd === `${prefix}say` || cmd === `${prefix}s`) {
 
         commands.get('say').execute(message, args, bot);
 
@@ -240,9 +241,6 @@ bot.on("message", async message => {
                 }).then(d => console.log(`${member.user.username} added`)).catch(e => console.log(e));
             }
         })
-    } else if(message.guild && message.author.id === "423925286350880779" && cmd === `${prefix}waikupdate`) {
-        waikupdate(bot)
-        message.channel.send('Manual sync started')
     } else if(cmd === `${prefix}cooldown` || cmd === `${prefix}cd`) {
         commands.get('cooldown').execute(bot, message, args);
     } else if(cmd === `${prefix}postvideo`) {
@@ -251,6 +249,9 @@ bot.on("message", async message => {
         commands.get('ytsub').execute(bot, message, args);
     } else if(cmd === `${prefix}videll`) {
         commands.get('norbivideocheck').execute(bot, message, args);
+    } else if(cmd === `${prefix}gvtest`) {
+        console.log('as');
+        commands.get('nsfwimagetest').execute(message, args);
     }
 });
 
@@ -385,8 +386,15 @@ async function waikupdate(bot: Client) {
         m6: 0,
         y1: 0,
         y2: 0,
+        new: 0,
     })
     const logchannel = await bot.channels.fetch('763040615080263700', false, true);
+    const waiklogchannel = await bot.channels.fetch('541999335324254261');
+
+    if(waiklogchannel.isText()) {
+        waiklogchannel.send('Role sync started')
+    }
+
     if(logchannel.isText()) {
         logchannel.send("Waik members sync started")
     }
@@ -409,52 +417,80 @@ async function waikupdate(bot: Client) {
 
 
         if(join + 86400000 > now) {
+
+            metrics.update({
+                y2: admin.firestore.FieldValue.increment(1),
+            });
+
             if(!member.roles.cache.has('821417192339275887')) {
                 waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
-                    console.log(`${member.user.tag} added to newbie (${waik.roles.cache.get('821417192339275887')?.members})`);
-    
+                    console.log(`${member.user.tag} added to newbie (${waik.roles.cache.get('821417192339275887')?.members.size})`);
+
+
                 }).catch(e => {
                     console.log(`Error adding ${member.user.tag} to newbee Err: ${e}`);
-    
                 })
             }
+
+
         } else {
+
+
             if(member.roles.cache.has('821417192339275887')) {
                 waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
-                    console.log(`${member.user.tag} removed from newbie`)
+                    console.log(`${member.user.tag} removed from newbie (${waik.roles.cache.get('821417192339275887')?.members.size})`)
                 })
             }
+
 
         }
 
         if(!member.user.bot) {
-            sendlog(member, undefined, "bot")
+            //sendlog(member, undefined, "bot")
+            console.log(`${member.user.tag} ignored (bot)`)
         } else if(join + y2 < now) {
-            waik.member(member.id)?.roles.remove("814303109966200864").then(async member => {
-                if(logchannel.isText()) {
-                    logchannel.send("Waik members sync started")
-                }
-            }).catch
+
+            if(member.roles.cache.has('814303109966200864') || member.roles.cache.has('814302832031301683')) {
+                waik.member(member.id)?.roles.remove('814303109966200864').then(v => {
+                    console.log(`${member.user.tag} removed from `)
+                }).catch(e => {
+                    console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
+                })
+            }
 
             waik.member(member.id)?.roles.add('814303501512343622').then(member => sendlog(member, undefined, "y2")).catch(e => sendlog(member, e.message, "y2"))
             metrics.update({
                 y2: admin.firestore.FieldValue.increment(1),
-            })
+            });
+
+
         } else if(join + y1 < now) {
+
+
             waik.member(member.id)?.roles.add('814303109966200864').then(member => sendlog(member, undefined, "y1")).catch(e => sendlog(member, e.message, "y1"))
             metrics.update({
                 y1: admin.firestore.FieldValue.increment(1),
             })
+
+
         } else if(join + m6 < now) {
+
+
             waik.member(member.id)?.roles.add('814302832031301683').then(member => sendlog(member, undefined, "m2")).catch(e => sendlog(member, e.message, "m6"))
             metrics.update({
                 m6: admin.firestore.FieldValue.increment(1),
             })
+
+
         } else if(join + m3 < now) {
+
+
             //waik.member(member.id)?.roles.add('814302832031301683').catch(e => console.error(e.message))
             metrics.update({
                 m3: admin.firestore.FieldValue.increment(1),
             })
+
+
         }
 
     })
