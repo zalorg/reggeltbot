@@ -3,7 +3,7 @@ import * as Discord from 'discord.js';
 const YT_PING_ROLE = "821157912566038569";
 
 module.exports = {
-    name: 'twitchsubsub',
+    name: 'twitchsub',
     async execute(bot: Discord.Client, message: Discord.Message, args: Array<string>) {
         console.log(args)
         if(message.guild && message.guild.id === "541446521313296385") {
