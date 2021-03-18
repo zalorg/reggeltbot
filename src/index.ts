@@ -438,7 +438,7 @@ async function waikupdate(bot: Client) {
             }
 
             if(!member.roles.cache.has(ry2)) {
-                waik.member(member.id)?.roles.remove(ry2).then(v => {
+                waik.member(member.id)?.roles.add(ry2).then(v => {
                     const role = waik.roles.cache.get(ry2);
                     console.log(`${member.user.tag} removed from ${role?.name}`)
                 }).catch(e => {
@@ -472,7 +472,7 @@ async function waikupdate(bot: Client) {
             }
 
             if(!member.roles.cache.has(ry1)) {
-                waik.member(member.id)?.roles.remove(ry1).then(v => {
+                waik.member(member.id)?.roles.add(ry1).then(v => {
                     const role = waik.roles.cache.get(ry1);
                     console.log(`${member.user.tag} removed from ${role?.name}`)
                 }).catch(e => {
@@ -506,7 +506,7 @@ async function waikupdate(bot: Client) {
             }
 
             if(!member.roles.cache.has(rm6)) {
-                waik.member(member.id)?.roles.remove(rm6).then(v => {
+                waik.member(member.id)?.roles.add(rm6).then(v => {
                     const role = waik.roles.cache.get(rm6);
                     console.log(`${member.user.tag} removed from ${role?.name}`)
                 }).catch(e => {
