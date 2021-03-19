@@ -105,6 +105,8 @@ bot.on('guildCreate', async (guild) => {
     admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(guild.id).set(defdata);
 })
 
+
+
 bot.on("message", async message => {
     if(message.author.bot) return;
     let prefix = (await getPrefix()).prefix; 
@@ -210,6 +212,8 @@ bot.on("message", async message => {
         commands.get('twitchsub').execute(bot, message, args);
     }
 });
+
+
 
 async function updateUser(message: Discord.Message) {
     if(message.guild) {
@@ -356,14 +360,12 @@ async function waikupdate(bot: Client) {
     }
     waik.members.cache.forEach(async member => {
 
+        const m3 = 3 * (30*24*60*60*1000);
+        const m6 = 6 * (30*24*60*60*1000);
+        const y1 = 12 * (30*24*60*60*1000);
+        const y2 = 24 * (30*24*60*60*1000);
+        const d1 = (24*60*60*1000);
 
-        //const joinref = await admin.firestore().doc(`dcusers/${member.id}/guilds/${waik.id}`).get();
-        const join = member.joinedTimestamp!;
-        //const m3 = 3 * 2592000000;
-        //const m6 = 6 * 2592000000;
-        //const y1 = 12 * 2592000000;
-        //const y2 = 24 * 2592000000;
-        const d1 = 86400000;
         const now = Date.now();
 
         const ry2 = '814303501512343622';
@@ -371,11 +373,10 @@ async function waikupdate(bot: Client) {
         const rm6 = '814302832031301683';
         const rd1 = '821417192339275887';
 
-        //console.log(join)
 
-        //1 day 86400000 ms
+        //const joinref = await admin.firestore().doc(`dcusers/${member.id}/guilds/${waik.id}`).get();
+        const join = member.joinedTimestamp!;
 
-        //newbee 821417192339275887
 
 
         if(join + d1 > now) {
@@ -393,7 +394,7 @@ async function waikupdate(bot: Client) {
             }
 
         } else {
-
+            
             if(member.roles.cache.has('821417192339275887')) {
                 waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
                     console.log(`${member.user.tag} removed from newbie (${waik.roles.cache.get('821417192339275887')?.members.size})`)
@@ -401,12 +402,13 @@ async function waikupdate(bot: Client) {
                     console.log(`Error removeing ${member.user.tag} from ${waik.roles.cache.get(rd1)?.members.size} Err: ${e}`);
                 })
             }
+            
 
         }
 
 
         //role remove
-
+        /*
         if(waik.member(member.id)?.roles.cache.find(e => e.id === ry2)) {
             waik.member(member.id)?.roles.remove(ry2).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry2)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(ry2)?.name} (E: ${e.message})`))
         }
@@ -415,15 +417,30 @@ async function waikupdate(bot: Client) {
         }
         if(waik.member(member.id)?.roles.cache.find(e => e.id === rm6)) {
             waik.member(member.id)?.roles.remove(rm6).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(rm6)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(rm6)?.name} (E: ${e.message})`))
-        }
-        
-        
-        /*
+        }        
+        */
         if(member.user.bot) {
-            //sendlog(member, undefined, "bot")
             console.log(`${member.user.tag} ignored (bot)`)
 
+        } else if(!join || join === null) {
+            console.log(`${member.user.tag} ignored (no join timestamp)`)
+
+            if(member.roles.cache.has(ry2)) {
+                waik.member(member.id)?.roles.remove(ry2).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry2)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(ry2)?.name} (E: ${e.message})`))
+            }
+            if(member.roles.cache.has(ry1)) {
+                waik.member(member.id)?.roles.remove(ry1).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry1)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(ry1)?.name} (E: ${e.message})`))
+            }
+            if(member.roles.cache.has(rm6)) {
+                waik.member(member.id)?.roles.remove(rm6).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(rm6)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(rm6)?.name} (E: ${e.message})`))
+            }            
         } else if(join + y2 < now) {
+
+            const dateObject = new Date(join)
+
+            const humanDateFormat = dateObject.toLocaleString()
+
+
             
             if(member.roles.cache.has(rm6)) {
                 waik.member(member.id)?.roles.remove(rm6).then(v => {
@@ -445,12 +462,19 @@ async function waikupdate(bot: Client) {
 
             if(!member.roles.cache.has(ry2)) {
                 waik.member(member.id)?.roles.add(ry2).then(v => {
-                    const role = waik.roles.cache.get(ry2);
-                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                    //const role = waik.roles.cache.get(ry2);
+                    //console.log(`${member.user.tag} added to ${role?.name}`)
+                    console.log('')
+                    console.log('y2')
+                    console.log(member.user.tag)
+                    console.log(humanDateFormat)
+                    console.log(join)
+                    console.log('')
                 }).catch(e => {
                     console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
                 })
             }
+            
             
             metrics.update({
                 y2: admin.firestore.FieldValue.increment(1),
@@ -458,6 +482,14 @@ async function waikupdate(bot: Client) {
 
 
         } else if(join + y1 < now) {
+
+            const dateObject = new Date(join)
+
+            const humanDateFormat = dateObject.toLocaleString()
+
+
+
+            
 
             if(member.roles.cache.has(rm6)) {
                 waik.member(member.id)?.roles.remove(rm6).then(v => {
@@ -479,12 +511,19 @@ async function waikupdate(bot: Client) {
 
             if(!member.roles.cache.has(ry1)) {
                 waik.member(member.id)?.roles.add(ry1).then(v => {
-                    const role = waik.roles.cache.get(ry1);
-                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                    //const role = waik.roles.cache.get(ry1);
+                    //console.log(`${member.user.tag} added to ${role?.name}`);
+                    console.log('')
+                    console.log('y1')
+                    console.log(member.user.tag)
+                    console.log(humanDateFormat)
+                    console.log(join)
+                    console.log('')
                 }).catch(e => {
                     console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
                 })
             }
+            
 
             metrics.update({
                 y1: admin.firestore.FieldValue.increment(1),
@@ -492,6 +531,14 @@ async function waikupdate(bot: Client) {
 
 
         } else if(join + m6 < now) {
+
+            const dateObject = new Date(join)
+
+            const humanDateFormat = dateObject.toLocaleString()
+
+
+
+            
 
             if(member.roles.cache.has(ry1)) {
                 waik.member(member.id)?.roles.remove(ry1).then(v => {
@@ -513,12 +560,21 @@ async function waikupdate(bot: Client) {
 
             if(!member.roles.cache.has(rm6)) {
                 waik.member(member.id)?.roles.add(rm6).then(v => {
-                    const role = waik.roles.cache.get(rm6);
-                    console.log(`${member.user.tag} removed from ${role?.name}`)
+                    //const role = waik.roles.cache.get(rm6);
+                    //console.log(`${member.user.tag} added to ${role?.name}`);
+
+                    console.log('')
+                    console.log('m6')
+                    console.log(member.user.tag)
+                    console.log(humanDateFormat)
+                    console.log(join)
+                    console.log('')
                 }).catch(e => {
                     console.error(`Error removeing roles from ${member.user.tag}, ${e.message}`)
                 })
             }
+
+            
 
             metrics.update({
                 m6: admin.firestore.FieldValue.increment(1),
@@ -533,7 +589,8 @@ async function waikupdate(bot: Client) {
 
 
         }
-        */
+
+
 
     })
     /*
