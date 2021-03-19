@@ -381,7 +381,7 @@ async function waikupdate(bot: Client) {
         if(join + d1 > now) {
 
             metrics.update({
-                y2: admin.firestore.FieldValue.increment(1),
+                new: admin.firestore.FieldValue.increment(1),
             });
 
             if(!member.roles.cache.has(rd1)) {
@@ -406,10 +406,17 @@ async function waikupdate(bot: Client) {
 
 
         //role remove
+
+        if(waik.member(member.id)?.roles.cache.find(e => e.id === ry2)) {
+            waik.member(member.id)?.roles.remove(ry2).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry2)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(ry2)?.name} (E: ${e.message})`))
+        }
+        if(waik.member(member.id)?.roles.cache.find(e => e.id === ry1)) {
+            waik.member(member.id)?.roles.remove(ry1).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry1)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(ry1)?.name} (E: ${e.message})`))
+        }
+        if(waik.member(member.id)?.roles.cache.find(e => e.id === rm6)) {
+            waik.member(member.id)?.roles.remove(rm6).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(rm6)?.name}`)).catch(e => console.error(`Error revoveing ${member.user.tag} from ${waik.roles.cache.get(rm6)?.name} (E: ${e.message})`))
+        }
         
-        waik.member(member.id)?.roles.remove(ry2).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry2)?.name}`))
-        waik.member(member.id)?.roles.remove(ry1).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(ry1)?.name}`))
-        waik.member(member.id)?.roles.remove(rm6).then(r => console.log(`${member.user.tag} revoved from ${waik.roles.cache.get(rm6)?.name}`))
         
         /*
         if(member.user.bot) {
