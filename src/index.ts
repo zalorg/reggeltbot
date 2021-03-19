@@ -105,7 +105,7 @@ bot.on('guildCreate', async (guild) => {
     admin.firestore().collection('bots').doc('reggeltbot').collection('config').doc(guild.id).set(defdata);
 })
 
-/*
+
 
 bot.on("message", async message => {
     if(message.author.bot) return;
@@ -213,7 +213,7 @@ bot.on("message", async message => {
     }
 });
 
-*/
+
 
 async function updateUser(message: Discord.Message) {
     if(message.guild) {
