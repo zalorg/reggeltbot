@@ -40,6 +40,8 @@ module.exports = {
                         MANAGE_GUILD: member.hasPermission("MANAGE_GUILD"),
                         MANAGE_MESSAGES: member.hasPermission("MANAGE_MESSAGES"),                
                     },
+                    joinedTimestamp: member.joinedTimestamp,
+                    joinedAt: member.joinedAt,
                 })
             } else {
                 ref.collection('guilds').doc(member.guild.id).set({
@@ -55,6 +57,8 @@ module.exports = {
                         MANAGE_GUILD: member.hasPermission("MANAGE_GUILD"),
                         MANAGE_MESSAGES: member.hasPermission("MANAGE_MESSAGES"),                
                     },
+                    joinedTimestamp: member.joinedTimestamp,
+                    joinedAt: member.joinedAt,
                 });
             }
 
