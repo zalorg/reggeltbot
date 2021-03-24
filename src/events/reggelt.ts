@@ -132,10 +132,16 @@ async function reggeltupdatefs(message: Message, decreased = false) {
     let db = admin.firestore();
     const reggeltRef = db.collection("dcusers").doc(message.author.id);
     const doc = await reggeltRef.get();
+
+    //const userguildref = db.collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild!.id)
+    //const userguilddoc = await userguildref.get();
+
     const botRef = db.collection("bots").doc("reggeltbot");
     const botDoc = await botRef.get();
+    
     const decreaseCount = botDoc.data()!.decreaseCount;
     const incrementCount = botDoc.data()!.incrementCount;
+
     if (!doc.exists) {
         reggeltRef.set({
             reggeltcount: (decreased ? decreaseCount : incrementCount),
