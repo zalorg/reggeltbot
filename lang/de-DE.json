@@ -75,5 +75,13 @@
             "f1": "Du trauriger %!KEYWORD%! %!COUNT%! mal",
             "f2": "[Klicken Sie hier, um im Web zu öffnen](https://reggeltbot.com/count?i=%!ID%!)"
         }
+    },
+    "time": {
+        "hour": "Stunde",
+        "hours": "Stunden",
+        "minute": "Minute",
+        "minutes": "Minuten",
+        "second": "Sekunde",
+        "seconds": "Sekunden"
     }
 }

@@ -41,17 +41,20 @@ module.exports = {
             const rawcd = configDoc.exists ? configDoc.data()!.cd : defconfigDoc.data()!.cd;
 
             const cdval = rawcd * 3600;
-
-            const cd = Math.floor(Date.now() / 1000) + cdval;
+            
+            const now = Math.floor(Date.now() / 1000);
+            const cd = now + cdval;
 
 
             if(cddoc.exists) {
-                console.log('');
-                console.log(cddoc.data()!.reggeltcount);
+                const nextTime = cddoc.data()!.reggeltcount;
 
-                if(cddoc.data()!.reggeltcount > Math.floor(Date.now() / 1000)) {
+                console.log('');
+                console.log(nextTime);
+
+                if(nextTime > now) {
                     message.delete();
-                    let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString()); 
+                    let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", hhmmss(nextTime - now, lang)); 
                     message.author.send(cdmsg);
                 } else {
                     /*
@@ -92,7 +95,13 @@ module.exports = {
                     pp: message.author.avatarURL(),
                 });
             }
-            if(message.author.id === "183302720030113792") {
+            if(doc.data()!.reggeltemote) {
+                message.react(doc.data()!.reggeltemote).catch(e => {
+                    console.log('cant react')
+                    message.react("☕").catch(e => {console.log('cant react')});  
+
+                });
+            } else if(message.author.id === "183302720030113792") {
                 message.react("🍵").catch(e => {console.log('cant react')});
             } else {
                 message.react("☕").catch(e => {console.log('cant react')});  
@@ -159,4 +168,16 @@ async function reggeltupdatefs(message: Message, decreased = false) {
             pp: message.author.avatarURL(),
         });
     }
+}
+
+function hhmmss(time: number, lang: Langtypes) : string {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+
+    let str = `${hours} ${(hours == 1 ? lang.time.hour : lang.time.hours)} ` + 
+              `${minutes} ${(minutes == 1 ? lang.time.minute : lang.time.minutes)} ` + 
+              `${seconds} ${(seconds == 1 ? lang.time.second : lang.time.seconds)}`;
+
+    return str;
 }

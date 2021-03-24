@@ -79,6 +79,14 @@ export interface Langtypes {
             title: string,
             
         }
+    },
+    time: {
+        hour: string,
+        hours: string,
+        minute: string,
+        minutes: string,
+        second: string,
+        seconds: string
     }
 }
 

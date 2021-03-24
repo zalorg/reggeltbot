@@ -75,5 +75,13 @@
             "f1": "%!USERNAME%! sad %!KEYWORD%! %!COUNT%! times",
             "f2": "[Click here to open on web](https://reggeltbot.com/count?i=%!ID%!)"
         }
+    },
+    "time": {
+        "hour": "hour",
+        "hours": "hours",
+        "minute": "minute",
+        "minutes": "minutes",
+        "second": "second",
+        "seconds": "seconds"
     }
 }
