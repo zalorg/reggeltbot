@@ -35,8 +35,8 @@ module.exports = {
             const configref = db.collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id);
             const configDoc = await configref.get();
 
-            const userref = db.collection('dcuser').doc(message.author.id);
-            const userdoc = await userref.get();
+            //const userref = db.collection('dcuser').doc(message.author.id);
+            //const userdoc = await userref.get();
 
             const rawcd = configDoc.exists ? configDoc.data()!.cd : defconfigDoc.data()!.cd;
 
@@ -54,12 +54,14 @@ module.exports = {
                     let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString()); 
                     message.author.send(cdmsg);
                 } else {
+                    /*
                     if(!userdoc.data()!.reggeltcountcd) {
                         userref.update({
                             reggeltcd: Date.now() + (6*60*60*1000),
                         })
                     }
-                    if(!process.env.PROD && rawcd <= 6 && userdoc.data()!.reggeltcountcd < Date.now()) {
+                    */
+                    if(!process.env.PROD && rawcd <= 6 /*&& userdoc.data()!.reggeltcountcd < Date.now()*/) {
                         await reggeltupdateall();
                         await reggeltupdatefs(message);
                     }
