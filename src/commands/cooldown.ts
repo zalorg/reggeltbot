@@ -56,7 +56,7 @@ module.exports = {
 
 function hhmmss(time: number, lang: Langtypes) : string {
     const hours = Math.floor(time / 3600);
-    const minutes = Math.floor(time / 60);
+    const minutes = Math.floor(time % 3600 / 60);
     const seconds = time % 60;
 
     let str = `${hours} ${(hours == 1 ? lang.time.hour : lang.time.hours)} ` + 
