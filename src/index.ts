@@ -212,6 +212,8 @@ bot.on("message", async message => {
         commands.get('twitchsub').execute(bot, message, args);
     } else if(cmd === `${prefix}ur`) {
         commands.get('sendRulesWaik').execute(bot, message, args);
+    } else if(cmd === `${prefix}shop`) {
+        commands.get('shop').execute(bot, message, args);
     }
 });
 
