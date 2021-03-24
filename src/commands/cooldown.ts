@@ -27,15 +27,17 @@ module.exports = {
 
             const cdval = rawcd * 3600;
 
-            const cd = Math.floor(Date.now() / 1000) + cdval;
-
+            const now = Math.floor(Date.now() / 1000);
+            const cd = now + cdval;
             console.log(cd)
 
             const userref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild!.id);
             const userdoc = await userref.get();
 
-            if(userdoc.data()!.reggeltcount) {
-                let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", new Date(userdoc.data()!.reggeltcount).toLocaleTimeString());    
+            const nextTime = userdoc.data()!.reggeltcount;
+
+            if(nextTime > now) {
+                let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", hhmmss(nextTime - now, lang));    
                 message.reply(cdmsg);
             } else {
                 message.reply('You are not on cooldown')
@@ -50,4 +52,16 @@ module.exports = {
         }
 
     }
+}
+
+function hhmmss(time: number, lang: Langtypes) : string {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+
+    let str = `${hours} ${(hours == 1 ? lang.time.hour : lang.time.hours)} ` + 
+              `${minutes} ${(minutes == 1 ? lang.time.minute : lang.time.minutes)} ` + 
+              `${seconds} ${(seconds == 1 ? lang.time.second : lang.time.seconds)}`;
+
+    return str;
 }
