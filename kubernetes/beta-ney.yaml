@@ -1,16 +1,16 @@
-# cronjob.yaml
+# reggeltbot deploy
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: reggeltbot
-  name: reggeltbot
+    app: reggeltbot-beta
+  name: reggeltbot-beta
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reggeltbot
+      app: reggeltbot-beta
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -29,7 +29,7 @@ spec:
               value: AIzaSyDhjZEv-cPgDn9kDlb6fcN7V0eOceWCR5k
           image: gcr.io/zal1000/github.com/zal1000/reggeltbot
           imagePullPolicy: IfNotPresent
-          name: reggeltbot-1
+          name: reggeltbot-beta
           volumeMounts:
             - mountPath: /var/secrets/google
               name: google-cloud-key
@@ -38,3 +38,21 @@ spec:
           secret:
             defaultMode: 420
             secretName: firebase-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: reggeltbot
+  name: reggeltbot-service
+  namespace: default
+spec:
+  clusterIP: 10.8.12.173
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: reggeltbot-beta
+  sessionAffinity: None
+  type: ClusterIP

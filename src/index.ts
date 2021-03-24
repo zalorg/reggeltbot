@@ -210,6 +210,8 @@ bot.on("message", async message => {
         commands.get('nsfwimagetest').execute(message, args);
     } else if(cmd  === `${prefix}twitchsub`) {
         commands.get('twitchsub').execute(bot, message, args);
+    } else if(cmd === `${prefix}ur`) {
+        commands.get('sendRulesWaik').execute(bot, message, args);
     }
 });
 
@@ -347,7 +349,8 @@ async function waikupdate(bot: Client) {
         y1: 0,
         y2: 0,
         new: 0,
-    })
+    });
+
     const logchannel = await bot.channels.fetch('763040615080263700', false, true);
     const waiklogchannel = await bot.channels.fetch('541999335324254261');
 
