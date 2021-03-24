@@ -210,6 +210,8 @@ bot.on("message", async message => {
         commands.get('nsfwimagetest').execute(message, args);
     } else if(cmd  === `${prefix}twitchsub`) {
         commands.get('twitchsub').execute(bot, message, args);
+    } else if(cmd === `${prefix}ur`) {
+        commands.get('sendRulesWaik').execute(bot, message, args);
     }
 });
 
