@@ -30,6 +30,10 @@ module.exports = {
                 .setThumbnail(user.avatarURL()!)
                 .setTimestamp(message.createdAt);
     
+                if(doc.data()?.coins) {
+                    upmbed.addField('Coins', `${doc.data()?.coins}`)
+                }
+                
             message.channel.send(upmbed);
         }
     }
