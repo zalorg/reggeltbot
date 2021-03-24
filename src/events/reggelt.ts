@@ -95,7 +95,13 @@ module.exports = {
                     pp: message.author.avatarURL(),
                 });
             }
-            if(message.author.id === "183302720030113792") {
+            if(doc.data()!.reggeltemote) {
+                message.react(doc.data()!.reggeltemote).catch(e => {
+                    console.log('cant react')
+                    message.react("☕").catch(e => {console.log('cant react')});  
+
+                });
+            } else if(message.author.id === "183302720030113792") {
                 message.react("🍵").catch(e => {console.log('cant react')});
             } else {
                 message.react("☕").catch(e => {console.log('cant react')});  
