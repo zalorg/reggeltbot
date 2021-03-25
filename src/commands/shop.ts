@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as Discord from 'discord.js';
+import * as qdb from 'quick.db';
 const db = admin.firestore()
 
 module.exports = {
@@ -112,7 +113,8 @@ module.exports = {
                         }
 
                         function addemotes() {
-                            if(userdoc.data()?.coins > 20) {
+                            const emoteBuy = qdb.get('config.emoteBuy');
+                            if(userdoc.data()?.coins >= emoteBuy) {
                                 userref.update({
                                     coins: admin.firestore.FieldValue.increment(-20),
                                 }).then(d1 => {

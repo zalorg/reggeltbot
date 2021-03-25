@@ -2,16 +2,17 @@ import * as admin from 'firebase-admin';
 import fs = require('fs');
 import { Message } from 'discord.js'
 import { Langtypes, Guildconfig } from '../types'
+import * as qdb from 'quick.db';
+
 module.exports = {
     name: 'reggelt',
     async execute(message: Message) {
-
         
         const db = admin.firestore();
 
-        const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
+        const guildconfig: Guildconfig = qdb.get(`guild.${message.guild?.id}`);
 
-        const guildlang = guildconfig.lang || "en-US"
+        const guildlang = guildconfig?.lang || "en-US"
 
         const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
@@ -29,28 +30,29 @@ module.exports = {
             const cdref = db.collection('dcusers').doc(message.author.id).collection('cooldowns').doc(message.guild!.id);
             const cddoc = await cdref.get();
 
-            const defconfigref = db.collection('bots').doc('reggeltbot').collection('config').doc('default');
-            const defconfigDoc = await defconfigref.get();
-
-            const configref = db.collection('bots').doc('reggeltbot').collection('config').doc(message.guild!.id);
-            const configDoc = await configref.get();
-
             //const userref = db.collection('dcuser').doc(message.author.id);
             //const userdoc = await userref.get();
 
-            const rawcd = configDoc.exists ? configDoc.data()!.cd : defconfigDoc.data()!.cd;
+            const guildcd = qdb.get(`guild.${message.guild?.id}`).cd;
+            //const def = qdb.get(`guild.default`).cd;
+
+            let rawcd = guildcd;
+
+
+            console.log(rawcd)
 
             const cdval = rawcd * 3600;
             
             const now = Math.floor(Date.now() / 1000);
             const cd = now + cdval;
 
+            console.log(cd)
+
+            console.log(new Date(cd * 1000).toUTCString())
+
 
             if(cddoc.exists) {
                 const nextTime = cddoc.data()!.reggeltcount;
-
-                console.log('');
-                console.log(nextTime);
 
                 if(nextTime > now) {
                     message.delete();
@@ -97,31 +99,30 @@ module.exports = {
             }
             if(doc.data()!.reggeltemote) {
                 message.react(doc.data()!.reggeltemote).catch(e => {
-                    console.log('cant react')
-                    message.react("☕").catch(e => {console.log('cant react')});  
+                    console.debug('cant react')
+                    message.react("☕").catch(e => {console.debug('cant react')});  
 
                 });
             } else if(message.author.id === "183302720030113792") {
-                message.react("🍵").catch(e => {console.log('cant react')});
+                message.react("🍵").catch(e => {console.debug('cant react')});
             } else {
-                message.react("☕").catch(e => {console.log('cant react')});  
+                message.react("☕").catch(e => {console.debug('cant react')});  
             }
         } else {
             if(!message.deletable) {
                 message.channel.send(lang.events.reggelt.noPerms)
                     .catch((err: any) => {
                         message.guild!.owner!.send(lang.events.reggelt.noSend);
-                        console.log(err);
+                        console.error(err);
                     });
             } else {
                 message.delete();
-                console.log(lang)
                 let nReggelt: string = lang.events.reggelt.notReggelt;
                 let replyMSG = nReggelt.replace('%!GUILD%!', `${message.guild!.name}`).replace('**%!KEYWORD%**', `**${lang.events.reggelt.keyWord}**`)
                 message.author.send(replyMSG)
                     .catch(function(error: string) {
                         message.reply("Error: " + error);
-                        console.log("Error:", error);
+                        console.error("Error:", error);
                     });
             }
             await reggeltupdatefs(message, true);
@@ -131,9 +132,7 @@ module.exports = {
 
 async function reggeltupdateall() {
     let db = admin.firestore();
-    const botRef = db.collection("bots").doc("reggeltbot");
-    const botDoc = await botRef.get();
-    const incrementCount = botDoc.data()!.incrementCount;
+    const incrementCount = qdb.get('config.incrementCount');
     await db.collection("bots").doc("reggeltbot-count-all").update({
         reggeltcount: admin.firestore.FieldValue.increment(incrementCount)
     });
@@ -146,12 +145,9 @@ async function reggeltupdatefs(message: Message, decreased = false) {
 
     //const userguildref = db.collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild!.id)
     //const userguilddoc = await userguildref.get();
-
-    const botRef = db.collection("bots").doc("reggeltbot");
-    const botDoc = await botRef.get();
     
-    const decreaseCount = botDoc.data()!.decreaseCount;
-    const incrementCount = botDoc.data()!.incrementCount;
+    const incrementCount = qdb.get('config.incrementCount');
+    const decreaseCount = qdb.get('config.decreaseCount');
 
     if (!doc.exists) {
         reggeltRef.set({

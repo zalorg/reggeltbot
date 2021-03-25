@@ -10,7 +10,7 @@ import * as admin from 'firebase-admin';
 import express = require('express');
 import { Guildconfig, Regggeltconfig } from './types'
 import { Client } from "discord.js";
-//import * as qdb from 'quick.db';
+import * as qdb from 'quick.db';
 
 const app = express();
 
@@ -109,7 +109,7 @@ bot.on('guildCreate', async (guild) => {
 
 bot.on("message", async message => {
     if(message.author.bot) return;
-    let prefix = (await getPrefix()).prefix; 
+    let prefix = qdb.get('config.prefix'); 
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
@@ -159,7 +159,7 @@ bot.on("message", async message => {
     switch(cmd) {
         case `${prefix}help`:
         case `${prefix}h`:
-            commands.get('help').execute(message, prefix, bot)
+            commands.get('help').execute(message, bot)
             break;
         case `${prefix}count`:
         case `${prefix}c`:
@@ -263,26 +263,6 @@ async function getReggeltChannel(PROD: string | undefined) {
     } else {
         return {
             channel: doc.data()!.main,
-        };
-    }
-}
-
-async function getPrefix() {
-    const db = admin.firestore();
-    const botRef = db.collection("bots").doc("reggeltbot");
-    const doc = await botRef.get();
-    const PROD = process.env.PROD;
-    if(PROD === "false") {
-        return {
-            prefix: doc.data()!.testprefix,
-        };
-    } else if(PROD === "beta") {
-        return {
-            prefix: doc.data()!.betaprefix,
-        };
-    } else {
-        return {
-            prefix: doc.data()!.prefix,
         };
     }
 }

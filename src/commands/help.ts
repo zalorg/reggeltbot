@@ -3,18 +3,21 @@ import ms = require('ms');
 import fs = require('fs');
 import { Message, Client, MessageEmbed } from 'discord.js'
 import { Guildconfig, Regggeltconfig, Langtypes } from '../types'
+import * as qdb from 'quick.db';
 
 module.exports = {
     name: 'help',
-    execute(message: Message, prefix: string, bot: Client) {
+    execute(message: Message, bot: Client) {
 
         //console.log('asd')
 
         //message.channel.startTyping()
 
+        const prefix = qdb.get('config.prefix');
+
         const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
-        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id];
+        const guildconfig: Guildconfig = qdb.get(`guild.${message.guild?.id}`);
 
         const guildlang = guildconfig.lang || "en-US"
 
@@ -45,7 +48,7 @@ module.exports = {
         const embed = new MessageEmbed()
         .setTitle(lang.title)
         .setDescription(`${badges}`)
-        .setColor("#FFCB2B")
+        .setColor(qdb.get('config.embedcolor'))
         .addField(lang.f1.replace('%!PREFIX%!', prefix), lang.f11.replace('%!DCID%!', message.author.id).replace('%!CHANNEL%!', reggeltconfig.channel))
         .addField(lang.f2.replace('%!PREFIX%!', prefix), lang.f21)
         .addField(lang.setlang1.replace('%!PREFIX%!', prefix), lang.setlang2.replace('%!ALLLANG%!', alllang))
@@ -62,7 +65,7 @@ module.exports = {
 
         embed
         .addField(lang.ping, `${bot.ws.ping}ms`)
-        .addField(lang.uptime, `${ms(bot.uptime!)}`)
+        .addField(lang.uptime, `${ms(bot.uptime || 0)}`)
         .setFooter(message.author.username)
         .setThumbnail(bot.user!.avatarURL()!)
         .setTimestamp(Date.now());
