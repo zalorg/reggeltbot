@@ -45,18 +45,18 @@ module.exports = {
             //console.log(qdb.get('config.prefix'))
 
             console.log('config cache updated')
-        })
+        });
     
 
 
         const ref = db.collection('bots').doc('reggeltbot').collection('config');
     
-        ref.onSnapshot(s => {
-            updatecache(my).then(() => {
-
-                fs.writeFileSync('./cache/guilds.json', JSON.stringify(my))
+        ref.onSnapshot(doc => {
+            doc.forEach(item => {
+                qdb.set(`guild.${item.id}`, item.data())
+                my.guilds[item.id] = item.data();
             })
-        })
+        });
 
     }
 }
@@ -66,18 +66,6 @@ interface Interface {
     langs: Array<string>;
 }
 
-async function updatecache(data: Interface) {
-    const db = admin.firestore();
 
-    const ref = db.collection('bots').doc('reggeltbot').collection('config');
-    const doc = await ref.get();
-
-    doc.forEach(item => {
-        qdb.set(`guild.${item.id}`, item.data())
-        data.guilds[item.id] = item.data();
-    })
-
-    console.log('guilds cache updated')
-}
 
 //            fs.writeFileSync('./cache/guilds.json', JSON.stringify(my))
