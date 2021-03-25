@@ -13,6 +13,4 @@ test.js
 asd.txt
 .env
 *.log
-json.sqlite
-json.sqlite
-json.sqlite
+*.sqlite*
