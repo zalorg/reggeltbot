@@ -10,7 +10,7 @@ import * as admin from 'firebase-admin';
 import express = require('express');
 import { Guildconfig, Regggeltconfig } from './types'
 import { Client } from "discord.js";
-//import * as qdb from 'quick.db';
+import * as qdb from 'quick.db';
 
 const app = express();
 
@@ -109,13 +109,13 @@ bot.on('guildCreate', async (guild) => {
 
 bot.on("message", async message => {
     if(message.author.bot) return;
-    let prefix = (await getPrefix()).prefix; 
+    let prefix = qdb.get('config.prefix'); 
     let messageArray = message.content.split(" ");
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
 
-    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id] || langcode.guilds['default'];
+    //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    const guildconfig: Guildconfig = qdb.get(`guild.${message.guild?.id}`) || qdb.get(`guild.default`);
 
     if(message.guild && !guildconfig) {
         const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
@@ -156,64 +156,63 @@ bot.on("message", async message => {
     }
     
     // help
-    if(cmd === `${prefix}help` || cmd === `${prefix}h`){
-        commands.get('help').execute(message, prefix, bot)
-    }
+    switch(cmd) {
+        case `${prefix}help`:
+        case `${prefix}h`:
+            commands.get('help').execute(message, bot)
+            break;
+        case `${prefix}count`:
+        case `${prefix}c`:
+            await commands.get('count').execute(message);
+            break;
+        case `${prefix}link`:
+            commands.get('link').execute(message, args);
+            break;
+        case `${prefix}fact`:
+        case `${prefix}f`:
+            commands.get('fact').execute(message, args);
+            break;
+        case `${prefix}restart`:
+            await restartRequest(message);
+            break;
+        case `${prefix}ping`:
+            commands.get('ping').execute(bot, args, message)
+            break;
+        case `${prefix}leaderboard`:
+        case `${prefix}l`:
+        case `${prefix}lb`:
+            await commands.get('leaderboard').execute(message, args, bot);
+            break;
+        case `${prefix}github`:
+            await commands.get('github').execute(message, args, bot);
+            break;
+        case `${prefix}setlang`:
+            commands.get('setlang').execute(message, args);
+            break;
+        case `${prefix}say`:
+        case `${prefix}s`:
+            commands.get('say').execute(message, args, bot);
+            break;
+        case `${prefix}cooldown`:
+        case `${prefix}cd`:
+            commands.get('cooldown').execute(bot, message, args);
+            break;
+        case `${prefix}postvideo`:
+            commands.get('postwaikyt').execute(bot, message, args);
+            break;
+        case `${prefix}ytsub`:
+            commands.get('ytsub').execute(bot, message, args);
+            break;
+        case `${prefix}twitchsub`:
+            commands.get('twitchsub').execute(bot, message, args);
+            break;
+        case `${prefix}ur`:
+            commands.get('sendRulesWaik').execute(bot, message, args);
+            break;
+        case `${prefix}shop`:
+            commands.get('shop').execute(bot, message, args);
+            break;
 
-    //count 
-    else if(cmd === `${prefix}count` || cmd === `${prefix}c`){
-
-        await commands.get('count').execute(message);
-    }
-    else if(cmd === `${prefix}link`) {
-
-        commands.get('link').execute(message, args);
-
-    } else if(cmd === `${prefix}fact` || cmd === `${prefix}f`) {
-
-        commands.get('fact').execute(message, args);
-
-    } else if (cmd === `${prefix}restart`) {
-
-        await restartRequest(message);
-
-    } else if (cmd === `${prefix}ping`) {
-
-        commands.get('ping').execute(bot, args, message)
-
-    } else if (cmd === `${prefix}leaderboard` || cmd === `${prefix}l`) {
-
-        await commands.get('leaderboard').execute(message, args, bot);
-
-    } else if (cmd === `${prefix}github`) {
-
-        await commands.get('github').execute(message, args, bot);
-
-    } else if(cmd === `${prefix}setlang`) {
-
-        commands.get('setlang').execute(message, args);
-
-    } else if(cmd === `${prefix}say` || cmd === `${prefix}s`) {
-
-        commands.get('say').execute(message, args, bot);
-
-    } else if(cmd === `${prefix}cooldown` || cmd === `${prefix}cd`) {
-        commands.get('cooldown').execute(bot, message, args);
-    } else if(cmd === `${prefix}postvideo`) {
-        commands.get('postwaikyt').execute(bot, message, args);
-    } else if(cmd === `${prefix}ytsub`) {
-        commands.get('ytsub').execute(bot, message, args);
-    } else if(cmd === `${prefix}videll`) {
-        commands.get('norbivideocheck').execute(bot, message, args);
-    } else if(cmd === `${prefix}gvtest`) {
-        console.log('as');
-        commands.get('nsfwimagetest').execute(message, args);
-    } else if(cmd  === `${prefix}twitchsub`) {
-        commands.get('twitchsub').execute(bot, message, args);
-    } else if(cmd === `${prefix}ur`) {
-        commands.get('sendRulesWaik').execute(bot, message, args);
-    } else if(cmd === `${prefix}shop`) {
-        commands.get('shop').execute(bot, message, args);
     }
 });
 
@@ -264,26 +263,6 @@ async function getReggeltChannel(PROD: string | undefined) {
     } else {
         return {
             channel: doc.data()!.main,
-        };
-    }
-}
-
-async function getPrefix() {
-    const db = admin.firestore();
-    const botRef = db.collection("bots").doc("reggeltbot");
-    const doc = await botRef.get();
-    const PROD = process.env.PROD;
-    if(PROD === "false") {
-        return {
-            prefix: doc.data()!.testprefix,
-        };
-    } else if(PROD === "beta") {
-        return {
-            prefix: doc.data()!.betaprefix,
-        };
-    } else {
-        return {
-            prefix: doc.data()!.prefix,
         };
     }
 }
