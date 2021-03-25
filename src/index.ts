@@ -114,8 +114,8 @@ bot.on("message", async message => {
     let cmd = messageArray[0];
     let args = messageArray.slice(1);
 
-    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id] || langcode.guilds['default'];
+    //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    const guildconfig: Guildconfig = qdb.get(`guild.${message.guild?.id}`) || qdb.get(`guild.default`);
 
     if(message.guild && !guildconfig) {
         const defdata = JSON.parse(fs.readFileSync('./cache/default-guild.json', 'utf8'))
