@@ -74,6 +74,10 @@
         "count": {
             "f1": "%!USERNAME%! sad %!KEYWORD%! %!COUNT%! times",
             "f2": "[Click here to open on web](https://reggeltbot.com/count?i=%!ID%!)"
+        },
+        "cooldown": {
+            "off": "You are not on cooldown",
+            "on": "You have to wait %!TIME%! to say morning again!"
         }
     },
     "time": {
