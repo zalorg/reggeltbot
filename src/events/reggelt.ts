@@ -97,8 +97,8 @@ module.exports = {
                     pp: message.author.avatarURL(),
                 });
             }
-            if(doc.data()!.reggeltemote) {
-                message.react(doc.data()!.reggeltemote).catch(e => {
+            if(doc.data()?.reggeltemote) {
+                message.react(doc.data()?.reggeltemote).catch(e => {
                     console.debug('cant react')
                     message.react("☕").catch(e => {console.debug('cant react')});  
 
@@ -149,20 +149,39 @@ async function reggeltupdatefs(message: Message, decreased = false) {
     const incrementCount = qdb.get('config.incrementCount');
     const decreaseCount = qdb.get('config.decreaseCount');
 
+    if(!doc.data()?.coins) {
+        await reggeltRef.update({
+            coins: doc.data()?.reggeltcount
+        })
+    }
+
     if (!doc.exists) {
         reggeltRef.set({
             reggeltcount: (decreased ? decreaseCount : incrementCount),
             tag: message.author.tag,
             username: message.author.username,
             pp: message.author.avatarURL(),
+            coins: (decreased ? decreaseCount : incrementCount),
         });
     } else {
-        reggeltRef.update({
-            reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
-            tag: message.author.tag,
-            username: message.author.username,
-            pp: message.author.avatarURL(),
-        });
+        if(!doc.data()?.coins) {
+            reggeltRef.update({
+                reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
+                tag: message.author.tag,
+                username: message.author.username,
+                pp: message.author.avatarURL(),
+                coins: doc.data()?.reggeltcount
+            });
+        } else {
+            reggeltRef.update({
+                reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
+                tag: message.author.tag,
+                username: message.author.username,
+                pp: message.author.avatarURL(),
+                coins: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
+            });
+        }
+
     }
 }
 
