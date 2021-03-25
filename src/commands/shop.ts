@@ -16,27 +16,9 @@ module.exports = {
         const emotedoc = await emoteref.get();
         const userdoc = await userref.get()
 
-        /*
-        if(!emotedoc.exists) {
-            const emotes: string[] = [];
-
-            if(!emotes.find(e => e === '☕')) {
-                emotes.push('☕');
-            }
-
-            if(!emotes.find(e => e === '🍵')) {
-                emotes.push('🍵');
-            }
-            
-            emoteref.set({
-                have: emotes,
-            }, {merge:true}).catch(e => {
-                message.reply('Error createing profile! Please try again later!')
-            })
-        }
-        */
         if(!args[0]) {
             message.reply('Please specify action!');
+            help(message);
             return;
         }
 
@@ -75,6 +57,7 @@ module.exports = {
             case 'buy':
                 if(!args[1]) {
                     message.reply('Please specify thing to add!');
+                    help(message);
                     return;
                 }
     
@@ -154,6 +137,7 @@ module.exports = {
 
                 if(!args[1]) {
                     message.reply('Specify the item you wanna sell!');
+                    help(message)
                     return;
                 } else if(!emotes.find(e => e === args[2])) {
                     message.reply('Try sellig an emote you own!');
@@ -195,7 +179,16 @@ module.exports = {
 
                     
                 }
-
+                break;
+            default:
+                help(message);
         }
     }
+}
+
+function help(message: Discord.Message) {
+    let embed = new Discord.MessageEmbed()
+    .setTitle('Reggeétbot economy help')
+
+    message.channel.send(embed);
 }
