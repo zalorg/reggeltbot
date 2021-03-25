@@ -76,9 +76,9 @@ export interface Langtypes {
             f2: string,
         },
         cooldown: {
-            title: string,
-            
-        }
+            on: string,
+            off: string,
+        },
     },
     time: {
         hour: string,
