@@ -156,64 +156,63 @@ bot.on("message", async message => {
     }
     
     // help
-    if(cmd === `${prefix}help` || cmd === `${prefix}h`){
-        commands.get('help').execute(message, prefix, bot)
-    }
+    switch(cmd) {
+        case `${prefix}help`:
+        case `${prefix}h`:
+            commands.get('help').execute(message, prefix, bot)
+            break;
+        case `${prefix}count`:
+        case `${prefix}c`:
+            await commands.get('count').execute(message);
+            break;
+        case `${prefix}link`:
+            commands.get('link').execute(message, args);
+            break;
+        case `${prefix}fact`:
+        case `${prefix}f`:
+            commands.get('fact').execute(message, args);
+            break;
+        case `${prefix}restart`:
+            await restartRequest(message);
+            break;
+        case `${prefix}ping`:
+            commands.get('ping').execute(bot, args, message)
+            break;
+        case `${prefix}leaderboard`:
+        case `${prefix}l`:
+        case `${prefix}lb`:
+            await commands.get('leaderboard').execute(message, args, bot);
+            break;
+        case `${prefix}github`:
+            await commands.get('github').execute(message, args, bot);
+            break;
+        case `${prefix}setlang`:
+            commands.get('setlang').execute(message, args);
+            break;
+        case `${prefix}say`:
+        case `${prefix}s`:
+            commands.get('say').execute(message, args, bot);
+            break;
+        case `${prefix}cooldown`:
+        case `${prefix}cd`:
+            commands.get('cooldown').execute(bot, message, args);
+            break;
+        case `${prefix}postvideo`:
+            commands.get('postwaikyt').execute(bot, message, args);
+            break;
+        case `${prefix}ytsub`:
+            commands.get('ytsub').execute(bot, message, args);
+            break;
+        case `${prefix}twitchsub`:
+            commands.get('twitchsub').execute(bot, message, args);
+            break;
+        case `${prefix}ur`:
+            commands.get('sendRulesWaik').execute(bot, message, args);
+            break;
+        case `${prefix}shop`:
+            commands.get('shop').execute(bot, message, args);
+            break;
 
-    //count 
-    else if(cmd === `${prefix}count` || cmd === `${prefix}c`){
-
-        await commands.get('count').execute(message);
-    }
-    else if(cmd === `${prefix}link`) {
-
-        commands.get('link').execute(message, args);
-
-    } else if(cmd === `${prefix}fact` || cmd === `${prefix}f`) {
-
-        commands.get('fact').execute(message, args);
-
-    } else if (cmd === `${prefix}restart`) {
-
-        await restartRequest(message);
-
-    } else if (cmd === `${prefix}ping`) {
-
-        commands.get('ping').execute(bot, args, message)
-
-    } else if (cmd === `${prefix}leaderboard` || cmd === `${prefix}l`) {
-
-        await commands.get('leaderboard').execute(message, args, bot);
-
-    } else if (cmd === `${prefix}github`) {
-
-        await commands.get('github').execute(message, args, bot);
-
-    } else if(cmd === `${prefix}setlang`) {
-
-        commands.get('setlang').execute(message, args);
-
-    } else if(cmd === `${prefix}say` || cmd === `${prefix}s`) {
-
-        commands.get('say').execute(message, args, bot);
-
-    } else if(cmd === `${prefix}cooldown` || cmd === `${prefix}cd`) {
-        commands.get('cooldown').execute(bot, message, args);
-    } else if(cmd === `${prefix}postvideo`) {
-        commands.get('postwaikyt').execute(bot, message, args);
-    } else if(cmd === `${prefix}ytsub`) {
-        commands.get('ytsub').execute(bot, message, args);
-    } else if(cmd === `${prefix}videll`) {
-        commands.get('norbivideocheck').execute(bot, message, args);
-    } else if(cmd === `${prefix}gvtest`) {
-        console.log('as');
-        commands.get('nsfwimagetest').execute(message, args);
-    } else if(cmd  === `${prefix}twitchsub`) {
-        commands.get('twitchsub').execute(bot, message, args);
-    } else if(cmd === `${prefix}ur`) {
-        commands.get('sendRulesWaik').execute(bot, message, args);
-    } else if(cmd === `${prefix}shop`) {
-        commands.get('shop').execute(bot, message, args);
     }
 });
 
