@@ -3,11 +3,36 @@ import fs = require('fs');
 import DBL = require('dblapi.js');
 import { Client } from 'discord.js'
 //import * as axios from 'axios';
+import * as git from 'nodegit';
+import * as qdb from 'quick.db'
 
 module.exports = {
     name: 'ready',
     execute(bot: Client) {
         bot.on("ready", async () => {
+
+            try {
+                (await git.Clone.clone('https://github.com/zal1000/reggeltbot', './tmp/repo')).getHeadCommit().then(commit => {
+                    console.log(commit.sha())
+                })
+            } catch(e) {
+                //console.log(e)
+            }
+            
+            git.Repository.open('./tmp/repo').then(repo => {
+                repo.getHeadCommit().then(commit => {
+                    console.log(commit.sha())
+
+                    const a = commit.sha().split('');
+
+                    const version = `${a[0]}${a[1]}${a[2]}${a[3]}${a[4]}${a[5]}${a[6]}`
+
+                    qdb.set('version', version);
+
+                    console.log(version)
+                })
+            })
+            
 
             if(!process.env.PROD) {
                 //waikupdate(bot)
@@ -35,12 +60,43 @@ module.exports = {
                 console.log(bans)
                 fs.writeFileSync('./cache/global-bans.json', JSON.stringify(bans))
             })
+
+            const activities_list = [
+                `for ${qdb.get('global.reggeltcount')} morning message`,
+                `version: ${qdb.get('version')}`
+            ]
+
+            let num = 0;
+
+            setInterval(() => {
+                console.log(qdb.get('global.reggeltcount'))
+                if(num === (activities_list.length)) {
+                    console.log('reseted')
+                    num = 0;
+                    //console.log(num)
+                }
+                //const index = Math.floor(Math.random() * (activities_list.length - 1) + 1); // generates a random number between 1 and the length of the activities array list (in this case 5).
+                bot.user!.setActivity(activities_list[num], {type: "WATCHING"}).then(() => {
+                    console.log(activities_list[num]);
+                    console.log(num)
+                    num = num + 1;
+                })
+
+                //console.log(activities_list.length - 1)
+
+
+
+            }, 10000);
+
+
         
         
             console.log(`${bot.user!.username} has started`);
             const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
             doc.onSnapshot((docSnapshot: any) => {
-                bot.user?.setActivity(`for ${docSnapshot.data().reggeltcount} morning message`, {type: "WATCHING"});
+                qdb.set('global.reggeltcount', docSnapshot.data().reggeltcount);
+                console.log('snap updated')
+                //bot.user?.setActivity(`| `, {type: "WATCHING"});
             }, (err: any) => {
                 console.log(`Encountered error: ${err}`);
                 bot.user?.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
