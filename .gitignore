@@ -13,4 +13,4 @@ test.js
 asd.txt
 .env
 *.log
-*.sqlite*
+*.sqlite
