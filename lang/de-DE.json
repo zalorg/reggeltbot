@@ -74,6 +74,10 @@
         "count": {
             "f1": "Du trauriger %!KEYWORD%! %!COUNT%! mal",
             "f2": "[Klicken Sie hier, um im Web zu öffnen](https://reggeltbot.com/count?i=%!ID%!)"
+        },
+        "cooldown": {
+            "off": "Du hast keine Abklingzeit ",
+            "on": "Sie müssen %!TIME%! warten, um wieder Morgen zu sagen!"
         }
     },
     "time": {

@@ -37,10 +37,10 @@ module.exports = {
             const nextTime = userdoc.data()!.reggeltcount;
 
             if(nextTime > now) {
-                let cdmsg = lang.events.reggelt.onCooldown.replace("%!CD%!", hhmmss(nextTime - now, lang));    
+                let cdmsg = lang.commands.cooldown.on.replace("%!TIME%!", hhmmss(nextTime - now, lang));    
                 message.reply(cdmsg);
             } else {
-                message.reply('You are not on cooldown')
+                message.reply(lang.commands.cooldown.off);
             }
 
 
