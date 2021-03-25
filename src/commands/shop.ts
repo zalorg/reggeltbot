@@ -3,6 +3,10 @@ import * as Discord from 'discord.js';
 import * as qdb from 'quick.db';
 const db = admin.firestore()
 
+const emoteBuy = qdb.get('config.emoteBuy');
+const emoteSell = qdb.get('config.emoteSell');
+
+
 module.exports = {
     name: 'shop',
     async execute(bot: Discord.Client, message: Discord.Message, args: Array<string>) {
@@ -68,7 +72,7 @@ module.exports = {
                     }
                 }
                 break;
-            case 'add':
+            case 'buy':
                 if(!args[1]) {
                     message.reply('Please specify thing to add!');
                     return;
@@ -113,24 +117,26 @@ module.exports = {
                         }
 
                         function addemotes() {
-                            const emoteBuy = qdb.get('config.emoteBuy');
                             if(userdoc.data()?.coins >= emoteBuy) {
-                                userref.update({
-                                    coins: admin.firestore.FieldValue.increment(-20),
-                                }).then(d1 => {
-                                    emoteref.set({
-                                        have: array,
-                                    }, {merge: true}).then(d => {
-                                        message.reply(`Emote added \n Your current emotes: [${array.join(' ')}]`);
+                                message.channel.send(`Buying emote... (${args[2]})`).then(m => {
+                                    userref.update({
+                                        coins: admin.firestore.FieldValue.increment(-20),
+                                    }).then(d1 => {
+                                        emoteref.set({
+                                            have: array,
+                                        }, {merge: true}).then(d => {
+                                            m.edit(`Emote added \n Your current emotes: [ ${array.join('   ')}] `);
+                                        }).catch(e => {
+                                            m.edit('Error! this dumass probably messed something up <@423925286350880779>')
+                                        })
                                     }).catch(e => {
-                                        message.reply('Error! this dumass probably messed something up <@423925286350880779>')
+                                        m.edit('Error! this dumass probably messed something up <@423925286350880779>')
                                     })
-                                }).catch(e => {
-                                    message.reply('Error! this dumass probably messed something up <@423925286350880779>')
                                 })
 
+
                             } else {
-                                message.reply(`You dont have enough coin to by an emote \n Your current coins: ${userdoc.data()?.coins}`)
+                                message.reply(`You dont have enough coin to by an emote \n Your current coins: ${userdoc.data()?.coins} 🪙`)
                             }
 
 
@@ -139,6 +145,57 @@ module.exports = {
                     }
                 }
                 break;
+            case 'sell':
+                //const coins = userdoc.data()?.coins;
+
+                let emotes: string[] = emotedoc.data()?.have || [];
+
+                const emote = args[2];
+
+                if(!args[1]) {
+                    message.reply('Specify the item you wanna sell!');
+                    return;
+                } else if(!emotes.find(e => e === args[2])) {
+                    message.reply('Try sellig an emote you own!');
+                } else if(emote === "☕" || emote === "🍵") {
+                    message.reply('You cant sell the default emotes!');
+                } else {
+                    message.channel.send(`Selling emote... ${args[2]} for ${emoteSell} coins`).then(m => {
+                        removeElement(emotes, args[2])
+                        userref.update({
+                            coins: admin.firestore.FieldValue.increment(10),
+                        }).then(d1 => {
+                            emoteref.update({
+                                have: emotes
+                            }).then(d => {
+                                m.edit(`Emote sold for ${emoteSell} 🪙`)
+                            }).catch(e => {
+                                message.reply('Error! this dumass probably messed something up <@423925286350880779>')
+                                console.error(e);
+                            })
+                        }).catch(e => {
+                            message.reply('Error! this dumass probably messed something up <@423925286350880779>')
+                            console.log(e)
+                        })
+
+
+                        console.log(emoteSell)
+                    })
+
+
+                    removeElement(emotes, args[2])
+
+                    function removeElement(array: Array<string>, elem: string) {
+                        var index = array.indexOf(elem);
+                        if (index > -1) {
+                            array.splice(index, 1);
+                        }
+                        console.log(emotes)
+                    }
+
+                    
+                }
+
         }
     }
 }
