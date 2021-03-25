@@ -23,6 +23,7 @@ module.exports = {
             qdb.set(`config.decreaseCount`, s.data()?.decreaseCount)
             qdb.set(`config.incrementCount`, s.data()?.incrementCount)
             qdb.set(`config.emoteBuy`, s.data()?.emoteBuy)
+            qdb.set(`config.emoteSell`, s.data()?.emoteSell)
 
             //prefix
 
