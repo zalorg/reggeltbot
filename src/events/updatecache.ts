@@ -29,12 +29,15 @@ module.exports = {
             switch(process.env.PROD) {
                 case 'false':
                     qdb.set(`config.prefix`, s.data()?.testprefix)
+                    qdb.set(`config.token`, s.data()?.testtoken)
                     break;
                 case 'beta':
                     qdb.set(`config.prefix`, s.data()?.betaprefix)
+                    qdb.set(`config.token`, s.data()?.betatoken)
                     break;
                 default: 
                     qdb.set(`config.prefix`, s.data()?.prefix)
+                    qdb.set(`config.token`, s.data()?.token)
                     break;
             }
 
