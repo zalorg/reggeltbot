@@ -15,3 +15,4 @@ asd.txt
 *.log
 *.sqlite
 *.sqlite-journal
+tmp/*

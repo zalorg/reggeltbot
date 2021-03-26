@@ -9,14 +9,13 @@ const bot = new Discord.Client({
 import * as admin from 'firebase-admin';
 import express = require('express');
 import { Guildconfig, Regggeltconfig } from './types'
-import { Client } from "discord.js";
 import * as qdb from 'quick.db';
 
 const app = express();
 
 process.on('unhandledRejection', up => { 
     console.log(up)
-    process.exit(1)
+    process.exit(0)
     //throw up;
 })
 
@@ -322,7 +321,7 @@ function msToTime(duration: number) {
     return hours + ":" + minutes + ":" + seconds;
 }
 
-async function waikupdate(bot: Client) {
+async function waikupdate(bot: Discord.Client) {
     const db = admin.firestore();
 
 

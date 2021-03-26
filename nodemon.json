@@ -1,6 +1,7 @@
 {
     "ignore": [
         "cache/**",
-        "old/**"
+        "old/**",
+        "tmp/**"
     ]
 }
