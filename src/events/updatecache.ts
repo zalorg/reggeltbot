@@ -58,6 +58,17 @@ module.exports = {
             })
         });
 
+        const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
+        doc.onSnapshot((docSnapshot: any) => {
+            qdb.set('global.reggeltcount', docSnapshot.data().reggeltcount);
+            //console.log('snap updated')
+            //bot.user?.setActivity(`| `, {type: "WATCHING"});
+        }, (err: any) => {
+            console.error(`Encountered error: ${err}`);
+            //bot.user?.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
+            qdb.set('global.reggeltcount', `Error: ${err.message}`);
+        });
+
     }
 }
 
