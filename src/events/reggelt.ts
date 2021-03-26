@@ -33,22 +33,22 @@ module.exports = {
             //const userref = db.collection('dcuser').doc(message.author.id);
             //const userdoc = await userref.get();
 
-            const guildcd = qdb.get(`guild.${message.guild?.id}`).cd;
+            const guildcd = guildconfig.cd;
             //const def = qdb.get(`guild.default`).cd;
 
             let rawcd = guildcd;
 
 
-            console.log(rawcd)
+            //console.log(rawcd)
 
             const cdval = rawcd * 3600;
             
             const now = Math.floor(Date.now() / 1000);
             const cd = now + cdval;
 
-            console.log(cd)
+            //console.log(cd)
 
-            console.log(new Date(cd * 1000).toUTCString())
+            ///console.log(new Date(cd * 1000).toUTCString())
 
 
             if(cddoc.exists) {
