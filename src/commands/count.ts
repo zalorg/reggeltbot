@@ -3,6 +3,8 @@ import fs = require('fs');
 import { Message, MessageEmbed } from 'discord.js'
 import * as qdb from 'quick.db';
 
+const coinName = qdb.get('config.coinName');
+
 module.exports = {
     name: 'count',
     async execute(message: Message) {
@@ -32,7 +34,7 @@ module.exports = {
                 .setTimestamp(message.createdAt);
     
                 if(doc.data()?.coins) {
-                    upmbed.addField('Coins', `${doc.data()?.coins}`)
+                    upmbed.addField(`${coinName}s`.charAt(1).toUpperCase(), `${doc.data()?.coins}`)
                 }
                 
             message.channel.send(upmbed);
