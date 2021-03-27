@@ -11,6 +11,11 @@ module.exports = {
     execute(bot: Client) {
         bot.on("ready", async () => {
 
+            if(qdb.fetchAll().length === 0) {
+                console.log('a')
+                process.exit();
+            }
+
             switch(process.env.PROD) {
                 case('false'): 
                     qdb.set('version', "testing");
