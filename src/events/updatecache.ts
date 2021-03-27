@@ -74,6 +74,13 @@ module.exports = {
             qdb.set('global.reggeltcount', `Error: ${err.message}`);
         });
 
+        console.log(qdb.fetchAll())
+
+        if(qdb.fetchAll().length === 0) {
+            console.log('a')
+            process.exit();
+        }
+
     }
 }
 
