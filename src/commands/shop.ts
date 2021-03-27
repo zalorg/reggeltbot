@@ -5,6 +5,8 @@ const db = admin.firestore()
 
 const emoteBuy = qdb.get('config.emoteBuy');
 const emoteSell = qdb.get('config.emoteSell');
+const coinName = qdb.get('config.coinName');
+const coinEmote = qdb.get('config.coinEmote');
 
 
 module.exports = {
@@ -85,7 +87,7 @@ module.exports = {
 
                         if(!userdoc.data()?.coins) {
                             if(!userdoc.data()?.reggeltcount) {
-                                message.reply(`You dont have any coins! Start whising mornigng to people in <#${message.guild?.channels.cache.find(e => e.name === "reggelt")?.id}>`)
+                                message.reply(`You dont have any ! Start whising mornigng to people in <#${message.guild?.channels.cache.find(e => e.name === "reggelt")?.id}>`)
                             } else {
                                 userref.update({
                                     coins: userdoc.data()?.reggeltcount,
@@ -119,7 +121,7 @@ module.exports = {
 
 
                             } else {
-                                message.reply(`You dont have enough coin to by an emote \n Your current coins: ${userdoc.data()?.coins} 🪙`)
+                                message.reply(`You dont have enough ${coinName} to by an emote \n Your current ${coinName}s: ${userdoc.data()?.coins} 🪙`)
                             }
 
 
