@@ -1,7 +1,8 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import { Client, Message, PartialMessage } from 'discord.js'
-import { Langtypes, Guildconfig } from '../types'
+import { Langtypes } from '../types'
+import * as qdb from 'quick.db';
 
 module.exports =  {
     name: 'msgUpdate',
@@ -10,11 +11,11 @@ module.exports =  {
         bot.on("messageUpdate", async (_, newMsg) => {
             if(newMsg.author!.bot) return;
 
-            const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+            //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-            const guild: Guildconfig = langcode.guilds[newMsg.guild!.id]
+            //const guild: Guildconfig = langcode.guilds[newMsg.guild!.id]
             
-            const guildlang = guild?.lang || "en-US";
+            const guildlang = qdb.get(`guilds.${newMsg.guild?.id}`).lang || "en-US";
 
             const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 

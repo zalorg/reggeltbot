@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import { Message, MessageEmbed } from 'discord.js'
-
+import * as qdb from 'quick.db';
 
 module.exports = {
     name: 'count',
@@ -10,7 +10,7 @@ module.exports = {
     
         const currentLang = langcode.guilds[message.guild!.id]
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.count;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${qdb.get(`guilds.${message.guild?.id}`).lang}.json`, 'utf8')).commands.count;
 
         const reggeltconfig: Reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
 

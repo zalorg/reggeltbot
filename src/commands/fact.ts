@@ -5,6 +5,7 @@ import fs = require('fs');
 import * as textToSpeech from '@google-cloud/text-to-speech'
 import { Message } from 'discord.js';
 import { Guildconfig, Langtypes } from '../types'
+import * as qdb from 'quick.db';
 
 const translate = new Translate();
 
@@ -12,11 +13,11 @@ module.exports = {
     name: 'fact',
     async execute(message: Message, args: Array<string>) {
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const currentLang: Guildconfig = langcode.guilds[message.guild!.id]
+        //const currentLang: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const guildlang = currentLang.lang || "en-US"
+        const guildlang = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US"
         
         const fulllang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
@@ -33,19 +34,13 @@ module.exports = {
                 .then((snapshot: { size: number; forEach: (arg0: (doc: any) => void) => void; }) => {
                     if(snapshot.size > 0) {
                         snapshot.forEach((doc: { id: any; data: () => any; }) => {
-                            const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-
-                            const lcode = langcode.guilds[message.guild!.id]
-                            sendRandomFact(doc.id, message, lcode.lang, args);
+                            sendRandomFact(doc.id, message, qdb.get(`guilds.${message.guild?.id}`).lang, args);
                         });
                     } else {
                         quotes.where(admin.firestore.FieldPath.documentId(), '<', key2).limit(1).get()
                             .then((snapshot: any) => {
                                 snapshot.forEach((doc: { id: any; data: () => any; }) => {
-                                    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-
-                                    const lcode = langcode.guilds[message.guild!.id]
-                                    sendRandomFact(doc.id, message, lcode.lang, args);
+                                    sendRandomFact(doc.id, message, qdb.get(`guilds.${message.guild?.id}`).lang, args);
                                 });
                             })
                             .catch((err: any) => {
@@ -75,11 +70,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
     const userRef = db.collection('users').doc(`${doc.data()!.owner}`);
     const userDoc = await userRef.get();  
 
-    const lngcode: any = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-
-    const currentLang = lngcode.guilds[message.guild!.id]
-
-    const guildlang = currentLang.lang || "en-US"
+    const guildlang = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US"
 
     const lang = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).commands.fact;
 
@@ -142,11 +133,8 @@ async function getRandomFactWithId(id: any, message: Message, args: Array<string
     const ref = db.collection("facts").doc(id);
     const doc = await ref.get();
     if(!doc.exists) {
-        const lngcode: any = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-
-        const currentLang: Guildconfig = lngcode.guilds[message.guild!.id]
     
-        const guildlang = currentLang.lang || "en-US"
+        const guildlang = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US"
 
         const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
@@ -154,10 +142,7 @@ async function getRandomFactWithId(id: any, message: Message, args: Array<string
 
         message.reply(lang.noFact);
     } else {
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-
-        const lcode = langcode.guilds[message.guild!.id]
-        sendRandomFact(doc.id, message, lcode.lang, args);
+        sendRandomFact(doc.id, message, qdb.get(`guilds.${message.guild?.id}`).lang, args);
     }
 }
 
@@ -181,8 +166,8 @@ async function tts(message: Message, args: Array<string>,) {
     const client = new textToSpeech.TextToSpeechClient();
     const text = args.join(' ');
 
-    const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-    const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+    //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    const guildconfig: Guildconfig = qdb.get(`guilds.${message.guild?.id}`)
 
     //message.reply(`${currentLang.lang}`)
 

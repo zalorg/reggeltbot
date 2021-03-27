@@ -4,7 +4,7 @@ import * as admin from 'firebase-admin';
 import fs = require('fs')
 import { Client, Message } from 'discord.js';
 import { Langtypes, Guildconfig } from '../types'
-
+import * as qdb from 'quick.db';
 const db = admin.firestore();
 
 
@@ -12,11 +12,11 @@ module.exports = {
     name: 'ping',
     async execute(bot: Client, args: any, message: Message) {
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const guildsettings: Guildconfig = langcode.guilds[message.guild!.id] || "en-US";
+        const guildsettings: Guildconfig = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US";
 
-        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildsettings.lang}.json`, 'utf8'));
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildsettings}.json`, 'utf8'));
 
         const lang = langfull.commands.ping;
 
