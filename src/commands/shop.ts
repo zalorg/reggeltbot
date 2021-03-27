@@ -109,7 +109,7 @@ module.exports = {
                             if(userdoc.data()?.coins >= emoteBuy) {
                                 message.channel.send(`Buying emote... (${args[2]})`).then(m => {
                                     userref.update({
-                                        coins: admin.firestore.FieldValue.increment(-20),
+                                        coins: admin.firestore.FieldValue.increment(qdb.get('config.coinSell')),
                                     }).then(d1 => {
                                         emoteref.set({
                                             have: array,
