@@ -3,17 +3,13 @@ import https = require('https');
 import fs = require('fs');
 import { Message } from 'discord.js'
 import { Langtypes } from '../types'
+import * as qdb from 'quick.db';
 
 module.exports = {
     name: 'link',
     async execute(message: Message, args: Array<string>) {
 
-
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-
-        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
-
-        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${qdb.get(`guilds.${message.guild?.id}`).lang}.json`, 'utf8'));
 
         const lang = langfull.commands.link;
 

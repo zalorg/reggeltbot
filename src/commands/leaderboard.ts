@@ -1,18 +1,20 @@
 import * as axios from 'axios';
 import * as Discord from 'discord.js';
 import fs = require('fs');
-import { Langtypes, Guildconfig } from '../types'
+import { Langtypes } from '../types'
 import * as admin from 'firebase-admin';
+import * as qdb from 'quick.db';
+
 const db = admin.firestore();
 
 module.exports = {
     name: 'leaderboard',
     async execute(message: Discord.Message, args: Array<string>, bot: Discord.Client) {
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+        //const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${qdb.get(`guilds.${message.guild?.id}`).lang}.json`, 'utf8'));
 
         const lang = langfull.commands.leaderboard
 
