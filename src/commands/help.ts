@@ -15,9 +15,11 @@ module.exports = {
 
         const prefix = qdb.get('config.prefix');
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+        const langcode = qdb.get('config.langs');
     
         const guildconfig: Guildconfig = qdb.get(`guild.${message.guild?.id}`);
+
+        console.log(guildconfig)
 
         const guildlang = guildconfig.lang || "en-US"
 
@@ -43,7 +45,7 @@ module.exports = {
 
         const badges = rawbadges.join(' ');
 
-        const alllang = langcode.langs.join(', ')
+        const alllang = langcode.join(', ')
 
         const embed = new MessageEmbed()
         .setTitle(lang.title)

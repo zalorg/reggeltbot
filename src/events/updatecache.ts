@@ -19,6 +19,7 @@ module.exports = {
         const configref = db.doc('bots/reggeltbot');
 
         configref.onSnapshot(s => {
+            qdb.set('config.langs', ["hu-HU", "en-US", "de-DE"])
             qdb.set(`config.embedcolor`, s.data()?.embedcolor)
             qdb.set(`config.decreaseCount`, s.data()?.decreaseCount)
             qdb.set(`config.incrementCount`, s.data()?.incrementCount)

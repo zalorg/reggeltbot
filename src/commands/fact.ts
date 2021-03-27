@@ -17,7 +17,7 @@ module.exports = {
 
         //const currentLang: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const guildlang = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US"
+        const guildlang = qdb.get(`guild.${message.guild?.id}`).lang || "en-US"
         
         const fulllang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
@@ -34,13 +34,13 @@ module.exports = {
                 .then((snapshot: { size: number; forEach: (arg0: (doc: any) => void) => void; }) => {
                     if(snapshot.size > 0) {
                         snapshot.forEach((doc: { id: any; data: () => any; }) => {
-                            sendRandomFact(doc.id, message, qdb.get(`guilds.${message.guild?.id}`).lang, args);
+                            sendRandomFact(doc.id, message, qdb.get(`guild.${message.guild?.id}`).lang, args);
                         });
                     } else {
                         quotes.where(admin.firestore.FieldPath.documentId(), '<', key2).limit(1).get()
                             .then((snapshot: any) => {
                                 snapshot.forEach((doc: { id: any; data: () => any; }) => {
-                                    sendRandomFact(doc.id, message, qdb.get(`guilds.${message.guild?.id}`).lang, args);
+                                    sendRandomFact(doc.id, message, qdb.get(`guild.${message.guild?.id}`).lang, args);
                                 });
                             })
                             .catch((err: any) => {
@@ -70,7 +70,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
     const userRef = db.collection('users').doc(`${doc.data()!.owner}`);
     const userDoc = await userRef.get();  
 
-    const guildlang = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US"
+    const guildlang = qdb.get(`guild.${message.guild?.id}`).lang || "en-US"
 
     const lang = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).commands.fact;
 
@@ -134,7 +134,7 @@ async function getRandomFactWithId(id: any, message: Message, args: Array<string
     const doc = await ref.get();
     if(!doc.exists) {
     
-        const guildlang = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US"
+        const guildlang = qdb.get(`guild.${message.guild?.id}`).lang || "en-US"
 
         const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
@@ -142,7 +142,7 @@ async function getRandomFactWithId(id: any, message: Message, args: Array<string
 
         message.reply(lang.noFact);
     } else {
-        sendRandomFact(doc.id, message, qdb.get(`guilds.${message.guild?.id}`).lang, args);
+        sendRandomFact(doc.id, message, qdb.get(`guild.${message.guild?.id}`).lang, args);
     }
 }
 
@@ -167,7 +167,7 @@ async function tts(message: Message, args: Array<string>,) {
     const text = args.join(' ');
 
     //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-    const guildconfig: Guildconfig = qdb.get(`guilds.${message.guild?.id}`)
+    const guildconfig: Guildconfig = qdb.get(`guild.${message.guild?.id}`)
 
     //message.reply(`${currentLang.lang}`)
 

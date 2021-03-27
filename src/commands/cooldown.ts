@@ -12,7 +12,7 @@ module.exports = {
             
             //const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
 
-            const guildlang = qdb.get(`guilds.${message.guild?.id}`).lang || "en-US"
+            const guildlang = qdb.get(`guild.${message.guild?.id}`).lang || "en-US"
     
             const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
             
