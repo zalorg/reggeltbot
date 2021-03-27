@@ -215,7 +215,7 @@ async function help(message: Discord.Message, coinEmote: Discord.Emoji | undefin
 
     .addField(`${prefix}shop buy`, `   **emote** *EMOJI* : You can buy emotes for **${emoteBuy} ${coinName}${coinEmote}** and use them to customise you experimance`)
     .addField('\u200B', '\u200B')
-    .addField(`${prefix}sell buy`, `   **emote** *EMOJI* : You can sell unwanted emotes **${emoteSell} ${coinName}${coinEmote}** and use them to customise you experimance`)
+    .addField(`${prefix}sell buy`, `   **emote** *EMOJI* : You can sell unwanted emotes **${emoteSell} ${coinName}${coinEmote}** and free up space in your inventory`)
     .addField('\u200B', '\u200B')
     .addField(`${prefix}shop set`, `
        **reggeltemote** *EMOJI* : You can set the reaction of you reggelt message in <#${message.guild?.channels.cache.find(e => e.name === "reggelt")?.id}> (Your current emote is: ${userdoc.data()?.reggeltemote})`)
