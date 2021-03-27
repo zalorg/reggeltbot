@@ -152,9 +152,12 @@ module.exports = {
                 } else if(emote === "☕" || emote === "🍵") {
                     message.reply('You cant sell the default emotes!');
                 } else if(emote === userdoc.data()?.reggeltemote) {
-                    message.channel.send(`You must change you current reggeltemote to sell this emote! \n 
-                    Use this command to set the reggeltemote to the default: \n
-                    ` + '`' + `${prefix}shop set reggeltemote ☕` + '`' + `\n ${message.author}`)
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`You must change you current reggeltemote to sell this emote!`)
+                    .addField(`Use this command to set the reggeltemote to the default`, '`' + `${prefix}shop set reggeltemote ☕` + '`')
+                    .setColor(qdb.get('config.embedcolor'))
+                    .setFooter(`${message.author.tag} • Reggeltbot economy`, message.author.avatarURL({dynamic: true}) || 'https://zal.page.link/9cL2').setTimestamp(Date.now())
+                    message.channel.send(embed)
                 } else {
                     message.channel.send(`Selling emote... ${args[2]} for ${emoteSell} ${coinName}`).then(m => {
                         removeElement(emotes, args[2])
@@ -195,7 +198,15 @@ module.exports = {
     }
 }
 
-function help(message: Discord.Message, coinEmote: Discord.Emoji | undefined) {
+async function help(message: Discord.Message, coinEmote: Discord.Emoji | undefined) {
+
+    const userref = db.collection('dcusers').doc(message.author.id);
+    //const emoteref = userref.collection('inventory').doc('emotes');
+
+    //const emotedoc = await emoteref.get();
+    const userdoc = await userref.get()
+
+
     let embed = new Discord.MessageEmbed()
     .setTitle('Reggeltbot economy help')
     .setColor(qdb.get('config.embedcolor'))
@@ -205,6 +216,9 @@ function help(message: Discord.Message, coinEmote: Discord.Emoji | undefined) {
     .addField(`${prefix}shop buy`, `   **emote** *EMOJI* : You can buy emotes for **${emoteBuy} ${coinName}${coinEmote}** and use them to customise you experimance`)
     .addField('\u200B', '\u200B')
     .addField(`${prefix}sell buy`, `   **emote** *EMOJI* : You can sell unwanted emotes **${emoteSell} ${coinName}${coinEmote}** and use them to customise you experimance`)
+    .addField('\u200B', '\u200B')
+    .addField(`${prefix}shop set`, `
+       **reggeltemote** *EMOJI* : You can set the reaction of you reggelt message in <#${message.guild?.channels.cache.find(e => e.name === "reggelt")?.id}> (Your current emote is: ${userdoc.data()?.reggeltemote})`)
     //console.log(embed);
     message.channel.send(embed);
 }
