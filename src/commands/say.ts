@@ -14,7 +14,7 @@ module.exports = {
 
         //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const guildconfig: Guildconfig = qdb.get(`guilds.${message.guild?.id}`).lang
+        const guildconfig: Guildconfig = qdb.get(`guilds.${message.guild?.id}`)
 
         if(!message.member?.voice) return;
 
