@@ -14,7 +14,7 @@ module.exports = {
 
         //const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${qdb.get(`guilds.${message.guild?.id}`).lang}.json`, 'utf8'));
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${qdb.get(`guild.${message.guild?.id}`).lang}.json`, 'utf8'));
 
         const lang = langfull.commands.leaderboard
 

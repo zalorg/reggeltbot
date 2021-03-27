@@ -2,7 +2,7 @@
 import ms = require('ms');
 import fs = require('fs');
 import { Message, Client, MessageEmbed } from 'discord.js'
-import { Guildconfig, Regggeltconfig, Langtypes } from '../types'
+import { Guildconfig, Langtypes } from '../types'
 import * as qdb from 'quick.db';
 
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
 
         const lang = langfull.commands.help;
 
-        const reggeltconfig: Regggeltconfig = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8')).events.reggelt;
+        const reggeltconfig = langfull.events.reggelt;
 
         const rawbadges: Array<string> = [];
 
