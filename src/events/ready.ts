@@ -10,7 +10,7 @@ module.exports = {
     name: 'ready',
     execute(bot: Client) {
         bot.on("ready", async () => {
-            console.log(qdb.fetchAll())
+            //console.log(qdb.fetchAll())
             if(qdb.fetchAll().length === 0) {
                 console.log('a')
                 process.exit();

@@ -3,14 +3,16 @@ import * as Discord from 'discord.js';
 import * as qdb from 'quick.db';
 const db = admin.firestore()
 
-const emoteBuy = qdb.get('config.emoteBuy');
-const emoteSell = qdb.get('config.emoteSell');
-const coinName = qdb.get('config.coinName');
-const prefix = qdb.get('config.prefix')
+
 
 module.exports = {
     name: 'shop',
     async execute(bot: Discord.Client, message: Discord.Message, args: Array<string>) {
+
+        const emoteBuy = `${qdb.get('config.emoteBuy')}`;
+        const emoteSell = `${qdb.get('config.emoteSell')}`;
+        const coinName = `${qdb.get('config.coinName')}`;
+        const prefix = `${qdb.get('config.prefix')}`
 
         const coinEmote = bot.emojis.cache.find(e => e.id === qdb.get('config.coinEmote')) ;
 
@@ -106,7 +108,7 @@ module.exports = {
                         }
 
                         function addemotes() {
-                            if(userdoc.data()?.coins >= emoteBuy) {
+                            if(userdoc.data()?.coins >= Number(emoteBuy)) {
                                 message.channel.send(`Buying emote... (${args[2]})`).then(m => {
                                     userref.update({
                                         coins: admin.firestore.FieldValue.increment(qdb.get('config.coinSell')),
@@ -199,6 +201,11 @@ module.exports = {
 }
 
 async function help(message: Discord.Message, coinEmote: Discord.Emoji | undefined) {
+
+    const emoteBuy = `${qdb.get('config.emoteBuy')}`;
+    const emoteSell = `${qdb.get('config.emoteSell')}`;
+    const coinName = `${qdb.get('config.coinName')}`;
+    const prefix = `${qdb.get('config.prefix')}`
 
     const userref = db.collection('dcusers').doc(message.author.id);
     //const emoteref = userref.collection('inventory').doc('emotes');
