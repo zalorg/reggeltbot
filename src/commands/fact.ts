@@ -84,7 +84,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
     if(!doc.data()!.owner){
         let upmbed = new Discord.MessageEmbed()
             .setTitle(lang.title1)
-            .setColor("#FFCB5C")
+            .setColor(qdb.get('config.embedcolor'))
             .addField(lang.fact, await translatefact(doc.data()!.fact, langcode))
             .setFooter(`This is a template fact`)
             .addField('\u200B', '\u200B')
@@ -97,7 +97,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
 
         let upmbed = new Discord.MessageEmbed()
             .setTitle(lang.title2.replace('%!AUTHOR%!', doc.data()!.author))
-            .setColor("#FFCB5C")
+            .setColor(qdb.get('config.embedcolor'))
             .addField(lang.fact, await translatefact(doc.data()!.fact, langcode))
             .addField(lang.factid, docid)
             .addField('\u200B', '\u200B')
@@ -113,7 +113,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
         
         let upmbed = new Discord.MessageEmbed()
             .setTitle(lang.title2.replace('%!AUTHOR%!', dcDoc.data()!.username))
-            .setColor("#FFCB5C")
+            .setColor(qdb.get('config.embedcolor'))
             .addField(lang.fact, await translatefact(doc.data()!.fact, langcode))
             .addField(lang.factid, docid)
             .addField('\u200B', '\u200B')

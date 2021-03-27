@@ -27,7 +27,7 @@ module.exports = {
             await axios.default.get(`${process.env.RAPIURL || configdoc.RAPIURL}/leaderboard?m=10`).then(res => {
                 const embed = new Discord.MessageEmbed()
                 .setTitle(lang.leaderboard)
-                .setColor('#FFCA5C')
+                .setColor(qdb.get('config.embedcolor'))
                 .setURL(`https://reggeltbot.com/leaderboard?m=10`)
                 .setThumbnail(res.data[0].pp)
                 
@@ -59,7 +59,7 @@ module.exports = {
                 await axios.default.get(`${process.env.RAPIURL}/leaderboard?m=${number}`).then(res => {
                     const embed = new Discord.MessageEmbed()
                     .setTitle(lang.leaderboard)
-                    .setColor('#FFCA5C')
+                    .setColor(qdb.get('config.embedcolor'))
                     .setURL(`https://reggeltbot.com/leaderboard?m=${number}`)
                     .setThumbnail(res.data[0].pp)
                     res.data.forEach((lb: any) => {

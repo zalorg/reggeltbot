@@ -2,7 +2,7 @@ import fs = require('fs');
 import * as admin from 'firebase-admin';
 import * as Discord from 'discord.js';
 import { Message } from 'discord.js'
-
+import * as qdb from 'quick.db';
 module.exports = {
     name: 'setlang',
     async execute(message: Message, args: any[]) {
@@ -16,6 +16,7 @@ module.exports = {
                 message.reply("Error: cannot find language! Here a list of all language:")
                 let embed = new Discord.MessageEmbed()
                 .setTitle('All avelible language')
+                .setColor(qdb.get('config.embedcolor'));
                 
         
                 langs.forEach((e: string) => {

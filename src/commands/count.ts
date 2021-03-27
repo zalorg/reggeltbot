@@ -3,6 +3,8 @@ import fs = require('fs');
 import { Message, MessageEmbed } from 'discord.js'
 import * as qdb from 'quick.db';
 
+const coinName = qdb.get('config.coinName');
+
 module.exports = {
     name: 'count',
     async execute(message: Message) {
@@ -25,14 +27,14 @@ module.exports = {
         } else {
             let upmbed = new MessageEmbed()
                 .setTitle(`${user.username}`)
-                .setColor("#FFCB5C")
+                .setColor(qdb.get('config.embedcolor'))
                 .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace('%!CHANNEL%!', `${reggeltconfig.channel}`).replace('%!USERNAME%!', user.username), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
                 .setFooter(user.username)
                 .setThumbnail(user.avatarURL()!)
                 .setTimestamp(message.createdAt);
     
                 if(doc.data()?.coins) {
-                    upmbed.addField('Coins', `${doc.data()?.coins}`)
+                    upmbed.addField(`${coinName}s`.charAt(1).toUpperCase(), `${doc.data()?.coins}`)
                 }
                 
             message.channel.send(upmbed);
