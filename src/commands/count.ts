@@ -12,7 +12,7 @@ module.exports = {
 
         const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang}.json`, 'utf8')).commands.count;
 
-        const reggeltconfig: Reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
+        const reggeltconfig: Reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang}.json`, 'utf8')).events.reggelt;
 
         let db = admin.firestore();
         let user = message.mentions.users.first() || message.author;;
