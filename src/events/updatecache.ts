@@ -25,6 +25,8 @@ module.exports = {
             qdb.set(`config.incrementCount`, s.data()?.incrementCount)
             qdb.set(`config.emoteBuy`, s.data()?.emoteBuy)
             qdb.set(`config.emoteSell`, s.data()?.emoteSell)
+            qdb.set(`config.coinName`, s.data()?.coinName)
+            qdb.set(`cofig.coinEmote`, s.data()?.coinEmote);
 
             //prefix
 
