@@ -20,7 +20,6 @@ module.exports = {
 
         configref.onSnapshot(s => {
             qdb.set('config.langs', ["hu-HU", "en-US", "de-DE"])
-            qdb.set(`config.embedcolor`, s.data()?.embedcolor)
             qdb.set(`config.decreaseCount`, s.data()?.decreaseCount)
             qdb.set(`config.incrementCount`, s.data()?.incrementCount)
             qdb.set(`config.emoteBuy`, s.data()?.emoteBuy)
@@ -32,14 +31,17 @@ module.exports = {
 
             switch(process.env.PROD) {
                 case 'false':
+                    qdb.set(`config.embedcolor`, '#B3B3B3')
                     qdb.set(`config.prefix`, s.data()?.testprefix)
                     qdb.set(`config.token`, s.data()?.testtoken)
                     break;
                 case 'beta':
+                    qdb.set(`config.embedcolor`, '#F15A25')
                     qdb.set(`config.prefix`, s.data()?.betaprefix)
                     qdb.set(`config.token`, s.data()?.betatoken)
                     break;
-                default: 
+                default:
+                    qdb.set(`config.embedcolor`, s.data()?.embedcolor)
                     qdb.set(`config.prefix`, s.data()?.prefix)
                     qdb.set(`config.token`, s.data()?.token)
                     break;

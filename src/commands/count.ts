@@ -27,7 +27,7 @@ module.exports = {
         } else {
             let upmbed = new MessageEmbed()
                 .setTitle(`${user.username}`)
-                .setColor("#FFCB5C")
+                .setColor(qdb.get('config.embedcolor'))
                 .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace('%!CHANNEL%!', `${reggeltconfig.channel}`).replace('%!USERNAME%!', user.username), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
                 .setFooter(user.username)
                 .setThumbnail(user.avatarURL()!)

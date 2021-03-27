@@ -77,7 +77,7 @@ module.exports = {
             })
 
             const activities_list = [
-                `for ${qdb.get('global.reggeltcount') || 'some'} morning message`,
+                `for ${qdb.get('global.reggeltcount') || 'some'} morning messages`,
                 `version: ${qdb.get('version')}`
             ]
 
