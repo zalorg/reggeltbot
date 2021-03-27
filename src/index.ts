@@ -163,18 +163,15 @@ bot.on("message", async message => {
     // help
     switch(cmd) {
         case `${prefix}help`:
-        case `${prefix}h`:
             commands.get('help').execute(message, bot)
             break;
         case `${prefix}count`:
-        case `${prefix}c`:
             await commands.get('count').execute(message);
             break;
         case `${prefix}link`:
             commands.get('link').execute(message, args);
             break;
         case `${prefix}fact`:
-        case `${prefix}f`:
             commands.get('fact').execute(message, args);
             break;
         case `${prefix}restart`:
@@ -184,8 +181,6 @@ bot.on("message", async message => {
             commands.get('ping').execute(bot, args, message)
             break;
         case `${prefix}leaderboard`:
-        case `${prefix}l`:
-        case `${prefix}lb`:
             await commands.get('leaderboard').execute(message, args, bot);
             break;
         case `${prefix}github`:
@@ -195,11 +190,9 @@ bot.on("message", async message => {
             commands.get('setlang').execute(message, args);
             break;
         case `${prefix}say`:
-        case `${prefix}s`:
             commands.get('say').execute(message, args, bot);
             break;
         case `${prefix}cooldown`:
-        case `${prefix}cd`:
             commands.get('cooldown').execute(bot, message, args);
             break;
         case `${prefix}postvideo`:
