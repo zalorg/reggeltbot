@@ -6,11 +6,11 @@ import * as qdb from 'quick.db';
 module.exports = {
     name: 'count',
     async execute(message: Message) {
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
     
-        const currentLang = langcode.guilds[message.guild!.id]
+        const currentLang = qdb.get(`guilds.${message.guild?.id}`).lang
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${qdb.get(`guilds.${message.guild?.id}`).lang}.json`, 'utf8')).commands.count;
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang}.json`, 'utf8')).commands.count;
 
         const reggeltconfig: Reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
 
