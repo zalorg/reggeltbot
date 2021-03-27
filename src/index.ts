@@ -200,6 +200,7 @@ bot.on("message", async message => {
             break;
         case `${prefix}cooldown`:
         case `${prefix}cd`:
+            console.log('cd')
             commands.get('cooldown').execute(bot, message, args);
             break;
         case `${prefix}postvideo`:

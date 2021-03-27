@@ -11,6 +11,11 @@ module.exports = {
     execute(bot: Client) {
         bot.on("ready", async () => {
 
+            if(qdb.fetchAll().length === 0) {
+                console.log('a')
+                process.exit();
+            }
+
             switch(process.env.PROD) {
                 case('false'): 
                     qdb.set('version', "testing");
@@ -77,7 +82,7 @@ module.exports = {
             })
 
             const activities_list = [
-                `for ${qdb.get('global.reggeltcount') || 'some'} morning message`,
+                `for ${qdb.get('global.reggeltcount') || 'some'} morning messages`,
                 `version: ${qdb.get('version')}`
             ]
 
@@ -100,21 +105,7 @@ module.exports = {
                 //console.log(activities_list.length - 1)
             }, 10000);
 
-
-        
-        
             console.log(`${bot.user!.username} has started`);
-            const doc = admin.firestore().collection("bots").doc("reggeltbot-count-all");
-            doc.onSnapshot((docSnapshot: any) => {
-                qdb.set('global.reggeltcount', docSnapshot.data().reggeltcount);
-                //console.log('snap updated')
-                //bot.user?.setActivity(`| `, {type: "WATCHING"});
-            }, (err: any) => {
-                console.log(`Encountered error: ${err}`);
-                bot.user?.setActivity(`Encountered error: ${err}`, {type: "PLAYING"});
-                qdb.set('global.reggeltcount', `Error: ${err.message}`);
-
-            });
         
         });
 

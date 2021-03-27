@@ -1,18 +1,20 @@
 import * as axios from 'axios';
 import * as Discord from 'discord.js';
 import fs = require('fs');
-import { Langtypes, Guildconfig } from '../types'
+import { Langtypes } from '../types'
 import * as admin from 'firebase-admin';
+import * as qdb from 'quick.db';
+
 const db = admin.firestore();
 
 module.exports = {
     name: 'leaderboard',
     async execute(message: Discord.Message, args: Array<string>, bot: Discord.Client) {
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+        //const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
 
-        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildconfig.lang}.json`, 'utf8'));
+        const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${qdb.get(`guild.${message.guild?.id}`).lang}.json`, 'utf8'));
 
         const lang = langfull.commands.leaderboard
 
@@ -25,7 +27,7 @@ module.exports = {
             await axios.default.get(`${process.env.RAPIURL || configdoc.RAPIURL}/leaderboard?m=10`).then(res => {
                 const embed = new Discord.MessageEmbed()
                 .setTitle(lang.leaderboard)
-                .setColor('#FFCA5C')
+                .setColor(qdb.get('config.embedcolor'))
                 .setURL(`https://reggeltbot.com/leaderboard?m=10`)
                 .setThumbnail(res.data[0].pp)
                 
@@ -57,7 +59,7 @@ module.exports = {
                 await axios.default.get(`${process.env.RAPIURL}/leaderboard?m=${number}`).then(res => {
                     const embed = new Discord.MessageEmbed()
                     .setTitle(lang.leaderboard)
-                    .setColor('#FFCA5C')
+                    .setColor(qdb.get('config.embedcolor'))
                     .setURL(`https://reggeltbot.com/leaderboard?m=${number}`)
                     .setThumbnail(res.data[0].pp)
                     res.data.forEach((lb: any) => {

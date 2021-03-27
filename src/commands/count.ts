@@ -1,18 +1,21 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import { Message, MessageEmbed } from 'discord.js'
+import * as qdb from 'quick.db';
 
+const coinName = qdb.get('config.coinName');
 
 module.exports = {
     name: 'count',
     async execute(message: Message) {
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-    
-        const currentLang = langcode.guilds[message.guild!.id]
+        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).commands.count;
+        const currentLang = qdb.get(`guild.${message.guild?.id}`).lang
 
-        const reggeltconfig: Reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang.lang}.json`, 'utf8')).events.reggelt;
+
+        const lang = JSON.parse(fs.readFileSync(`./lang/${currentLang}.json`, 'utf8')).commands.count;
+
+        const reggeltconfig: Reggeltconfig = JSON.parse(fs.readFileSync(`./lang/${currentLang}.json`, 'utf8')).events.reggelt;
 
         let db = admin.firestore();
         let user = message.mentions.users.first() || message.author;;
@@ -24,14 +27,14 @@ module.exports = {
         } else {
             let upmbed = new MessageEmbed()
                 .setTitle(`${user.username}`)
-                .setColor("#FFCB5C")
+                .setColor(qdb.get('config.embedcolor'))
                 .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace('%!CHANNEL%!', `${reggeltconfig.channel}`).replace('%!USERNAME%!', user.username), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
                 .setFooter(user.username)
                 .setThumbnail(user.avatarURL()!)
                 .setTimestamp(message.createdAt);
     
                 if(doc.data()?.coins) {
-                    upmbed.addField('Coins', `${doc.data()?.coins}`)
+                    upmbed.addField(`${coinName}s`.charAt(1).toUpperCase(), `${doc.data()?.coins}`)
                 }
                 
             message.channel.send(upmbed);

@@ -1,7 +1,8 @@
 import * as admin from 'firebase-admin';
 import { Client, Message } from 'discord.js'
-import { Guildconfig, Langtypes} from '../types'
+import { Langtypes} from '../types'
 import * as fs from 'fs';
+import * as qdb from 'quick.db';
 // .replace("%!CD%!", new Date(cd * 1000).toLocaleTimeString())
 module.exports = {
     name: 'cooldown',
@@ -9,9 +10,9 @@ module.exports = {
         //console.log(args)
         if(args) {
             
-            const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
+            //const guildconfig: Guildconfig = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8')).guilds[message.guild!.id];
 
-            const guildlang = guildconfig.lang || "en-US"
+            const guildlang = qdb.get(`guild.${message.guild?.id}`).lang || "en-US"
     
             const lang: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
             

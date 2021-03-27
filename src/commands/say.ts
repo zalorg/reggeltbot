@@ -2,7 +2,7 @@ import { TextToSpeechClient } from '@google-cloud/text-to-speech'
 import fs = require('fs');
 import { Message } from 'discord.js'
 import { Guildconfig } from '../types'
-
+import *  as qdb from 'quick.db';
 
 module.exports = {
     name: 'say',
@@ -12,9 +12,9 @@ module.exports = {
         const client = new TextToSpeechClient();
         const text = args.join(' ');
 
-        const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        const guildconfig: Guildconfig = langcode.guilds[message.guild!.id]
+        const guildconfig: Guildconfig = qdb.get(`guilds.${message.guild?.id}`)
 
         if(!message.member?.voice) return;
 
