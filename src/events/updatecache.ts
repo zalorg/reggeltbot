@@ -26,8 +26,8 @@ module.exports = {
             qdb.set(`config.emoteBuy`, s.data()?.emoteBuy)
             qdb.set(`config.emoteSell`, s.data()?.emoteSell)
             qdb.set(`config.coinName`, s.data()?.coinName)
-            qdb.set(`cofig.coinEmote`, s.data()?.coinEmote);
-
+            qdb.set(`config.coinEmote`, s.data()?.coinEmote);
+            
             //prefix
 
             switch(process.env.PROD) {
