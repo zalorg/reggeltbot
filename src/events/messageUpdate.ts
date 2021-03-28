@@ -15,7 +15,7 @@ module.exports =  {
 
             //const guild: Guildconfig = langcode.guilds[newMsg.guild!.id]
             
-            const guildlang = qdb.get(`guilds.${newMsg.guild?.id}`).lang || "en-US";
+            const guildlang = qdb.get(`guild.${newMsg.guild?.id}`).lang || "en-US";
 
             const langfull: Langtypes = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, 'utf8'));
 
