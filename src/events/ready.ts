@@ -202,7 +202,7 @@ module.exports = {
                     let senttoguilds: string[] = doc.data()?.senttoguilds || [];
 
 
-                    const ref = doc.ref;
+                    //const ref = doc.ref;
 
                     //let senttoguilds: string[] = doc.data()?.senttoguilds || [];
 
@@ -217,6 +217,19 @@ module.exports = {
                             }
                         
                     })
+
+                    let pendig: string[];
+
+
+                    bot.guilds.cache.forEach(g => {
+
+                        //if(pendig === true) {
+                            pendig.push(g.id)
+                        //}
+
+                    })
+
+                    console.log(pendig!)
                 })
             })
         });

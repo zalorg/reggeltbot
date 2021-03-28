@@ -158,7 +158,7 @@ module.exports = {
                     .setTitle(`You must change you current reggeltemote to sell this emote!`)
                     .addField(`Use this command to set the reggeltemote to the default`, '`' + `${prefix}shop set reggeltemote ☕` + '`')
                     .setColor(qdb.get('config.embedcolor'))
-                    .setFooter(`${message.author.tag} • Reggeltbot economy`, message.author.avatarURL({dynamic: true} || bot.user?.avatarURL({dynamic: true})) || 'https://zal.page.link/9cL2').setTimestamp(Date.now())
+                    .setFooter(`${message.author.tag} • Reggeltbot economy`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
                     message.channel.send(embed)
                 } else {
                     message.channel.send(`Selling emote... ${args[2]} for ${emoteSell} ${coinName}`).then(m => {
@@ -224,8 +224,7 @@ async function help(message: Discord.Message, coinEmote: Discord.Emoji | undefin
     .addField('\u200B', '\u200B')
     .addField(`${prefix}sell buy`, `   **emote** *EMOJI* : You can sell unwanted emotes **${emoteSell} ${coinName}${coinEmote}** and free up space in your inventory`)
     .addField('\u200B', '\u200B')
-    .addField(`${prefix}shop set`, `
-       **reggeltemote** *EMOJI* : You can set the reaction of you reggelt message in <#${message.guild?.channels.cache.find(e => e.name === "reggelt")?.id}> (Your current emote is: ${userdoc.data()?.reggeltemote})`)
+    .addField(`${prefix}shop set`, `**reggeltemote** *EMOJI* : You can set the reaction of you reggelt message in ${message.guild?.channels.cache.find(e => e.name === "reggelt") || 'a new #reggelt channel made by the admin!'} (Your current emote is: ${userdoc.data()?.reggeltemote})`)
     //console.log(embed);
     message.channel.send(embed);
 }
