@@ -12,7 +12,6 @@ module.exports = {
         bot.on("ready", async () => {
             //console.log(qdb.fetchAll())
             if(qdb.fetchAll().length === 0) {
-                console.log('a')
                 process.exit();
             }
 
@@ -106,7 +105,120 @@ module.exports = {
             }, 10000);
 
             console.log(`${bot.user!.username} has started`);
-        
+
+            const msgqueueref = admin.firestore().collection('bots').doc('reggeltbot').collection('messagequeue');
+            const msgqueuequerry = msgqueueref.where('sent', '==', false);
+
+            msgqueuequerry.onSnapshot(snap => {
+                if(snap.empty) {
+                    console.log('no new messages')
+                } else {
+                    snap.forEach(doc => {
+                        const channel = bot.channels.cache.get(doc.data()?.channel);
+
+                        const dm = bot.users.cache.get(doc.data()?.channel);
+
+                        const ref = doc.ref;
+
+                        if(doc.data()?.sent === true) {
+                            console.log('message already sent')
+                            return;
+                        }
+
+                        if(channel?.isText()) {
+                            if(!doc.data()?.message) {
+                                ref.update({
+                                    status: 'err',
+                                    error: 'No message!',
+                                    sent: true,
+                                })
+                            } else {
+                                ref.update({
+                                    status: 'sending',
+                                    sent: true,
+                                }).then(d => {
+                                    channel.send(doc.data()?.message).then(msg => {
+                                        ref.update({
+                                            status: 'sent',
+                                            id: msg.id,
+                                            type: msg.type,
+                                            sent: true,
+                                        })
+                                    }).catch(e => {
+                                        ref.update({
+                                            status: 'err',
+                                            error: e.message,
+                                            sent: true,
+                                        })
+                                    })
+                                })
+                            }
+                        } else if(dm?.id) {
+                            if(!doc.data()?.message) {
+                                ref.update({
+                                    status: 'err',
+                                    error: 'No message!',
+                                    sent: true,
+                                })
+                            } else {
+                                ref.update({
+                                    status: 'sending',
+                                    sent: true,
+                                }).then(d => {
+                                    dm.send(doc.data()?.message).then(msg => {
+                                        ref.update({
+                                            status: 'sent',
+                                            id: msg.id,
+                                            msg: msg.toJSON(),
+                                            sent: true,
+                                        })
+                                    }).catch(e => {
+                                        ref.update({
+                                            status: 'err',
+                                            error: e.message,
+                                            sent: true,
+                                        })
+                                    })
+                                })
+
+                            }
+                        } else {
+                            ref.update({
+                                status: 'err',
+                                error: 'No such user/cannel!',
+                                sent: true,
+                            })
+                        }
+                    })
+                }
+            })
+
+            const broadcastref = admin.firestore().collection('bots').doc('reggeltbot').collection('reggeltbtoadcast');
+            const broadcastquery = broadcastref.where('sent', '==', true);
+
+
+            broadcastquery.onSnapshot(snap => {
+                snap.forEach(doc => {
+                    let senttoguilds: string[] = doc.data()?.senttoguilds || [];
+
+
+                    const ref = doc.ref;
+
+                    //let senttoguilds: string[] = doc.data()?.senttoguilds || [];
+
+                    bot.guilds.cache.forEach(guild => {
+                        if(senttoguilds.find(e => e === guild.id)) return;
+                            const channel = guild.channels.cache.find(c => c.name ===  'reggelt');
+
+                            if(channel?.isText()) {
+                                channel.send(doc.data()?.message).then(m => {
+                                    return senttoguilds.push(guild.id);
+                                })
+                            }
+                        
+                    })
+                })
+            })
         });
 
     }
