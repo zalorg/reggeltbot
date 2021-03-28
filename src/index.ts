@@ -218,6 +218,8 @@ bot.on("message", async message => {
         case `${prefix}shop`:
             commands.get('shop').execute(bot, message, args);
             break;
+        case `${prefix}poll`:
+            commands.get('pollCmd').execute(message, args, bot);
 
     }
 });
