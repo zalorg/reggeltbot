@@ -158,7 +158,7 @@ module.exports = {
                     .setTitle(`You must change you current reggeltemote to sell this emote!`)
                     .addField(`Use this command to set the reggeltemote to the default`, '`' + `${prefix}shop set reggeltemote ☕` + '`')
                     .setColor(qdb.get('config.embedcolor'))
-                    .setFooter(`${message.author.tag} • Reggeltbot economy`, message.author.avatarURL({dynamic: true}) || 'https://zal.page.link/9cL2').setTimestamp(Date.now())
+                    .setFooter(`${message.author.tag} • Reggeltbot economy`, message.author.avatarURL({dynamic: true} || bot.user?.avatarURL({dynamic: true})) || 'https://zal.page.link/9cL2').setTimestamp(Date.now())
                     message.channel.send(embed)
                 } else {
                     message.channel.send(`Selling emote... ${args[2]} for ${emoteSell} ${coinName}`).then(m => {
