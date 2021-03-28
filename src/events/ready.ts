@@ -6,6 +6,7 @@ import { Client } from 'discord.js'
 import * as git from 'nodegit';
 import * as qdb from 'quick.db'
 
+const db = admin.firestore()
 module.exports = {
     name: 'ready',
     execute(bot: Client) {
@@ -57,7 +58,6 @@ module.exports = {
                 //waikupdate(bot)
             }
 
-            sendCommands()
 
             const dblToken = (await admin.firestore().collection('bots').doc('reggeltbot').get()).data()?.dblToken
             const dbl = new DBL(dblToken, bot);
@@ -232,138 +232,53 @@ module.exports = {
                     console.log(pendig!)
                 })
             })
+
+            const pollref = db.collection('bots').doc('reggeltbot').collection('polls');
+            const pollquery = pollref.where('ended', '==', false);
+
+            pollquery.onSnapshot(snap =>  {
+                if(snap.empty) return;
+
+                snap.docs.forEach(async doc => {
+                    //console.log(doc.data())
+                    const channel = bot.channels.cache.get(doc.data()?.channelid);
+                    if(channel?.isText()) {
+                        await channel.messages.fetch()
+
+                        const message = channel.messages.cache.get(doc.data()?.messageid)
+
+                        console.log(message?.content)
+
+                        const collector = message?.createReactionCollector((reaction, user) => user.id, {dispose: true});
+
+                        collector?.on('remove', async (react, user) => {
+                            const ref = doc.ref.collection('votes');
+                            const query = ref.where('id', '==', user.id).where('reaction.emojiID', '==', react.emoji.id);
+                            const docs = await query.get()
+
+                            docs.forEach(doc2 => {
+                                doc2.ref.delete().then(d => {
+                                    console.log('doc removed')
+                                })
+                            })
+
+                            console.log('remove')
+                        })
+
+                        collector?.on('collect', (reaction, user) => {
+                            const ref = doc.ref.collection('votes');
+                            ref.add({
+                                reaction: reaction.toJSON(),
+                                user: user.toJSON(),
+                                id: user.id,
+                                emoteid: reaction.emoji.id,
+                            })
+                            console.log('add')
+                        })
+                    }
+                })
+            })
         });
 
     }
 }
-
-function sendCommands() {
-/*
-    send({
-        "name": "count",
-        "description": "Ennyiszer köszöntél be a #reggelt csatornába",
-        "options": [
-            {
-                "name": "user",
-                "description": "The user to get",
-                "type": 6,
-                "required": false
-            }
-        ]
-    })
-    */
-    
-}
-/*
-async function waikupdate(bot: Client) {
-    const db = admin.firestore();
-
-
-    const waik = await bot.guilds.fetch('541446521313296385');
-
-    const metrics = db.doc(`bots/reggeltbot/config/${waik.id}`);
-
-    metrics.update({
-        m3: 0,
-        m6: 0,
-        y1: 0,
-        y2: 0,
-    })
-    const logchannel = await bot.channels.fetch('763040615080263700', false, true);
-    if(logchannel.isText()) {
-        logchannel.send("Waik members sync started")
-    }
-    waik.members.cache.forEach(async member => {
-
-
-        //const joinref = await admin.firestore().doc(`dcusers/${member.id}/guilds/${waik.id}`).get();
-        const join = member.joinedTimestamp!;
-        const m3 = 3 * 2592000000;
-        const m6 = 6 * 2592000000;
-        const y1 = 12 * 2592000000;
-        const y2 = 24 * 2592000000;
-        const now = Date.now();
-
-        //console.log(join)
-
-        //1 day 86400000 ms
-
-        //newbee 821417192339275887
-
-
-        if(join + 86400000 > now) {
-            waik.member(member.id)?.roles.add('821417192339275887').then(async member => {
-                sendlog(member, undefined, "newbee")
-                console.log(member.user.tag);
-
-            }).catch(e => {
-                console.log(`Error adding ${member.user.tag} to newbee Err: ${e}`);
-
-            })
-        } else {
-            waik.member(member.id)?.roles.remove('821417192339275887').then(async member => {
-                //sendlog(member, undefined, "newbee")
-            })
-        }
-
-        if(!member.user.bot) {
-            sendlog(member, undefined, "bot")
-        } else if(join + y2 < now) {
-            waik.member(member.id)?.roles.remove("814303109966200864").then(async member => {
-                if(logchannel.isText()) {
-                    logchannel.send("Waik members sync started")
-                }
-            }).catch
-
-            waik.member(member.id)?.roles.add('814303501512343622').then(member => sendlog(member, undefined, "y2")).catch(e => sendlog(member, e.message, "y2"))
-            metrics.update({
-                y2: admin.firestore.FieldValue.increment(1),
-            })
-        } else if(join + y1 < now) {
-            waik.member(member.id)?.roles.add('814303109966200864').then(member => sendlog(member, undefined, "y1")).catch(e => sendlog(member, e.message, "y1"))
-            metrics.update({
-                y1: admin.firestore.FieldValue.increment(1),
-            })
-        } else if(join + m6 < now) {
-            waik.member(member.id)?.roles.add('814302832031301683').then(member => sendlog(member, undefined, "m2")).catch(e => sendlog(member, e.message, "m6"))
-            metrics.update({
-                m6: admin.firestore.FieldValue.increment(1),
-            })
-        } else if(join + m3 < now) {
-            //waik.member(member.id)?.roles.add('814302832031301683').catch(e => console.error(e.message))
-            metrics.update({
-                m3: admin.firestore.FieldValue.increment(1),
-            })
-        }
-
-    })
-
-    async function sendlog(member: GuildMember, err: string | undefined, role: string) {
-        const logchannel = await bot.channels.fetch('763040615080263700', false, true);
-        if(logchannel.isText()) {
-            if(err) {
-                if(role === "y2") {
-                    logchannel.send(`<@${member.id}> failed to added to **y2** Error: **${err}**`)
-                } else if(role === "y1") {
-                    logchannel.send(`<@${member.id}> failed to added to **y1** Error: **${err}**`)
-                } else if(role === "m6") {
-                    logchannel.send(`<@${member.id}> failed to added to **m6** Error: **${err}**`)
-                } else if(role === "bot") {
-                    logchannel.send('bot ignored')
-                }
-
-                // Err end
-            } else {
-                if(role === "y2") {
-                    logchannel.send(`<@${member.id}> added to **y2**`)
-                } else if(role === "y1") {
-                    logchannel.send(`<@${member.id}> added to **y1**`)
-                } else if(role === "m6") {
-                    logchannel.send(`<@${member.id}> added to **m6**`)
-                }
-            }
-        }
-    }
-}
-
-*/
