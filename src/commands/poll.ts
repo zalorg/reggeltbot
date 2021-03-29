@@ -37,7 +37,9 @@ module.exports = {
                                 message.channel.send('Poll creation canceled!')
                                 qdb.delete(`temp.guildcounter.${message.guild?.id}.state`)
                             }
-                            console.log(msg.content)
+
+                            console.log(msg.content);
+
                             if(msg.content === "next") {
                                 console.log(reactions.length)
                                 if(reactions.length === 0) {
@@ -83,6 +85,20 @@ module.exports = {
                     
                         default:
                             console.log(qdb.get(`temp.guildcounter.${message.guild?.id}.state`))
+                            const chspl = msg.content.split('')
+                            if(!chspl.find(e => e === "#")) {
+                                message.channel.send('Error! invalid channel!')
+                                return;
+                            }
+                            if(!chspl.find(e => e === ">"))  {
+                                message.channel.send('Error! invalid channel!')
+                                return;
+                            }
+                            if(!chspl.find(e => e === "<"))  {
+                                message.channel.send('Error! invalid channel!')
+                                return;
+                            }
+                            console.log(chspl)
                             const channelid = msg.content.split('#', 2)[1].split('>', 1)[0]
                             const chnl = bot.channels.cache.get(channelid);
 
@@ -93,6 +109,11 @@ module.exports = {
                             \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**`)
                             .setFooter(`${message.author.tag} • Reggeltbot poll`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
                             .setColor(qdb.get('config.embedcolor'))
+
+                            if(!chnl)  {
+                                message.channel.send('Error! invalid channel!')
+                                return;
+                            }
 
                             
                             m.edit(embed2).then(m2 => {
