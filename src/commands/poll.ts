@@ -256,82 +256,84 @@ module.exports = {
                             } else {
                                 //console.log(chspl)
                                 const channelid = msg.content.split('#', 2)[1].split('>', 1)[0]
-                                const chnl = bot.channels.cache.get(channelid);
+                                const chnlr = bot.channels.cache.get(channelid);
     
-                                await chnl?.fetch()
-    
-                                if(!chnl)  {
-                                    message.channel.send('Error! invalid channel!').then(md => {
-                                        setTimeout(() => {
-                                            if(msg.deletable) {
-                                                msg.delete();
-                                            }
-                                            if(md.deletable) {
-                                                md.delete()
-                                            }
-                                        }, 5000);
-                                    })
-                                } else if(!chnl.isText()) {
-                                    message.channel.send('Channel error!')
-                                } else if(chnl.isText() && chnl.lastMessage?.guild?.id != message.guild?.id) {
-                                    console.log(chnl.lastMessage?.guild?.id)
-                                    console.log(message.guild?.id)
-                                    message.channel.send('Channel error! You can only create poll for this server!')
-                                } else {
-
-                                    qdb.set(`temp.guildcounter.${message.guild?.id}.channel`, chnl);
-    
-                                    let embed2 = new Discord.MessageEmbed()
-                                    .setTitle('Reggeltbot poll create')
-                                    .setDescription(`Okay, so i will start the poll in ${chnl}, now please add the option, by reacting to this message 
-                                    \n**If you see unrendered emoji like this:** *:stonks:* ** please remove it!** 
-                                    \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**`)
-                                    .setFooter(`${message.author.tag} • Reggeltbot poll`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
-                                    .setColor(qdb.get('config.embedcolor'))
-                                
-                                    m.edit(embed2).then(m2 => {
-                                        if(msg.deletable) {
-                                            msg.delete()
-                                            qdb.set(`temp.guildcounter.${message.guild?.id}.state`, 1)
-        
-                                        }
-        
-                                        const collector = m2.createReactionCollector((r, u) => u);
-        
-        
-                                        collector.on('collect', (react, user) => {
-                                            if(user.id === msg.author.id) {
-                                                console.log('by author')
-                                            }
-                                            //console.log(react.emoji)
-                                            console.log(react.emoji.id || react.emoji.name)
-                                            reactions.push(react.emoji)
-                                            qdb.set(`temp.guildcounter.${message.guild?.id}.reactions`, reactions)
-        
-                                            let embed2 = new Discord.MessageEmbed()
-                                            .setTitle('Reggeltbot poll create')
-                                            .setDescription(`Okay, so i will start the poll in ${chnl}, now please add the option, by reacting to this message 
-                                            \nCurrent emotes: **${reactions.join('  ')}**
-                                            \n**If you see unrendered emoji like this:** *:stonks:* ** please remove it!** 
-                                            \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**`)
-                                            .setFooter(`${message.author.tag} • Reggeltbot poll`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
-                                            .setColor(qdb.get('config.embedcolor'))
-        
-                                            m.edit(embed2)
-
-                                            collector.on('end', (collected) => {
-                                                console.log('end')
-                                            })
-
-                                            clr = () => {
-                                                collector.stop('manual stop')
-                                            }
-        
-                                            
+                                await chnlr?.fetch().then(chnl => {
+                                    if(!chnl)  {
+                                        message.channel.send('Error! invalid channel!').then(md => {
+                                            setTimeout(() => {
+                                                if(msg.deletable) {
+                                                    msg.delete();
+                                                }
+                                                if(md.deletable) {
+                                                    md.delete()
+                                                }
+                                            }, 5000);
                                         })
+                                    } else if(!chnl.isText()) {
+                                        message.channel.send('Channel error!')
+                                    } else if(chnl.isText() && chnl.lastMessage?.guild?.id != message.guild?.id) {
+                                        console.log(chnl.lastMessage?.guild?.id)
+                                        console.log(message.guild?.id)
+                                        message.channel.send('Channel error! You can only create poll for this server!')
+                                    } else {
+    
+                                        qdb.set(`temp.guildcounter.${message.guild?.id}.channel`, chnl);
+        
+                                        let embed2 = new Discord.MessageEmbed()
+                                        .setTitle('Reggeltbot poll create')
+                                        .setDescription(`Okay, so i will start the poll in ${chnl}, now please add the option, by reacting to this message 
+                                        \n**If you see unrendered emoji like this:** *:stonks:* ** please remove it!** 
+                                        \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**`)
+                                        .setFooter(`${message.author.tag} • Reggeltbot poll`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
+                                        .setColor(qdb.get('config.embedcolor'))
+                                    
+                                        m.edit(embed2).then(m2 => {
+                                            if(msg.deletable) {
+                                                msg.delete()
+                                                qdb.set(`temp.guildcounter.${message.guild?.id}.state`, 1)
+            
+                                            }
+            
+                                            const collector = m2.createReactionCollector((r, u) => u);
+            
+            
+                                            collector.on('collect', (react, user) => {
+                                                if(user.id === msg.author.id) {
+                                                    console.log('by author')
+                                                }
+                                                //console.log(react.emoji)
+                                                console.log(react.emoji.id || react.emoji.name)
+                                                reactions.push(react.emoji)
+                                                qdb.set(`temp.guildcounter.${message.guild?.id}.reactions`, reactions)
+            
+                                                let embed2 = new Discord.MessageEmbed()
+                                                .setTitle('Reggeltbot poll create')
+                                                .setDescription(`Okay, so i will start the poll in ${chnl}, now please add the option, by reacting to this message 
+                                                \nCurrent emotes: **${reactions.join('  ')}**
+                                                \n**If you see unrendered emoji like this:** *:stonks:* ** please remove it!** 
+                                                \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**`)
+                                                .setFooter(`${message.author.tag} • Reggeltbot poll`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
+                                                .setColor(qdb.get('config.embedcolor'))
+            
+                                                m.edit(embed2)
+    
+                                                collector.on('end', (collected) => {
+                                                    console.log('end')
+                                                })
+    
+                                                clr = () => {
+                                                    collector.stop('manual stop')
+                                                }
+            
+                                                
+                                            })
+    
+                                        })
+                                    }
+                                })
+    
 
-                                    })
-                                }
                             }
 
 
