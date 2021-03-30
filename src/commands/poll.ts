@@ -33,7 +33,7 @@ module.exports = {
                     time: 60000
                 });
 
-                collector.on('collect', (msg: Discord.Message) => {
+                collector.on('collect', async (msg: Discord.Message) => {
 
                     let reactions: Discord.Emoji[] = qdb.get(`temp.guildcounter.${message.guild?.id}.reactions`) || [];
 
@@ -258,7 +258,7 @@ module.exports = {
                                 const channelid = msg.content.split('#', 2)[1].split('>', 1)[0]
                                 const chnl = bot.channels.cache.get(channelid);
     
-                                chnl?.fetch(true)
+                                await chnl?.fetch()
     
                                 if(!chnl)  {
                                     message.channel.send('Error! invalid channel!').then(md => {
