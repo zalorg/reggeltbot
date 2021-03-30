@@ -24,7 +24,7 @@ module.exports = {
             const embed = new Discord.MessageEmbed()
             .setTitle('Reggeltbot poll create')
             .setDescription('First, please tag the channel')
-            .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+            .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, message.author.avatarURL({dynamic: true}) || undefined)
             .setTimestamp(Date.now())
             .setColor(qdb.get('config.embedcolor'))
 
@@ -76,7 +76,7 @@ module.exports = {
                                     \nCurrent emotes: **${emotes.join('  ')}**
                                     \nCurrent channel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
                                     `)
-                                    .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                    .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, message.author.avatarURL({dynamic: true}) || undefined)
                                     .setTimestamp(Date.now())
                                     .setColor(qdb.get('config.embedcolor'))
 
@@ -114,7 +114,7 @@ module.exports = {
                                 \nEmotes: **${emotes.join('  ')}**
                                 \nChannel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
                                 `)
-                                .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, message.author.avatarURL({dynamic: true}) || undefined)
                                 .setTimestamp(Date.now())
                                 .setColor(qdb.get('config.embedcolor'))
                                 emotes = [];
@@ -165,7 +165,7 @@ module.exports = {
                                                             \nChannel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
                                                             \nCreator: ${message.author}
                                                             `)
-                                                            .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                                            .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, message.author.avatarURL({dynamic: true}) || undefined)
                                                             .setTimestamp(Date.now())
                                                             .setColor("#2FBA6A")
                                                             emotes = []
@@ -186,7 +186,7 @@ module.exports = {
                                                 \n
                                                 \nError: **Channel error!**
                                                 `)
-                                                .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                                .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, message.author.avatarURL({dynamic: true}) || undefined)
                                                 .setTimestamp(Date.now())
                                                 .setColor("#CD404E")
                                                 emotes = []
@@ -203,7 +203,7 @@ module.exports = {
                                             .setDescription(`
                                             Poll canceled!
                                             `)
-                                            .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                            .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, message.author.avatarURL({dynamic: true}) || undefined)
                                             .setTimestamp(Date.now())
                                             .setColor("#CD404E")
                                             emotes = []
@@ -280,8 +280,9 @@ module.exports = {
                                         .setTitle('Reggeltbot poll create')
                                         .setDescription(`Okay, so i will start the poll in ${chnl}, now please add the option, by reacting to this message 
                                         \n**If you see unrendered emoji like this:** *:stonks:* ** please remove it!** 
-                                        \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**`)
-                                        .setFooter(`${message.author.tag} • Reggeltbot poll`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
+                                        \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**
+                                        \nIf you added all reaction you wanted, send **next**!`)
+                                        .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
                                         .setColor(qdb.get('config.embedcolor'))
                                     
                                         m.edit(embed2).then(m2 => {
@@ -309,7 +310,7 @@ module.exports = {
                                                 \nCurrent emotes: **${reactions.join('  ')}**
                                                 \n**If you see unrendered emoji like this:** *:stonks:* ** please remove it!** 
                                                 \n \n**YOU CAN ONLY USE DEFAULT EMOTES AND EMOTES FROM THIS SERVER!**`)
-                                                .setFooter(`${message.author.tag} • Reggeltbot poll`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
+                                                .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, `${message.author.avatarURL({dynamic: true})}`).setTimestamp(Date.now())
                                                 .setColor(qdb.get('config.embedcolor'))
             
                                                 m.edit(embed2)
