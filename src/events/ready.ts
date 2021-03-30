@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
 import DBL = require('dblapi.js');
-import { Client } from 'discord.js'
+import { Client, ReactionCollector } from 'discord.js'
 //import * as axios from 'axios';
 import * as git from 'nodegit';
 import * as qdb from 'quick.db'
@@ -236,11 +236,16 @@ module.exports = {
             const pollref = db.collection('bots').doc('reggeltbot').collection('polls');
             const pollquery = pollref.where('ended', '==', false);
 
+            var collectors: ReactionCollector[] = []
+
             pollquery.onSnapshot(snap =>  {
+
+                collectors.forEach(c => {
+                    c.stop('restart')
+                })
                 if(snap.empty) return;
 
                 snap.docs.forEach(async doc => {
-                    //console.log(doc.data())
                     const channel = bot.channels.cache.get(doc.data()?.channelid);
                     if(channel?.isText()) {
                         await channel.messages.fetch()
@@ -250,6 +255,8 @@ module.exports = {
                         console.log(message?.content)
 
                         const collector = message?.createReactionCollector((reaction, user) => user.id, {dispose: true});
+
+                        collectors.push(collector!)
 
                         collector?.on('remove', async (react, user) => {
                             const ref = doc.ref.collection('votes');
