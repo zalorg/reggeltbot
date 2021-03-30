@@ -258,7 +258,7 @@ module.exports = {
                                 const channelid = msg.content.split('#', 2)[1].split('>', 1)[0]
                                 const chnl = bot.channels.cache.get(channelid);
     
-    
+                                chnl?.fetch(true)
     
                                 if(!chnl)  {
                                     message.channel.send('Error! invalid channel!').then(md => {
