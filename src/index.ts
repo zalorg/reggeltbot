@@ -221,6 +221,9 @@ bot.on("message", async message => {
             break;
         case `${prefix}poll`:
             commands.get('pollCmd').execute(message, args, bot);
+        case `${prefix}profile`:
+            console.log('p')
+            commands.get('profile').execute(bot, args, message);
 
     }
 });
