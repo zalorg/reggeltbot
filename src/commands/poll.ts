@@ -7,7 +7,7 @@ const db = admin.firestore()
 module.exports = {
     name: 'pollCmd',
     async execute(message: Discord.Message, args: string[], bot: Discord.Client) {
-        if(message.member?.permissions.has('MANAGE_MESSAGES')) {
+        if(!message.member?.permissions.has('MANAGE_MESSAGES')) {
             message.reply('nope! :)')
             return;
         }
