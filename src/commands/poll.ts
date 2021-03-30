@@ -2,6 +2,8 @@ import * as admin from 'firebase-admin';
 import * as Discord from 'discord.js';
 import * as qdb from 'quick.db';
 
+const db = admin.firestore()
+
 module.exports = {
     name: 'pollCmd',
     async execute(message: Discord.Message, args: string[], bot: Discord.Client) {
@@ -141,26 +143,37 @@ module.exports = {
                                                         emotes.push(r.id ? `<:${r.name}:${r.id}>` : r.name)
                                                     })
 
-                                                    m.edit(embed).then(m3 => {
-                                                        let embed = new Discord.MessageEmbed()
-                                                        .setTitle('Reggeltbot poll create')
-                                                        .setDescription(`
-                                                        Poll created!
-                                                        \n
-                                                        \nMessage: **${qdb.get(`temp.guildcounter.${message.guild?.id}.content`)}**
-                                                        \nEmotes: **${emotes.join('  ')}**
-                                                        \nChannel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
-                                                        \nCreator: ${message.author}
-                                                        `)
-                                                        .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
-                                                        .setTimestamp(Date.now())
-                                                        .setColor("#2FBA6A")
-                                                        emotes = []
-                                                        m.edit(embed).then(me => {
-                                                            m.reactions.removeAll().catch(e => console.error);
-                                                            coll.stop('poll created');
+                                                    const ref = db.collection('bots').doc('reggeltbot').collection('polls');
+
+                                                    ref.add({
+                                                        author: message.author.id,
+                                                        channelid: mc.channel.id,
+                                                        messageid: mc.id,
+                                                        ended: false,
+                                                    }).then(d => {
+                                                        m.edit(embed).then(m3 => {
+                                                            let embed = new Discord.MessageEmbed()
+                                                            .setTitle('Reggeltbot poll create')
+                                                            .setDescription(`
+                                                            Poll created!
+                                                            \n
+                                                            \nMessage: **${qdb.get(`temp.guildcounter.${message.guild?.id}.content`)}**
+                                                            \nEmotes: **${emotes.join('  ')}**
+                                                            \nChannel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
+                                                            \nCreator: ${message.author}
+                                                            `)
+                                                            .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                                            .setTimestamp(Date.now())
+                                                            .setColor("#2FBA6A")
+                                                            emotes = []
+                                                            m.edit(embed).then(me => {
+                                                                m.reactions.removeAll().catch(e => console.error);
+                                                                coll.stop('poll created');
+                                                            })
                                                         })
                                                     })
+
+
                                                 })
                                             } else {
                                                 let embed = new Discord.MessageEmbed()
