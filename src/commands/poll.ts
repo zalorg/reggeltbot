@@ -272,10 +272,6 @@ module.exports = {
                                         })
                                     } else if(!chnl.isText()) {
                                         message.channel.send('Channel error!')
-                                    } else if(chnl.isText() && chnl.lastMessage?.guild?.id != message.guild?.id) {
-                                        console.log(chnl.lastMessage?.guild?.id)
-                                        console.log(message.guild?.id)
-                                        message.channel.send('Channel error! You can only create poll for this server!')
                                     } else {
     
                                         qdb.set(`temp.guildcounter.${message.guild?.id}.channel`, chnl);
