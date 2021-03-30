@@ -28,11 +28,7 @@ module.exports = {
                     time: 60000
                 });
 
-                var guildcounter = qdb.get(`temp.guildcounter.${message.guild?.id}.state`);
-
                 collector.on('collect', (msg: Discord.Message) => {
-                    if(!guildcounter) {
-                    }
 
                     let reactions: Discord.Emoji[] = qdb.get(`temp.guildcounter.${message.guild?.id}.reactions`) || [];
 
@@ -43,8 +39,6 @@ module.exports = {
                                 qdb.delete(`temp.guildcounter.${message.guild?.id}.state`)
                                 clr()
                             }
-
-                            console.log(msg.content);
 
                             if(msg.content === "next") {
                                 console.log(reactions.length)
@@ -61,6 +55,8 @@ module.exports = {
                                     })
                                 } else {
 
+                                    clr();
+
                                     let emotes: string[] = [];
 
                                     reactions.forEach(r => {
@@ -73,6 +69,7 @@ module.exports = {
                                     Okay, now please enter the message that I shoud send!
                                     \n
                                     \nCurrent emotes: **${emotes.join('  ')}**
+                                    \nCurrent channel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
                                     `)
                                     .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
                                     .setTimestamp(Date.now())
@@ -82,13 +79,128 @@ module.exports = {
                                         if(msg.deletable) {
                                             msg.delete()
                                             m.reactions.removeAll()
+                                            qdb.set(`temp.guildcounter.${message.guild?.id}.state`, 2)
+
                                         }
                                     })
                         
                                 }
                             }
                             break;
-                    
+                        case 2:
+                            if(msg.content === "stop") {
+
+                            } else {
+                                qdb.set(`temp.guildcounter.${message.guild?.id}.content`, msg.content);
+
+                                let emotes: string[] = [];
+
+                                reactions.forEach(r => {
+                                    emotes.push(r.id ? `<:${r.name}:${r.id}>` : r.name)
+                                })
+
+                                let embed = new Discord.MessageEmbed()
+                                .setTitle('Reggeltbot poll create')
+                                .setDescription(`
+                                And finaly, confirm!
+                                \n React with <:greenTick:809931766642245663> to confirm, or with <:redTick:809931766601220096> to cancel!
+                                \n
+                                \nMessage: **${qdb.get(`temp.guildcounter.${message.guild?.id}.content`)}**
+                                \nEmotes: **${emotes.join('  ')}**
+                                \nChannel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
+                                `)
+                                .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                .setTimestamp(Date.now())
+                                .setColor(qdb.get('config.embedcolor'))
+                                emotes = [];
+
+                                m.edit(embed).then(m2 => {
+                                    if(msg.deletable) {
+                                            msg.delete();
+                                        }
+                                    m.react('809931766642245663').catch(e => console.error)
+                                    m.react('809931766601220096').catch(e => console.error)
+
+                                    const coll = m2.createReactionCollector((react, user) => user.id === msg.author.id);
+
+                                    coll.on('collect', (r, u) => {
+                                        if(r.emoji.id === "809931766642245663") {
+
+
+                                            const chnlid = qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id
+
+                                            const chnl = bot.channels.cache.get(chnlid);
+
+                                            //console.log(chnl)
+
+                                            if(chnl && chnl.isText() && chnl.lastMessage?.guild?.id === message.guild?.id) {
+                                                chnl.send(qdb.get(`temp.guildcounter.${message.guild?.id}.content`)).then(mc => {
+                                                    let emotes: string[] = [];
+                                                    reactions.forEach(r => {
+                                                        mc.react(r.id || r.name)
+                                                        emotes.push(r.id ? `<:${r.name}:${r.id}>` : r.name)
+                                                    })
+
+                                                    m.edit(embed).then(m3 => {
+                                                        let embed = new Discord.MessageEmbed()
+                                                        .setTitle('Reggeltbot poll create')
+                                                        .setDescription(`
+                                                        Poll created!
+                                                        \n
+                                                        \nMessage: **${qdb.get(`temp.guildcounter.${message.guild?.id}.content`)}**
+                                                        \nEmotes: **${emotes.join('  ')}**
+                                                        \nChannel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
+                                                        \nCreator: ${message.author}
+                                                        `)
+                                                        .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                                        .setTimestamp(Date.now())
+                                                        .setColor("#2FBA6A")
+                                                        emotes = []
+                                                        m.edit(embed).then(me => {
+                                                            m.reactions.removeAll().catch(e => console.error);
+                                                            coll.stop('poll created');
+                                                        })
+                                                    })
+                                                })
+                                            } else {
+                                                let embed = new Discord.MessageEmbed()
+                                                .setTitle('Reggeltbot poll create')
+                                                .setDescription(`
+                                                Error creating poll!
+                                                \n
+                                                \nError: **Channel error!**
+                                                `)
+                                                .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                                .setTimestamp(Date.now())
+                                                .setColor("#CD404E")
+                                                emotes = []
+                                                m.edit(embed).then(me => {
+                                                    coll.stop('channel error')
+                                                    m.reactions.removeAll().catch(e => console.error);
+                                                })
+                                            }
+
+
+                                        } else if(r.emoji.id === '809931766601220096') {
+                                            let embed = new Discord.MessageEmbed()
+                                            .setTitle('Reggeltbot poll create')
+                                            .setDescription(`
+                                            Poll canceled!
+                                            `)
+                                            .setFooter(`${message.author.tag} • Reggeltbot poll`, message.author.avatarURL({dynamic: true}) || undefined)
+                                            .setTimestamp(Date.now())
+                                            .setColor("#CD404E")
+                                            emotes = []
+                                            m.edit(embed).then(me => {
+                                                coll.stop('canceled')
+                                                m.reactions.removeAll().catch(e => console.error);
+                                            })
+                                        }
+                                    })
+                                })
+                            }
+                            console.log(msg.content)
+                            break;
                         default:
                             console.log(qdb.get(`temp.guildcounter.${message.guild?.id}.state`))
                             const chspl = msg.content.split('')
@@ -144,6 +256,8 @@ module.exports = {
                                         }, 5000);
                                     })
                                 } else {
+
+                                    qdb.set(`temp.guildcounter.${message.guild?.id}.channel`, chnl);
     
                                     let embed2 = new Discord.MessageEmbed()
                                     .setTitle('Reggeltbot poll create')
@@ -188,7 +302,6 @@ module.exports = {
                                             })
 
                                             clr = () => {
-                                                console.log(2)
                                                 collector.stop('manual stop')
                                             }
         
