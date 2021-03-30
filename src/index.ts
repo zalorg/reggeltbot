@@ -4,6 +4,7 @@ import * as Discord from 'discord.js';
 import fs = require('fs');
 //const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
 const bot = new Discord.Client({
+    disableMentions: 'everyone',
     retryLimit: 10,
 });
 import * as admin from 'firebase-admin';
