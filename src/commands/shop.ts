@@ -158,7 +158,7 @@ module.exports = {
                     .setTitle(`You must change you current reggeltemote to sell this emote!`)
                     .addField(`Use this command to set the reggeltemote to the default`, '`' + `${prefix}shop set reggeltemote ☕` + '`')
                     .setColor(qdb.get('config.embedcolor'))
-                    .setFooter(`${message.author.tag} • Reggeltbot economy`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
+                    .setFooter(`${message.author.tag} • Reggeltbot economy (Beta)`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
                     message.channel.send(embed)
                 } else {
                     message.channel.send(`Selling emote... ${args[2]} for ${emoteSell} ${coinName}`).then(m => {
@@ -217,7 +217,7 @@ async function help(message: Discord.Message, coinEmote: Discord.Emoji | undefin
     let embed = new Discord.MessageEmbed()
     .setTitle('Reggeltbot economy help')
     .setColor(qdb.get('config.embedcolor'))
-    .setFooter(`${message.author.tag} • Reggeltbot economy`, `${message.author.avatarURL({dynamic: true})}`)
+    .setFooter(`${message.author.tag} • Reggeltbot economy (Beta)`, `${message.author.avatarURL({dynamic: true})}`)
     .setTimestamp(Date.now())
 
     .addField(`${prefix}shop buy`, `   **emote** *EMOJI* : You can buy emotes for **${emoteBuy} ${coinName}${coinEmote}** and use them to customise you experimance`)
