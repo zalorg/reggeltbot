@@ -29,9 +29,8 @@ module.exports = {
                 .setTitle(`${user.username}`)
                 .setColor(qdb.get('config.embedcolor'))
                 .addField(`${lang.f1}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace('%!CHANNEL%!', `${reggeltconfig.channel}`).replace('%!USERNAME%!', user.username), `${lang.f2}`.replace("%!KEYWORD%!", reggeltconfig.keyWord).replace("%!COUNT%!", `${doc.data()!.reggeltcount}`).replace("%!ID%!", message.author.id))
-                .setFooter(user.username)
                 .setThumbnail(user.avatarURL()!)
-                .setTimestamp(message.createdAt);
+                .setFooter(`${message.author.tag} • Reggeltbot count`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now());
     
                 if(doc.data()?.coins) {
                     upmbed.addField(`${coinName}s`.charAt(1).toUpperCase(), `${doc.data()?.coins}`)

@@ -89,7 +89,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
             .setFooter(`This is a template fact`)
             .addField('\u200B', '\u200B')
             .addField(lang.add, lang.addF)
-            .setTimestamp(message.createdAt);
+            .setFooter(`${message.author.tag} • This is a template fact • Reggeltbot facts`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now());
 
         message.channel.send(upmbed);
     
@@ -102,8 +102,7 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
             .addField(lang.factid, docid)
             .addField('\u200B', '\u200B')
             .addField(lang.add, lang.addF)
-            .setFooter(doc.data()!.author)
-            .setTimestamp(message.createdAt);
+            .setFooter(`${message.author.tag} • Reggeltbot facts`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now());
 
         message.channel.send(upmbed);
         
@@ -118,9 +117,8 @@ async function sendRandomFact(docid: any, message: Message, langcode: string, ar
             .addField(lang.factid, docid)
             .addField('\u200B', '\u200B')
             .addField(lang.add, lang.addF)
-            .setFooter(dcDoc.data()!.tag)
             .setThumbnail(dcDoc.data()!.pp)
-            .setTimestamp(message.createdAt);
+            .setFooter(`${message.author.tag} • Reggeltbot facts`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now());
 
         message.channel.send(upmbed);
     }

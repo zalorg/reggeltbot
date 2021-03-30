@@ -149,12 +149,6 @@ async function reggeltupdatefs(message: Message, decreased = false) {
     const incrementCount = qdb.get('config.incrementCount');
     const decreaseCount = qdb.get('config.decreaseCount');
 
-    if(!doc.data()?.coins && doc.data()?.reggeltcount) {
-        await reggeltRef.update({
-            coins: doc.data()?.reggeltcount
-        })
-    }
-
     if (!doc.exists) {
         reggeltRef.set({
             reggeltcount: (decreased ? decreaseCount : incrementCount),

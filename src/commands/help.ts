@@ -68,9 +68,8 @@ module.exports = {
         embed
         .addField(lang.ping, `${bot.ws.ping}ms`)
         .addField(lang.uptime, `${ms(bot.uptime || 0)}`)
-        .setFooter(message.author.username)
         .setThumbnail(bot.user!.avatarURL()!)
-        .setTimestamp(Date.now());
+        .setFooter(`${message.author.tag} • Reggeltbot help`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now());
 
 
         message.channel.send(embed)
