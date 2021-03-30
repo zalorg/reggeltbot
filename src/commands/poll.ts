@@ -138,7 +138,7 @@ module.exports = {
 
                                             //console.log(chnl)
 
-                                            if(chnl && chnl.isText() && chnl.lastMessage?.guild?.id === message.guild?.id) {
+                                            if(chnl && chnl.isText()) {
                                                 chnl.send(qdb.get(`temp.guildcounter.${message.guild?.id}.content`)).then(mc => {
                                                     let emotes: string[] = [];
                                                     reactions.forEach(r => {
@@ -271,6 +271,12 @@ module.exports = {
                                             }
                                         }, 5000);
                                     })
+                                } else if(!chnl.isText()) {
+                                    message.channel.send('Channel error!')
+                                } else if(chnl.isText() && chnl.lastMessage?.guild?.id != message.guild?.id) {
+                                    console.log(chnl.lastMessage?.guild?.id)
+                                    console.log(message.guild?.id)
+                                    message.channel.send('Channel error! You can only create poll for this server!')
                                 } else {
 
                                     qdb.set(`temp.guildcounter.${message.guild?.id}.channel`, chnl);
