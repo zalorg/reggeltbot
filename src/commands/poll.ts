@@ -60,8 +60,6 @@ module.exports = {
                                     })
                                 } else {
 
-                                    clr();
-
                                     let emotes: string[] = [];
 
                                     reactions.forEach(r => {
@@ -94,7 +92,7 @@ module.exports = {
                             break;
                         case 2:
                             if(msg.content === "stop") {
-
+                                clr();
                             } else {
                                 qdb.set(`temp.guildcounter.${message.guild?.id}.content`, msg.content);
 
@@ -170,6 +168,7 @@ module.exports = {
                                                             .setColor("#2FBA6A")
                                                             emotes = []
                                                             m.edit(embed).then(me => {
+                                                                clr();
                                                                 m.reactions.removeAll().catch(e => console.error);
                                                                 coll.stop('poll created');
                                                             })
