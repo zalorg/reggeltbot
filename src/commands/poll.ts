@@ -37,12 +37,16 @@ module.exports = {
 
                     let reactions: Discord.Emoji[] = qdb.get(`temp.guildcounter.${message.guild?.id}.reactions`) || [];
 
+                    if(msg.content === 'stop' || msg.content === 'cancel') return msg.channel.send('Canceled').then(m => qdb.delete(`temp.guildcounter.${message.guild?.id}.state`))
                     switch (qdb.get(`temp.guildcounter.${message.guild?.id}.state`)) {
                         case 1:
                             if(msg.content === "stop") {
-                                message.channel.send('Poll creation canceled!')
-                                qdb.delete(`temp.guildcounter.${message.guild?.id}.state`)
-                                clr()
+                                message.channel.send('Poll creation canceled!').then(m => {
+                                    clr()
+                                    collector.stop('manual stop')
+                                    qdb.delete(`temp.guildcounter.${message.guild?.id}.state`)
+                                })
+
                             }
 
                             if(msg.content === "next") {
@@ -159,10 +163,11 @@ module.exports = {
                                                             .setDescription(`
                                                             Poll created!
                                                             \n
-                                                            \nMessage: **${qdb.get(`temp.guildcounter.${message.guild?.id}.content`)}**
+                                                            \nMessage: ${qdb.get(`temp.guildcounter.${message.guild?.id}.content`)}
                                                             \nEmotes: **${emotes.join('  ')}**
                                                             \nChannel: <#${qdb.get(`temp.guildcounter.${message.guild?.id}.channel`).id}>
                                                             \nCreator: ${message.author}
+                                                            \nId: **${d.id}**
                                                             `)
                                                             .setFooter(`${message.author.tag} • Reggeltbot poll (Beta)`, message.author.avatarURL({dynamic: true}) || undefined)
                                                             .setTimestamp(Date.now())
@@ -170,6 +175,7 @@ module.exports = {
                                                             emotes = []
                                                             m.edit(embed).then(me => {
                                                                 clr();
+                                                                collector.stop('poll created')
                                                                 m.reactions.removeAll().catch(e => console.error);
                                                                 coll.stop('poll created');
                                                             })
