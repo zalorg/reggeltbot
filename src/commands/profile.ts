@@ -57,7 +57,7 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
     .setTitle(`${member.displayName || member.user.tag}'s profile`)
     .addField(`Reggeltcount`, `${doc.data()?.reggeltcount || '0'}`)
     .addField(`Coins`, `${doc.data()?.coins || '0'} <:${qdb.get('config.coinName')}:${qdb.get('config.coinEmote')}>`)
-    .setColor(member.displayColor || qdb.get('config.embedcolor'))
+    .setColor(qdb.get('config.embedcolor') || member.displayColor)
     .setFooter(`${message.author.tag} • Reggeltbot profile (Beta)`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
 
     if(emotedoc.exists) {
