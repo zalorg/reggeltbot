@@ -59,6 +59,9 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
         if(user) {
             
         }
+    } else {
+        let av = member?.user?.avatarURL({dynamic: true}) || member.user.displayAvatarURL({dynamic: true}) || bot.user?.avatarURL({dynamic: true}); 
+        embed.setThumbnail(av!) 
     }
 
     if(emotedoc.exists) {
@@ -78,14 +81,15 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
 
         doc.data()?.badges.forEach((b: string) => {
             switch (b) {
-                case 'tester':
-                    ba.push("<:test:812821214019190795>")
-                    break;
+
                 case 'premium':
                     ba.push("<:premium:812821285197447178>")
                     break;
                 case 'verified':
                     ba.push("<:greenTick:809931766642245663>")
+                    break;
+                case 'tester':
+                    ba.push("<:test:812821214019190795>")
                     break;
             }
         });
