@@ -71,8 +71,11 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
         e = [];
     }
 
-    if(doc.data()?.badges != 0) {
+    if(doc.data()?.badges && doc.data()?.badges.length > 0) {
         let ba: string[] = []
+
+        console.log(doc.data()?.badges)
+
         doc.data()?.badges.forEach((b: string) => {
             switch (b) {
                 case 'tester':
