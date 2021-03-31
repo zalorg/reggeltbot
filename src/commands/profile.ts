@@ -43,7 +43,7 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
 
     let avatar = member.user.avatarURL({dynamic: true}) || bot.user?.avatarURL({dynamic: true})!
 
-    if(userdoc.exists) {
+    if(userdoc?.exists) {
         const user = await admin.auth().getUser(userdoc.id);
         const a = user.photoURL
         if(a) {
@@ -65,9 +65,29 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
 
         console.log(e.join('  '))
 
-        embed.addField(`Emotes`, `${e.join('  ')}`)
+        embed.addField(`Emotes`, `${e.join('  ')} \n`)
 
         e = [];
+    }
+
+    if(doc.data()?.badges[0]) {
+        let ba: string[] = []
+        doc.data()?.badges.forEach((b: string) => {
+            switch (b) {
+                case 'tester':
+                    ba.push("<:test:812821214019190795>")
+                    break;
+                case 'premium':
+                    ba.push("<:premium:812821285197447178>")
+                    break;
+                case 'verified':
+                    ba.push("<:greenTick:809931766642245663>")
+                    break;
+            }
+        });
+
+        embed.setDescription(`${ba.join('   ')}`)
+        ba = [];
     }
 
 
