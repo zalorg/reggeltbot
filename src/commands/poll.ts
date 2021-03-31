@@ -116,11 +116,12 @@ module.exports = {
                                 .setTimestamp(Date.now())
                                 .setColor(qdb.get('config.embedcolor'))
                                 emotes = [];
-
+                                
                                 m.edit(embed).then(m2 => {
                                     if(msg.deletable) {
                                             msg.delete();
-                                        }
+                                    }
+                                    clr()
                                     m.react('809931766642245663').catch(e => console.error)
                                     m.react('809931766601220096').catch(e => console.error)
 
