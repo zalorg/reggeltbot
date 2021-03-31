@@ -292,10 +292,10 @@ module.exports = {
             
                                             }
             
-                                            const collector = m2.createReactionCollector((r, u) => u);
+                                            const collector2 = m2.createReactionCollector((r, u) => u);
             
             
-                                            collector.on('collect', (react, user) => {
+                                            collector2.on('collect', (react, user) => {
                                                 if(user.id === msg.author.id) {
                                                     console.log('by author')
                                                 }
@@ -315,12 +315,12 @@ module.exports = {
             
                                                 m.edit(embed2)
     
-                                                collector.on('end', (collected) => {
+                                                collector2.on('end', (collected) => {
                                                     console.log('end')
                                                 })
     
                                                 clr = () => {
-                                                    collector.stop('manual stop')
+                                                    collector2.stop('manual stop')
                                                 }
             
                                                 
