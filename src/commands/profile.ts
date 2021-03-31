@@ -41,24 +41,25 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
     const userdocs = await userquery.get()
     const userdoc = userdocs.docs[0]
 
-    let avatar = member.user.avatarURL({dynamic: true}) || bot.user?.avatarURL({dynamic: true})!
-
-    if(userdoc?.exists) {
-        const user = await admin.auth().getUser(userdoc.id);
-        const a = user.photoURL
-        if(a) {
-            avatar = a;
-        }
-    }
-    
-
     let embed = new Discord.MessageEmbed()
-    .setThumbnail(avatar)
     .setTitle(`${member.displayName || member.user.tag}'s profile`)
     .addField(`Reggeltcount`, `${doc.data()?.reggeltcount || '0'}`)
     .addField(`Coins`, `${doc.data()?.coins || '0'} <:${qdb.get('config.coinName')}:${qdb.get('config.coinEmote')}>`)
-    .setColor(member.displayColor || qdb.get('config.embedcolor'))
+    .setColor(qdb.get('config.embedcolor') || member.displayColor)
     .setFooter(`${message.author.tag} • Reggeltbot profile (Beta)`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
+
+
+    if(userdoc?.exists) {
+        const user = await admin.auth().getUser(userdoc.id);
+        
+        let av = user?.photoURL || member?.user?.avatarURL({dynamic: true}) || member.user.displayAvatarURL({dynamic: true}) || bot.user?.avatarURL({dynamic: true}); 
+        embed.setThumbnail(av!)
+
+
+        if(user) {
+            
+        }
+    }
 
     if(emotedoc.exists) {
         let e: string[] =  emotedoc.data()?.have;
@@ -70,8 +71,11 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
         e = [];
     }
 
-    if(doc.data()?.badges[0]) {
+    if(doc.data()?.badges && doc.data()?.badges.length > 0) {
         let ba: string[] = []
+
+        console.log(doc.data()?.badges)
+
         doc.data()?.badges.forEach((b: string) => {
             switch (b) {
                 case 'tester':
