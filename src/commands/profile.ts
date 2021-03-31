@@ -54,10 +54,10 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
 
     let embed = new Discord.MessageEmbed()
     .setThumbnail(avatar)
-    .setTitle(`${member.user.tag}'s profile`)
+    .setTitle(`${member.displayName || member.user.tag}'s profile`)
     .addField(`Reggeltcount`, `${doc.data()?.reggeltcount || '0'}`)
     .addField(`Coins`, `${doc.data()?.coins || '0'} <:${qdb.get('config.coinName')}:${qdb.get('config.coinEmote')}>`)
-    .setColor(qdb.get('config.embedcolor'))
+    .setColor(member.displayColor || qdb.get('config.embedcolor'))
     .setFooter(`${message.author.tag} • Reggeltbot profile (Beta)`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
 
     if(emotedoc.exists) {
