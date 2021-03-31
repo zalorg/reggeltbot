@@ -5,6 +5,7 @@ import * as admin from 'firebase-admin';
 //import * as axiosb from 'axios'
 //const axios = axiosb.default;
 //import Path = require('path');
+import * as qdb from 'quick.db';
 
 //const storage = new Storage();
 import vision = require('@google-cloud/vision');
@@ -83,6 +84,7 @@ module.exports = {
                         .addField('Racy', `${detections?.racy} (conf: ${detections?.racyConfidence})`)
                         .addField('User', `${member.user.tag} \n <@${member.user.id}>`)
                         .setImage(member.user.avatarURL()!)
+                        .setColor(qdb.get('config.embedcolor'))
                         logchannel.send(embed)
                         logchannel.send('<@283284511104696322> <@423925286350880779>')
                     } else {
