@@ -152,6 +152,7 @@ async function reggeltupdatefs(message: Message, decreased = false) {
     if (!doc.exists) {
         reggeltRef.set({
             reggeltcount: (decreased ? decreaseCount : incrementCount),
+            reggeltcount1: (decreased ? decreaseCount : incrementCount),
             tag: message.author.tag,
             username: message.author.username,
             pp: message.author.avatarURL(),
@@ -161,6 +162,7 @@ async function reggeltupdatefs(message: Message, decreased = false) {
         if(!doc.data()?.coins) {
             reggeltRef.update({
                 reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
+                reggeltcount1: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
                 tag: message.author.tag,
                 username: message.author.username,
                 pp: message.author.avatarURL(),
@@ -168,6 +170,7 @@ async function reggeltupdatefs(message: Message, decreased = false) {
             });
         } else {
             reggeltRef.update({
+                reggeltcount1: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
                 reggeltcount: admin.firestore.FieldValue.increment(decreased ? decreaseCount : incrementCount),
                 tag: message.author.tag,
                 username: message.author.username,
