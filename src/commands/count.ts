@@ -3,7 +3,7 @@ import fs = require('fs');
 import { Message, MessageEmbed } from 'discord.js'
 import * as qdb from 'quick.db';
 
-const coinName = qdb.get('config.coinName') || 'Coins';
+const coinName = qdb.get('config.coinName');
 
 module.exports = {
     name: 'count',
@@ -21,14 +21,6 @@ module.exports = {
         let user = message.mentions.users.first() || message.author;;
         const cityRef = db.collection("dcusers").doc(user.id);
         const doc = await cityRef.get();
-
-        let coinEmote;
-        if(qdb.get('config.coinName') && qdb.get('config.coinEmote')) {
-            coinEmote = `<:${qdb.get('config.coinName')}:${qdb.get('config.coinEmote')}>`;
-        } else {
-            coinEmote = '💲';
-        }
-
         if (!doc.exists) {
             console.log("No such document!");
             message.reply("Error reading document!");
@@ -41,7 +33,7 @@ module.exports = {
                 .setFooter(`${message.author.tag} • Reggeltbot count`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now());
     
                 if(doc.data()?.coins) {
-                    upmbed.addField(coinName, `${doc.data()?.coins || '0'} ${coinEmote}`)
+                    upmbed.addField(`${coinName}s`, `${doc.data()?.coins}`)
                 }
                 
             message.channel.send(upmbed);

@@ -3,7 +3,6 @@ import * as admin from 'firebase-admin';
 import * as qdb from 'quick.db';
 
 const db = admin.firestore();
-const coinName = qdb.get('config.coinName') || 'Coins';
 
 module.exports = {
     name: 'profile',
@@ -42,17 +41,10 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
     const userdocs = await userquery.get()
     const userdoc = userdocs.docs[0]
 
-    let coinEmote;
-    if(qdb.get('config.coinName') && qdb.get('config.coinEmote')) {
-        coinEmote = `<:${qdb.get('config.coinName')}:${qdb.get('config.coinEmote')}>`;
-    } else {
-        coinEmote = '💲';
-    }
-
     let embed = new Discord.MessageEmbed()
     .setTitle(`${member.displayName || member.user.tag}'s profile`)
     .addField(`Reggeltcount`, `${doc.data()?.reggeltcount1 || '0'}`)
-    .addField(coinName, `${doc.data()?.coins || '0'} ${coinEmote}`)
+    .addField(`Coins`, `${doc.data()?.coins || '0'} <:${qdb.get('config.coinName')}:${qdb.get('config.coinEmote')}>`)
     .setColor(qdb.get('config.embedcolor') || member.displayColor)
     .setFooter(`${message.author.tag} • Reggeltbot profile (Beta)`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
 
