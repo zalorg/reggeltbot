@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import * as qdb from 'quick.db';
 
 const db = admin.firestore();
-const coinName = qdb.get('config.coinName') || 'Coins';
+const coinName: string = qdb.get('config.coinName') || 'Coins';
 
 module.exports = {
     name: 'profile',
@@ -42,17 +42,14 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
     const userdocs = await userquery.get()
     const userdoc = userdocs.docs[0]
 
-    let coinEmote;
-    if(qdb.get('config.coinName') && qdb.get('config.coinEmote')) {
-        coinEmote = `<:${qdb.get('config.coinName')}:${qdb.get('config.coinEmote')}>`;
-    } else {
-        coinEmote = '💲';
-    }
-
+    const coinemote = bot.emojis.cache.get(qdb.get('config.coinEmote'))
+    
+    let coinEmote = coinemote || '💲';
+    
     let embed = new Discord.MessageEmbed()
     .setTitle(`${member.displayName || member.user.tag}'s profile`)
-    .addField(`Reggeltcount`, `${doc.data()?.reggeltcount1 || '0'}`)
-    .addField(coinName, `${doc.data()?.coins || '0'} ${coinEmote}`)
+    .addField(`Reggeltcount`, `${doc.data()?.reggeltcount || '0'}`)
+    .addField(`${coinName.charAt(0).toUpperCase()}${coinName.slice(1)}s`, `${doc.data()?.coins || '0'} ${coinEmote}`)
     .setColor(qdb.get('config.embedcolor') || member.displayColor)
     .setFooter(`${message.author.tag} • Reggeltbot profile (Beta)`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now())
 
@@ -63,17 +60,13 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
         let av = user?.photoURL || member?.user?.avatarURL({dynamic: true}) || member.user.displayAvatarURL({dynamic: true}) || bot.user?.avatarURL({dynamic: true}); 
         embed.setThumbnail(av!)
 
-
-        if(user) {
-            
-        }
     } else {
         let av = member?.user?.avatarURL({dynamic: true}) || member.user.displayAvatarURL({dynamic: true}) || bot.user?.avatarURL({dynamic: true}); 
         embed.setThumbnail(av!) 
     }
 
     if(emotedoc.exists) {
-        let e: string[] =  emotedoc.data()?.have;
+        let e: string[] = emotedoc.data()?.have;
 
         console.log(e.join('  '))
 
@@ -87,14 +80,13 @@ async function send(bot: Discord.Client, args: string[], message: Discord.Messag
 
         console.log(doc.data()?.badges)
 
-        doc.data()?.badges.forEach((b: string) => {
+        doc.data()?.badges.forEach(async (b: string) => {
             switch (b) {
-
-                case 'premium':
-                    ba.push("<:premium:812821285197447178>")
-                    break;
                 case 'verified':
                     ba.push("<:greenTick:809931766642245663>")
+                    break;
+                case 'premium':
+                    ba.push("<:premium:812821285197447178>")
                     break;
                 case 'tester':
                     ba.push("<:test:812821214019190795>")
