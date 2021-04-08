@@ -5,6 +5,7 @@ import * as qdb from 'quick.db';
 const db = admin.firestore();
 const coinName: string = qdb.get('config.coinName') || 'Coins';
 
+
 module.exports = {
     name: 'profile',
     async execute(bot: Discord.Client, args: string[], message: Discord.Message) {

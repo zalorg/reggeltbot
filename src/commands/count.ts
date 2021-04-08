@@ -3,7 +3,7 @@ import fs = require('fs');
 import { Client, Message, MessageEmbed } from 'discord.js'
 import * as qdb from 'quick.db';
 
-const coinName = qdb.get('config.coinName') || 'Coins';
+const coinName = qdb.get('config.coinName');
 
 module.exports = {
     name: 'count',
@@ -22,7 +22,7 @@ module.exports = {
         const cityRef = db.collection("dcusers").doc(user.id);
         const doc = await cityRef.get();
 
-        let coinEmote = bot.emojis.cache.get(qdb.get('config.coinEmote')) || '💲';
+        let coinEmote = bot.emojis.cache.get(qdb.get('config.coinEmote')) || '💲'
 
         if (!doc.exists) {
             console.log("No such document!");
