@@ -169,7 +169,7 @@ bot.on("message", async message => {
             break;
         case `${prefix}count`:
         case `${prefix}c`:
-            await commands.get('count').execute(message);
+            await commands.get('count').execute(message, bot);
             break;
         case `${prefix}link`:
             commands.get('link').execute(message, args);

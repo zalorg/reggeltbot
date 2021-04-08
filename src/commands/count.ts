@@ -1,13 +1,13 @@
 import * as admin from 'firebase-admin';
 import fs = require('fs');
-import { Message, MessageEmbed } from 'discord.js'
+import { Client, Message, MessageEmbed } from 'discord.js'
 import * as qdb from 'quick.db';
 
 const coinName = qdb.get('config.coinName');
 
 module.exports = {
     name: 'count',
-    async execute(message: Message) {
+    async execute(message: Message, bot: Client) {
         //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
         const currentLang = qdb.get(`guild.${message.guild?.id}`).lang
@@ -21,6 +21,9 @@ module.exports = {
         let user = message.mentions.users.first() || message.author;;
         const cityRef = db.collection("dcusers").doc(user.id);
         const doc = await cityRef.get();
+
+        let coinEmote = bot.emojis.cache.get(qdb.get('config.coinEmote')) || '💲'
+
         if (!doc.exists) {
             console.log("No such document!");
             message.reply("Error reading document!");
@@ -33,7 +36,7 @@ module.exports = {
                 .setFooter(`${message.author.tag} • Reggeltbot count`, message.author.avatarURL({dynamic: true}) || undefined ).setTimestamp(Date.now());
     
                 if(doc.data()?.coins) {
-                    upmbed.addField(`${coinName}s`, `${doc.data()?.coins}`)
+                    upmbed.addField(`${coinName.charAt(0).toUpperCase() + coinName.slice(1)}s`, `${doc.data()?.coins || '0'} ${coinEmote}`)
                 }
                 
             message.channel.send(upmbed);

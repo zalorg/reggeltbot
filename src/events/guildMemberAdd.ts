@@ -95,6 +95,8 @@ module.exports = {
                         console.log(`Violence: ${detections!.violence}`);
                         console.log(`Racy: ${detections!.racy}`);
                     }
+
+                    member.roles.add('821417192339275887')
                 }
 
 
