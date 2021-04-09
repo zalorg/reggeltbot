@@ -48,62 +48,38 @@ module.exports = {
 
       const now = Math.floor(Date.now() / 1000);
       const cd = now + cdval;
-      
+
       // on cooldown
-      if((await checkcd(message))) {
-
-      }
-
-      // if user already have cooldown doc
-
-
-      if (cddoc.exists) {
+      if (await checkcd(message)) {
+        await message.delete();
         const nextTime = cddoc.data()!.reggeltcount;
-
-        // if user on cooldown
-        if (nextTime > now) {
-          await message.delete();
-          let cdmsg = lang.events.reggelt.onCooldown.replace(
-            "%!CD%!",
-            hhmmss(nextTime - now, lang)
-          );
-          await message.author.send(cdmsg);
-          // if not on cooldown
-        } else {
-          // if prod bot and server has 6 or more cd
-          if (
-            !process.env.PROD &&
-            rawcd <= 6 /*&& userdoc.data()!.reggeltcountcd < Date.now()*/
-          ) {
-            // update
-            await reggeltupdateall();
-            await reggeltupdatefs(message);
-          }
-          // cd update
-          await cdref.update({
-            reggeltcount: cd,
-          });
-        }
-        // if no cd doc
+        let cdmsg = lang.events.reggelt.onCooldown.replace(
+          "%!CD%!",
+          hhmmss(nextTime - now, lang)
+        );
+        await message.author.send(cdmsg);
       } else {
-        // cd update
-        await cdref.update({
-          reggeltcount: cd,
-        });
-
         if (
           !process.env.PROD &&
           rawcd <= 6 /*&& userdoc.data()!.reggeltcountcd < Date.now()*/
         ) {
+          // update
           await reggeltupdateall();
           await reggeltupdatefs(message);
         }
+        // cd update
+        await cdref
+          .update({
+            reggeltcount: cd,
+          })
+          .then(async (d) => {
+            // Reaction add here
+            await react(doc.data()?.reggeltemote, message);
+          });
       }
-      // Reaction add here
-      await react(doc.data()?.reggeltemote, message);
     } else {
       if (!message.deletable) {
-        message.channel.send(lang.events.reggelt.noPerms).catch((err: any) => {
+        message.channel.send(lang.events.reggelt.noPerms).catch((err) => {
           message.guild!.owner!.send(lang.events.reggelt.noSend);
           console.error(err);
         });
@@ -118,6 +94,7 @@ module.exports = {
           console.error("Error:", error);
         });
       }
+
       await reggeltupdatefs(message, true);
     }
   },
@@ -135,7 +112,7 @@ async function checkcd(message: Message): Promise<boolean> {
     return false;
   }
 
-  if(cddoc.data()?.reggeltcountcd && cddoc.data()?.reggeltcount > now) {
+  if (cddoc.data()?.reggeltcountcd && cddoc.data()?.reggeltcount > now) {
     return true;
   }
 
