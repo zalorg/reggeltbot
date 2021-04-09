@@ -60,6 +60,7 @@ module.exports = {
       }
 
       message.channel.send(upmbed);
+
     }
   },
 };
