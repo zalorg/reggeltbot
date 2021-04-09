@@ -115,7 +115,7 @@ async function checkcd(message: Message): Promise<boolean> {
     return false;
   }
 
-  if (cddoc.data()?.reggeltcountcd && cddoc.data()?.reggeltcount > now) {
+  if (cddoc.data()?.reggeltcount && cddoc.data()?.reggeltcount > now) {
     return true;
   }
 
