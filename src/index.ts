@@ -157,20 +157,20 @@ bot.on("message", async (message) => {
       )
       .then(() => {
         ref
-          .update({
+          .set({
             pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`,
             username: message.author.username,
             tag: message.author.tag,
-          })
+          }, {merge: true})
           .catch((err) => console.error(err.code));
       })
       .catch(() => {
         ref
-          .update({
+          .set({
             pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`,
             username: message.author.username,
             tag: message.author.tag,
-          })
+          }, {merge: true})
           .catch((err) => console.error(err.code));
       });
   }

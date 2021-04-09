@@ -69,9 +69,12 @@ module.exports = {
         }
         // cd update
         await cdref
-          .update({
-            reggeltcount: cd,
-          })
+          .set(
+            {
+              reggeltcount: cd,
+            },
+            { merge: true }
+          )
           .then(async (d) => {
             // Reaction add here
             await react(doc.data()?.reggeltemote, message);
@@ -89,7 +92,7 @@ module.exports = {
         let replyMSG = nReggelt
           .replace("%!GUILD%!", `${message.guild!.name}`)
           .replace("**%!KEYWORD%**", `**${lang.events.reggelt.keyWord}**`);
-        message.author.send(replyMSG).catch(function (error: string) {
+        message.author.send(replyMSG).catch(function(error: string) {
           message.reply("Error: " + error);
           console.error("Error:", error);
         });
@@ -144,9 +147,12 @@ async function reggeltupdateall() {
   await db
     .collection("bots")
     .doc("reggeltbot-count-all")
-    .update({
-      reggeltcount: admin.firestore.FieldValue.increment(incrementCount),
-    });
+    .set(
+      {
+        reggeltcount: admin.firestore.FieldValue.increment(incrementCount),
+      },
+      { merge: true }
+    );
 }
 
 async function reggeltupdatefs(message: Message, decreased = false) {
