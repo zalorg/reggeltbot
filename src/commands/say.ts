@@ -1,49 +1,61 @@
-import { TextToSpeechClient } from '@google-cloud/text-to-speech'
-import fs = require('fs');
-import { Message } from 'discord.js'
-import { Guildconfig } from '../types'
-import *  as qdb from 'quick.db';
+import { TextToSpeechClient } from "@google-cloud/text-to-speech";
+import fs = require("fs");
+import { Message } from "discord.js";
+import { Guildconfig } from "../types";
+import * as qdb from "quick.db";
 
 module.exports = {
-    name: 'say',
-    async execute(message: Message, args: Array<string>,) {
-        //if(!args) return message.reply('I cant say nothing')
-        
-        const client = new TextToSpeechClient();
-        const text = args.join(' ');
+  name: "say",
+  async execute(message: Message, args: Array<string>) {
+    //if(!args) return message.reply('I cant say nothing')
 
-        //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
+    const client = new TextToSpeechClient();
+    const text = args.join(" ");
 
-        const guildconfig: Guildconfig = qdb.get(`guilds.${message.guild?.id}`)
+    //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
-        if(!message.member?.voice) return;
+    const guildconfig: Guildconfig = qdb.get(`guilds.${message.guild?.id}`);
 
-        //message.reply(`${guildconfig.lang}`)
+    if (!message.member?.voice) return;
 
-            const [response] = await client.synthesizeSpeech({
-                input: {text: text},
-                voice: {languageCode: `${guildconfig.saylang}`, ssmlGender: 'NEUTRAL'},
-                audioConfig: {audioEncoding: 'MP3'},
-              });
+    //message.reply(`${guildconfig.lang}`)
 
-            fs.writeFileSync(`./cache/${message.author.id}.mp3`, response!.audioContent!, 'binary')
+    const [response] = await client.synthesizeSpeech({
+      input: { text: text },
+      voice: { languageCode: `${guildconfig.saylang}`, ssmlGender: "NEUTRAL" },
+      audioConfig: { audioEncoding: "MP3" },
+    });
 
-            //console.log('Audio content written to file: output.mp3');
-            
-            const voiceChannel = message.member!.voice.channel;
+    fs.writeFileSync(
+      `./cache/${message.author.id}.mp3`,
+      response!.audioContent!,
+      "binary"
+    );
 
-            voiceChannel!.join().then((connection: any) => {
-                message.member!.voice.channel!.join().then((VoiceConnection: any) => {
-                    VoiceConnection.play(`./cache/${message.author.id}.mp3`).on("finish", () => {
-                        VoiceConnection.disconnect();
-                        //message.reply('Disconnected')
-                    });
-                }).catch((e: any) => {
-                    throw e;
-                })
+    //console.log('Audio content written to file: output.mp3');
 
-             }).catch((err: any) => {
-                 console.error(err);
-             });
-    }
-}
+    const voiceChannel = message.member!.voice.channel;
+
+    voiceChannel!
+      .join()
+      .then((connection: any) => {
+        message
+          .member!.voice.channel!.join()
+          .then((VoiceConnection: any) => {
+            VoiceConnection.play(`./cache/${message.author.id}.mp3`).on(
+              "finish",
+              () => {
+                VoiceConnection.disconnect();
+                //message.reply('Disconnected')
+              }
+            );
+          })
+          .catch((e: any) => {
+            throw e;
+          });
+      })
+      .catch((err: any) => {
+        console.error(err);
+      });
+  },
+};
