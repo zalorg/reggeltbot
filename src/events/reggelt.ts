@@ -25,7 +25,16 @@ module.exports = {
       message.author.send(lang.root.bans.reggeltGlobal);
       return;
     }
+    
+    if(message.content.includes('--ignore')) {
+      const botref = db.collection('bots').doc('reggeltbot')
+      const botdoc = await botref.get();
+      if(message.author.id === botdoc.data()?.ownerid) {
+        return;
+      }
+    }
 
+        
     if (
       message.content.toLowerCase().includes(lang.events.reggelt.keyWord) ||
       message.content.toLowerCase().includes("reggelt")
