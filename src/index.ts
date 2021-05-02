@@ -7,8 +7,10 @@ const bot = new Discord.Client({
   retryLimit: 10,
 });
 import * as admin from "firebase-admin";
-admin.initializeApp();
-
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+  databaseURL: "https://zal1000.firebaseio.com",
+});
 import express = require("express");
 import { Guildconfig, Regggeltconfig } from "./types";
 import * as qdb from "quick.db";
