@@ -1,4 +1,3 @@
-import axios from "axios";
 //import Discord = require("discord.js");
 import * as Discord from "discord.js";
 import fs = require("fs");
@@ -8,9 +7,12 @@ const bot = new Discord.Client({
   retryLimit: 10,
 });
 import * as admin from "firebase-admin";
+admin.initializeApp();
+
 import express = require("express");
 import { Guildconfig, Regggeltconfig } from "./types";
 import * as qdb from "quick.db";
+import { update } from "./updateuser";
 
 const app = express();
 
@@ -18,13 +20,6 @@ process.on("unhandledRejection", (up) => {
   console.log(up);
   process.exit(0);
   //throw up;
-});
-
-//declare var  Discord: { MessageEmbed: new () => { (): any; new(): any; setTitle: { (arg0: string): { (): any; new(): any; setColor: { (arg0: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; addField: { (arg0: string, arg1: string): { (): any; new(): any; setFooter: { (arg0: any): { (): any; new(): any; setThumbnail: { (arg0: any): { (): any; new(): any; setTimestamp: { (arg0: any): any; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; setURL: { (arg0: string): { (): any; new(): any; setThumbnail: { (arg0: any): any; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; };
-
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  databaseURL: "https://zal1000.firebaseio.com",
 });
 
 function rdbupdate() {
@@ -148,33 +143,6 @@ bot.on("message", async (message) => {
     fs.readFileSync(`./lang/${guildlang}.json`, "utf8")
   ).events.reggelt;
 
-  if (!message.author.bot) {
-    updateUser(message);
-    const ref = admin.firestore().collection("dcusers").doc(message.author.id);
-    await axios
-      .get(
-        `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`
-      )
-      .then(() => {
-        ref
-          .set({
-            pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`,
-            username: message.author.username,
-            tag: message.author.tag,
-          }, {merge: true})
-          .catch((err) => console.error(err.code));
-      })
-      .catch(() => {
-        ref
-          .set({
-            pp: `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`,
-            username: message.author.username,
-            tag: message.author.tag,
-          }, {merge: true})
-          .catch((err) => console.error(err.code));
-      });
-  }
-
   if (process.env.PROD === "false" && !message.content.startsWith(prefix)) {
     events.get("automod").execute(message);
   }
@@ -255,48 +223,12 @@ bot.on("message", async (message) => {
       console.log("p");
       commands.get("profile").execute(bot, args, message);
       break;
+
+    default:
+      update(message);
+      break;
   }
 });
-
-async function updateUser(message: Discord.Message) {
-  if (message.guild) {
-    const ref = admin
-      .firestore()
-      .collection("dcusers")
-      .doc(message.author.id)
-      .collection("guilds")
-      .doc(message.guild?.id);
-    //const doc = await ref.get();
-    const gme = message.guild.member(message.author.id)!;
-    //console.log(gme.permissions.toArray());
-    ref
-      .set(
-        {
-          name: message.guild.name,
-          owner: message.guild.ownerID,
-          icon: message.guild.iconURL(),
-          permissions: {
-            ADMINISTRATOR: gme.hasPermission("ADMINISTRATOR"),
-            MANAGE_CHANNELS: gme.hasPermission("MANAGE_CHANNELS"),
-            MANAGE_GUILD: gme.hasPermission("MANAGE_GUILD"),
-            MANAGE_MESSAGES: gme.hasPermission("MANAGE_MESSAGES"),
-          },
-          allpermissions: gme.permissions.toArray(),
-          color: gme.displayColor,
-          colorHEX: gme.displayHexColor,
-          nick: gme.nickname,
-        },
-        { merge: true }
-      )
-      .then(() => {
-        //message.reply('Server added/updated succesfuly!');
-      })
-      .catch((err) => {
-        //message.reply('Error adding the server, please try again later and open a new issue on Github(https://github.com/zal1000/reggeltbot/issues)');
-        throw err;
-      });
-  }
-}
 
 async function getReggeltChannel(PROD: string | undefined) {
   const db = admin.firestore();

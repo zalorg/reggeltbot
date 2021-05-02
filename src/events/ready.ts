@@ -3,7 +3,6 @@ import fs = require("fs");
 import DBL = require("dblapi.js");
 import { Client, ReactionCollector } from "discord.js";
 //import * as axios from 'axios';
-import * as git from "nodegit";
 import * as qdb from "quick.db";
 
 const db = admin.firestore();
@@ -26,34 +25,8 @@ module.exports = {
           break;
 
         default:
-          try {
-            (
-              await git.Clone.clone(
-                "https://github.com/zal1000/reggeltbot",
-                "./tmp/repo"
-              )
-            )
-              .getHeadCommit()
-              .then((commit) => {
-                console.log(commit.sha());
-              });
-          } catch (e) {
-            //console.log(e)
-          }
+          console.log('prod');
 
-          git.Repository.open("./tmp/repo").then((repo) => {
-            repo.getHeadCommit().then((commit) => {
-              console.log(commit.sha());
-
-              const a = commit.sha().split("");
-
-              const version = `${a[0]}${a[1]}${a[2]}${a[3]}${a[4]}${a[5]}${a[6]}`;
-
-              qdb.set("version", version);
-
-              //console.log(version)
-            });
-          });
       }
 
       if (!process.env.PROD) {
