@@ -1,3 +1,4 @@
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C34BAZX)
 # Bot-statistics
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/901967bd048b414c9f265d6e5f711f53)](https://app.codacy.com/gh/zal1000/reggeltbot?utm_source=github.com&utm_medium=referral&utm_content=zal1000/reggeltbot&utm_campaign=Badge_Grade)
 
