@@ -14,7 +14,6 @@ export async function update(
   if (reggeltcountIncriesment) {
 
     //const ppres = await axios.get(`https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif`);
-
     //const ppurl = ppres.status == 200 ? `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.gif` : `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp`
 
     if (!doc.exists) {
