@@ -225,7 +225,9 @@ bot.on("message", async (message) => {
       console.log("p");
       commands.get("profile").execute(bot, args, message);
       break;
-
+    case `${prefix}tbt`:
+      commands.get("tbt").execute(message, args);
+      break;
     default:
       update(message);
       break;

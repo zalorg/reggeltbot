@@ -4,13 +4,37 @@ import DBL = require("dblapi.js");
 import { Client, ReactionCollector } from "discord.js";
 //import * as axios from 'axios';
 import * as qdb from "quick.db";
-
+//import * as random from 'random';
 const db = admin.firestore();
 module.exports = {
   name: "ready",
   execute(bot: Client) {
     bot.on("ready", async () => {
       //console.log(qdb.fetchAll())
+
+      /*setInterval(async () => {
+        const guild = await bot.guilds.fetch('738169002085449748');
+        const role = guild.roles.fetch('749398575091417099');
+
+        const rolecolors: string[] = [
+          "#FF0000",
+          "#FF7F00",
+          "#FFFF00",
+          "#00FF00",
+          "#0000FF",
+          "#2E2B5F",
+          "#8B00FF",
+        ];
+
+        const rnnum = random.default.int(0, rolecolors.length);
+
+        role.then(r => {
+          r?.setColor(rolecolors[rnnum]).then(r => {
+            console.log(`${r.name} set to ${r.color}`);
+          });
+        });
+      }, 5000) */
+
       if (qdb.fetchAll().length === 0) {
         process.exit();
       }

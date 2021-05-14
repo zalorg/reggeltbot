@@ -42,7 +42,7 @@ export async function update(
             tag: message.author.tag,
             username: message.author.username,
             pp: message.author.avatarURL({dynamic:true}),
-            coins: doc.data()?.reggeltcount,
+            coins: doc.data()?.reggeltcount || reggeltcountIncriesment,
           },
           { merge: true }
         );
