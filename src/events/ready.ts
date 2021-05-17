@@ -22,9 +22,12 @@ module.exports = {
   name: "ready",
   execute(bot: Client) {
     bot.on("ready", async () => {
-      setInterval(() => {
-        sendPingToStatusPage(bot.ws.ping);
-      }, 1000);
+      if (!process.env.PROD) {
+        setInterval(() => {
+          sendPingToStatusPage(bot.ws.ping);
+        }, 1000);
+      }
+
       let componentIds = [
         "frxly1cd0pxv",
         "0n4bnnhyjtc9",
@@ -412,20 +415,30 @@ async function sendPingToStatusPage(
     value: Number(ping),
   };
 
-  var request = http.request(url, options, function (res: { statusMessage: string; on: (arg0: string, arg1: { (): void; (): void; (error: any): void; }) => void; }) {
-    if (res.statusMessage === "Unauthorized") {
-      const genericError =
-        "Error encountered. Please ensure that your page code and authorization key are correct.";
-      return console.error(genericError);
-    }
-    res.on("data", function () {
-      //console.log("Ping sent: " + ping);
-    });
+  var request = http.request(
+    url,
+    options,
+    function (res: {
+      statusMessage: string;
+      on: (
+        arg0: string,
+        arg1: { (): void; (): void; (error: any): void }
+      ) => void;
+    }) {
+      if (res.statusMessage === "Unauthorized") {
+        const genericError =
+          "Error encountered. Please ensure that your page code and authorization key are correct.";
+        return console.error(genericError);
+      }
+      res.on("data", function () {
+        //console.log("Ping sent: " + ping);
+      });
 
-    res.on('error', () => {
-      console.log('err')
-    })
-  });
+      res.on("error", () => {
+        console.log("err");
+      });
+    }
+  );
 
   request.end(JSON.stringify({ data: data }));
 
