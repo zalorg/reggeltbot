@@ -2,38 +2,72 @@ import * as admin from "firebase-admin";
 import fs = require("fs");
 import DBL = require("dblapi.js");
 import { Client, ReactionCollector } from "discord.js";
-//import * as axios from 'axios';
+import * as axios from "axios";
 import * as qdb from "quick.db";
 //import * as random from 'random';
 const db = admin.firestore();
+
+/*
+let errorlist: {
+  status:
+    | "degraded_performance"
+    | "partial_outage"
+    | "major_outage"
+    | "under_maintenance";
+  id: string, name: string;
+}[] = [];
+let fullstatus: any;
+*/
 module.exports = {
   name: "ready",
   execute(bot: Client) {
     bot.on("ready", async () => {
-      //console.log(qdb.fetchAll())
+      setInterval(() => {
+        sendPingToStatusPage(bot.ws.ping);
+      }, 1000);
+      let componentIds = [
+        "frxly1cd0pxv",
+        "0n4bnnhyjtc9",
+        "jm3bmv0yzg3r",
+        "16ml9zr8mpny",
+        "z60x84pdpjp1",
+      ];
 
-      /*setInterval(async () => {
-        const guild = await bot.guilds.fetch('738169002085449748');
-        const role = guild.roles.fetch('749398575091417099');
+      setInterval(() => {
+        let statuses: {
+          status:
+            | "degraded_performance"
+            | "partial_outage"
+            | "major_outage"
+            | "under_maintenance";
+          id: string;
+          name: string;
+        }[] = [];
+        axios.default
+          .get("https://mpp8x8t3hc6r.statuspage.io/api/v2/summary.json")
+          .then(async (res) => {
+            //fullstatus = res.data;
+            for await (const id of componentIds) {
+              const components: Component[] = res.data.components;
 
-        const rolecolors: string[] = [
-          "#FF0000",
-          "#FF7F00",
-          "#FFFF00",
-          "#00FF00",
-          "#0000FF",
-          "#2E2B5F",
-          "#8B00FF",
-        ];
+              const component = components.find((e) => e.id === id);
+              //console.log(component);
 
-        const rnnum = random.default.int(0, rolecolors.length);
+              if (!component) {
+                throw Error;
+              }
 
-        role.then(r => {
-          r?.setColor(rolecolors[rnnum]).then(r => {
-            console.log(`${r.name} set to ${r.color}`);
+              if (component.status != "operational") {
+                statuses.push({
+                  status: component.status,
+                  id: component.id,
+                  name: component.name,
+                });
+              }
+            }
+            //errorlist = statuses;
           });
-        });
-      }, 5000) */
+      }, 5000);
 
       if (qdb.fetchAll().length === 0) {
         process.exit();
@@ -49,8 +83,7 @@ module.exports = {
           break;
 
         default:
-          console.log('prod');
-
+          console.log("prod");
       }
 
       if (!process.env.PROD) {
@@ -93,23 +126,36 @@ module.exports = {
       let num = 0;
 
       setInterval(() => {
-        //console.log(qdb.get('global.reggeltcount'))
+        //console.log(errorlist)
+        /*
+        if (errorlist.length != 0 || fullstatus?.incidents && fullstatus?.incidents?.length != 0) {
+          //console.log("1")
+          if(fullstatus.incidents.length != 0) {
+            //console.log(fullstatus.incidents)
+            bot.user?.setActivity(`${fullstatus.incidents[0].name} | ${fullstatus.incidents[0].impact}`, { type: "WATCHING" })
+            if(fullstatus.incidents[0].impact === "none") {
+              bot.user?.setStatus('online');
+            } else if(fullstatus.incidents[0].impact === "minor") {
+              bot.user?.setStatus('idle');
+            } else {
+              bot.user?.setStatus('dnd');
+            }
+          } else if(errorlist.find(e => e.status === "major_outage")) {
+            //console.log(errorlist.find(e => e.status === "major_outage"))
+          }
+
+        } else {
+          */
         if (num === activities_list.length) {
-          //console.log('reseted')
           num = 0;
-          //console.log(num)
         }
-        //const index = Math.floor(Math.random() * (activities_list.length - 1) + 1); // generates a random number between 1 and the length of the activities array list (in this case 5).
         bot
           .user!.setActivity(activities_list[num], { type: "WATCHING" })
           .then(() => {
-            //console.log(activities_list[num]);
-            //console.log(num)
             num = num + 1;
           });
-
-        //console.log(activities_list.length - 1)
-      }, 10000);
+        // }
+      }, 5000);
 
       console.log(`${bot.user!.username} has started`);
 
@@ -314,3 +360,74 @@ module.exports = {
     });
   },
 };
+
+interface Component {
+  id: string;
+  name: string;
+  status:
+    | "operational"
+    | "degraded_performance"
+    | "partial_outage"
+    | "major_outage"
+    | "under_maintenance";
+  created_at: string;
+  updated_at: string;
+  position: number;
+  description: null | string;
+  showcase: boolean;
+  start_date: string;
+  group_id: string;
+  page_id: string;
+  group: boolean;
+  only_show_if_degraded: boolean;
+}
+
+async function sendPingToStatusPage(
+  ping: string | number | null
+): Promise<boolean> {
+  if (!ping) {
+    return false;
+  }
+  var http = require("https");
+
+  // The following 4 are the actual values that pertain to your account and this specific metric.
+  var apiKey = process.env.STATUSPAGE_KEY;
+  var pageId = "mpp8x8t3hc6r";
+  var metricId = "lx451242vscb";
+  var apiBase = "https://api.statuspage.io/v1";
+
+  var url =
+    apiBase + "/pages/" + pageId + "/metrics/" + metricId + "/data.json";
+  var authHeader = { Authorization: "OAuth " + apiKey };
+  var options = { method: "POST", headers: authHeader };
+
+  // Need at least 1 data point for every 5 minutes.
+  // Submit random data for the whole day.
+  var epochInSeconds = Math.floor(Date.now() / 1000);
+
+  var currentTimestamp = epochInSeconds;
+
+  var data = {
+    timestamp: currentTimestamp,
+    value: Number(ping),
+  };
+
+  var request = http.request(url, options, function (res: { statusMessage: string; on: (arg0: string, arg1: { (): void; (): void; (error: any): void; }) => void; }) {
+    if (res.statusMessage === "Unauthorized") {
+      const genericError =
+        "Error encountered. Please ensure that your page code and authorization key are correct.";
+      return console.error(genericError);
+    }
+    res.on("data", function () {
+      //console.log("Ping sent: " + ping);
+    });
+
+    res.on('error', () => {
+      console.log('err')
+    })
+  });
+
+  request.end(JSON.stringify({ data: data }));
+
+  return true;
+}
