@@ -54,10 +54,15 @@ async function reggeltUpdateEdit(message: Message | PartialMessage) {
     .update({
       reggeltcount: admin.firestore.FieldValue.increment(decreaseCount),
     });
-  await db
-    .collection("dcusers")
-    .doc(message.author!.id)
-    .update({
-      reggeltcount: admin.firestore.FieldValue.increment(decreaseCount),
-    });
+    if(message.author?.id) {
+      await db.collection('dcusers').doc(message.author.id).set(
+        {
+          tag: message.author.tag,
+          username: message.author.username,
+          pp: message.author.avatarURL({dynamic:true}),
+        },
+        { merge: true }
+      );
+    }
+    
 }

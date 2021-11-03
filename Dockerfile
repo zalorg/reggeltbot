@@ -1,4 +1,4 @@
-FROM node:14.0.0
+FROM node:14
 RUN mkdir -p /usr/src/reggeltbot
 WORKDIR /usr/src/reggeltbot
 RUN mkdir cache
@@ -11,3 +11,4 @@ ENV PORT=3000
 ENV version=${GITHUB_SHA}
 RUN echo "version: ${version}"
 CMD ["node", "dist/index.js"]
+

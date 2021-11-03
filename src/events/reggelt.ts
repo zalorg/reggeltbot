@@ -3,6 +3,7 @@ import fs = require("fs");
 import { Message } from "discord.js";
 import { Langtypes, Guildconfig } from "../types";
 import * as qdb from "quick.db";
+import * as updateUser from '../updateuser';
 
 module.exports = {
   name: "reggelt",
@@ -74,6 +75,7 @@ module.exports = {
         ) {
           // update
           await reggeltupdateall();
+          await updateUser.update(message);
           await reggeltupdatefs(message);
         }
         // cd update
@@ -142,10 +144,16 @@ async function react(reaction: string, message: Message) {
   } else if (message.author.id === "183302720030113792") {
     message.react("🍵").catch((e) => {
       console.debug("cant react");
+      message.react("☕").catch((e) => {
+        console.debug("cant react");
+      });
     });
   } else {
     message.react("☕").catch((e) => {
       console.debug("cant react");
+      message.react("☕").catch((e) => {
+        console.debug("cant react");
+      });
     });
   }
 }
@@ -165,65 +173,9 @@ async function reggeltupdateall() {
 }
 
 async function reggeltupdatefs(message: Message, decreased = false) {
-  let db = admin.firestore();
-  const reggeltRef = db.collection("dcusers").doc(message.author.id);
-  const doc = await reggeltRef.get();
-
-  //const userguildref = db.collection('dcusers').doc(message.author.id).collection('guilds').doc(message.guild!.id)
-  //const userguilddoc = await userguildref.get();
-
   const incrementCount = qdb.get("config.incrementCount");
   const decreaseCount = qdb.get("config.decreaseCount");
-
-  if (!doc.exists) {
-    reggeltRef.set(
-      {
-        reggeltcount: decreased ? decreaseCount : incrementCount,
-        reggeltcount1: decreased ? decreaseCount : incrementCount,
-        tag: message.author.tag,
-        username: message.author.username,
-        pp: message.author.avatarURL(),
-        coins: decreased ? decreaseCount : incrementCount,
-      },
-      { merge: true }
-    );
-  } else {
-    if (!doc.data()?.coins) {
-      reggeltRef.set(
-        {
-          reggeltcount: admin.firestore.FieldValue.increment(
-            decreased ? decreaseCount : incrementCount
-          ),
-          reggeltcount1: admin.firestore.FieldValue.increment(
-            decreased ? decreaseCount : incrementCount
-          ),
-          tag: message.author.tag,
-          username: message.author.username,
-          pp: message.author.avatarURL(),
-          coins: doc.data()?.reggeltcount,
-        },
-        { merge: true }
-      );
-    } else {
-      reggeltRef.set(
-        {
-          reggeltcount1: admin.firestore.FieldValue.increment(
-            decreased ? decreaseCount : incrementCount
-          ),
-          reggeltcount: admin.firestore.FieldValue.increment(
-            decreased ? decreaseCount : incrementCount
-          ),
-          tag: message.author.tag,
-          username: message.author.username,
-          pp: message.author.avatarURL(),
-          coins: admin.firestore.FieldValue.increment(
-            decreased ? decreaseCount : incrementCount
-          ),
-        },
-        { merge: true }
-      );
-    }
-  }
+  updateUser.update(message, decreased ? decreaseCount : incrementCount)
 }
 
 function hhmmss(time: number, lang: Langtypes): string {
