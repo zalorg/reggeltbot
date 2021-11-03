@@ -28,11 +28,6 @@ spec:
     spec:
       containers:
         - env:
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              valueFrom:
-                configMapKeyRef:
-                  key: GOOGLE_APPLICATION_CREDENTIALS
-                  name: reggeltbot-config-pdn4
             - name: GOOGLEAPIKEY
               valueFrom:
                 configMapKeyRef:
@@ -55,26 +50,6 @@ spec:
               memory: '200MiB'
       serviceAccountName: reggeltbot-prod
       
----
-apiVersion: autoscaling/v2beta1
-kind: HorizontalPodAutoscaler
-metadata:
-  labels:
-    app: reggeltbot
-  name: reggeltbot-hpa-gvwn
-  namespace: default
-spec:
-  maxReplicas: 5
-  metrics:
-    - resource:
-        name: cpu
-        targetAverageUtilization: 80
-      type: Resource
-  minReplicas: 1
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: reggeltbot
 ---
 apiVersion: v1
 kind: Service
