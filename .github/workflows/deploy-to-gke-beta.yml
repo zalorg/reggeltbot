@@ -20,6 +20,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Python setup
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.8"
     # Setup gcloud CLI
     - uses: google-github-actions/setup-gcloud@v0.2.0
       with:
@@ -37,6 +41,12 @@ jobs:
         location: ${{ env.GKE_ZONE }}
         credentials: ${{ secrets.GKE_SA_KEY }}
 
+    # Modify deploy file
+    - name: Modify deploy file
+      run: |-
+        pip install ruamel.yaml
+        python ./helper/subst.py gcr.io/zal1000/github.com/zal1000/reggeltbot gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:$GITHUB_SHA ./kubernetes/deploy.yaml
+
     # Build the Docker image
     - name: Build
       run: |-
@@ -51,16 +61,9 @@ jobs:
       run: |-
         docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
 
-    # Set up kustomize
-    - name: Set up Kustomize
-      run: |-
-        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-        chmod u+x ./kustomize
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
-        ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
-        ./kustomize build . | kubectl apply -f -
+        kubectl apply -f ./kubernetes/deploy.yaml
         kubectl rollout status deployment/$DEPLOYMENT_NAME
-        kubectl get services -o wide

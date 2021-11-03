@@ -8,4 +8,6 @@ RUN npm install\
 COPY . /usr/src/reggeltbot
 RUN tsc
 ENV PORT=3000
+ENV version=${GITHUB_SHA}
+RUN echo "version: ${version}"
 CMD ["node", "dist/index.js"]
