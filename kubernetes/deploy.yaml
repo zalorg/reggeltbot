@@ -5,117 +5,9 @@ metadata:
     app: reggeltbot
   managedFields:
     - apiVersion: apps/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:labels':
-            .: {}
-            'f:app': {}
-        'f:spec':
-          'f:progressDeadlineSeconds': {}
-          'f:replicas': {}
-          'f:revisionHistoryLimit': {}
-          'f:selector': {}
-          'f:strategy':
-            'f:rollingUpdate':
-              .: {}
-              'f:maxSurge': {}
-              'f:maxUnavailable': {}
-            'f:type': {}
-          'f:template':
-            'f:metadata':
-              'f:labels':
-                .: {}
-                'f:app': {}
-            'f:spec':
-              'f:containers':
-                'k:{"name":"reggeltbot-1"}':
-                  .: {}
-                  'f:env':
-                    .: {}
-                    'k:{"name":"GOOGLE_APPLICATION_CREDENTIALS"}':
-                      .: {}
-                      'f:name': {}
-                      'f:valueFrom':
-                        .: {}
-                        'f:configMapKeyRef':
-                          .: {}
-                          'f:key': {}
-                          'f:name': {}
-                    'k:{"name":"GOOGLEAPIKEY"}':
-                      .: {}
-                      'f:name': {}
-                      'f:valueFrom':
-                        .: {}
-                        'f:configMapKeyRef':
-                          .: {}
-                          'f:key': {}
-                          'f:name': {}
-                    'k:{"name":"STATUSPAGE_KEY"}':
-                      .: {}
-                      'f:name': {}
-                      'f:valueFrom':
-                        .: {}
-                        'f:configMapKeyRef':
-                          .: {}
-                          'f:key': {}
-                          'f:name': {}
-                  'f:image': {}
-                  'f:imagePullPolicy': {}
-                  'f:name': {}
-                  'f:resources': {}
-                  'f:terminationMessagePath': {}
-                  'f:terminationMessagePolicy': {}
-                  'f:volumeMounts':
-                    .: {}
-                    'k:{"mountPath":"/var/secrets/google"}':
-                      .: {}
-                      'f:mountPath': {}
-                      'f:name': {}
-              'f:dnsPolicy': {}
-              'f:restartPolicy': {}
-              'f:schedulerName': {}
-              'f:securityContext': {}
-              'f:terminationGracePeriodSeconds': {}
-              'f:volumes':
-                .: {}
-                'k:{"name":"google-cloud-key"}':
-                  .: {}
-                  'f:name': {}
-                  'f:secret':
-                    .: {}
-                    'f:defaultMode': {}
-                    'f:secretName': {}
       manager: GoogleCloudConsole
       operation: Update
       time: '2021-05-17T20:10:56Z'
-    - apiVersion: apps/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            .: {}
-            'f:deployment.kubernetes.io/revision': {}
-        'f:status':
-          'f:availableReplicas': {}
-          'f:conditions':
-            'k:{"type":"Available"}':
-              'f:lastTransitionTime': {}
-              'f:lastUpdateTime': {}
-              'f:message': {}
-              'f:reason': {}
-              'f:status': {}
-            'k:{"type":"Progressing"}':
-              'f:lastUpdateTime': {}
-              'f:message': {}
-              'f:reason': {}
-          'f:observedGeneration': {}
-          'f:readyReplicas': {}
-          'f:replicas': {}
-          'f:updatedReplicas': {}
-      manager: kube-controller-manager
-      operation: Update
-      time: '2021-05-17T20:10:58Z'
   name: reggeltbot
   namespace: default
 spec:
@@ -126,8 +18,8 @@ spec:
       app: reggeltbot
   strategy:
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+      maxSurge: '1'
+      maxUnavailable: '0'
     type: RollingUpdate
   template:
     metadata:
@@ -154,51 +46,21 @@ spec:
           image: gcr.io/zal1000/github.com/zal1000/reggeltbot
           imagePullPolicy: IfNotPresent
           name: reggeltbot-1
-          volumeMounts:
-            - mountPath: /var/secrets/google
-              name: google-cloud-key
-      volumes:
-        - name: google-cloud-key
-          secret:
-            defaultMode: 420
-            secretName: firebase-key
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '1Gi'
+            requests:
+              cpu: '0.05'
+              memory: '200MiB'
+      serviceAccountName: reggeltbot-prod
+      
 ---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   labels:
     app: reggeltbot
-  managedFields:
-    - apiVersion: autoscaling/v2beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:labels':
-            .: {}
-            'f:app': {}
-        'f:spec':
-          'f:maxReplicas': {}
-          'f:metrics': {}
-          'f:minReplicas': {}
-          'f:scaleTargetRef':
-            'f:apiVersion': {}
-            'f:kind': {}
-            'f:name': {}
-      manager: GoogleCloudConsole
-      operation: Update
-      time: '2021-05-17T20:08:38Z'
-    - apiVersion: autoscaling/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            .: {}
-            'f:autoscaling.alpha.kubernetes.io/conditions': {}
-        'f:status':
-          'f:currentReplicas': {}
-      manager: vpa-recommender
-      operation: Update
-      time: '2021-05-17T20:08:53Z'
   name: reggeltbot-hpa-gvwn
   namespace: default
 spec:
@@ -219,33 +81,6 @@ kind: Service
 metadata:
   labels:
     app: reggeltbot
-  managedFields:
-    - apiVersion: v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:labels':
-            .: {}
-            'f:app': {}
-            'f:app.kubernetes.io/managed-by': {}
-            'f:app.kubernetes.io/name': {}
-            'f:app.kubernetes.io/version': {}
-        'f:spec':
-          'f:ports':
-            .: {}
-            'k:{"port":3000,"protocol":"TCP"}':
-              .: {}
-              'f:port': {}
-              'f:protocol': {}
-              'f:targetPort': {}
-          'f:selector':
-            .: {}
-            'f:app': {}
-          'f:sessionAffinity': {}
-          'f:type': {}
-      manager: GoogleCloudConsole
-      operation: Update
-      time: '2021-02-09T04:24:05Z'
   name: reggeltbot-service
   namespace: default
 spec:
@@ -255,7 +90,7 @@ spec:
   ports:
     - port: 3000
       protocol: TCP
-      targetPort: 3000
+      targetPort: '3000'
   selector:
     app: reggeltbot
   sessionAffinity: None
