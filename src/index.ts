@@ -1,10 +1,9 @@
 //import Discord = require("discord.js");
 import * as Discord from "discord.js";
 import fs = require("fs");
-//const bot: { message: { channel: { name: any }; }; user: { username: string; setActivity: Function} } = new Discord.Client();
 const bot = new Discord.Client({
-  disableMentions: "everyone",
   retryLimit: 10,
+  intents: [Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_PRESENCES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS],
 });
 import * as admin from "firebase-admin";
 admin.initializeApp({
@@ -150,11 +149,9 @@ bot.on("message", async (message) => {
   }
 
   // reggelt
-  if (message.channel.type === "text") {
+  if (message.channel.isText()) {
     if (
-      message.channel.name ===
-        (await getReggeltChannel(process.env.PROD)).channel ||
-      message.channel.name === reggeltconfig.channel
+      message.channel === (await getReggeltChannel(process.env.PROD)).channel || (message.channel.type === "GUILD_TEXT" && message.channel.name === reggeltconfig.channel)
     ) {
       await events.get("reggelt").execute(message);
     }
@@ -300,27 +297,3 @@ function msToTime(duration: number) {
 
   return hours + ":" + minutes + ":" + seconds;
 }
-
-/*
-interface Command {
-    get(eventname: string): {
-        name: string,
-        execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
-    },
-    set(eventname: string, module: object): {
-        name: string,
-        execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
-    }
-
-    Collection: {
-
-        get(eventname: string): {
-            name: string,
-            execute(bot?: object, args?: Array<string>, Discord?: any, message?: object,): void,
-        }
-
-    }
-
-}
-
-*/

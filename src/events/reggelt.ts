@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import fs = require("fs");
-import { Message } from "discord.js";
+import { Message, User } from "discord.js";
 import { Langtypes, Guildconfig } from "../types";
 import * as qdb from "quick.db";
 import * as updateUser from '../updateuser';
@@ -93,17 +93,17 @@ module.exports = {
       }
     } else {
       if (!message.deletable) {
-        message.channel.send(lang.events.reggelt.noPerms).catch((err) => {
-          message.guild!.owner!.send(lang.events.reggelt.noSend);
+        message.channel.send(lang.events.reggelt.noPerms).catch(async (err) => {
+          await (await message.guild!.fetchOwner()).send(lang.events.reggelt.noSend);
           console.error(err);
         });
       } else {
-        message.delete();
+        await message.delete();
         let nReggelt: string = lang.events.reggelt.notReggelt;
         let replyMSG = nReggelt
           .replace("%!GUILD%!", `${message.guild!.name}`)
           .replace("**%!KEYWORD%**", `**${lang.events.reggelt.keyWord}**`);
-        message.author.send(replyMSG).catch(function(error: string) {
+        await message.author.send(replyMSG).catch(function(error: string) {
           message.reply("Error: " + error);
           console.error("Error:", error);
         });
@@ -176,6 +176,34 @@ async function reggeltupdatefs(message: Message, decreased = false) {
   const incrementCount = qdb.get("config.incrementCount");
   const decreaseCount = qdb.get("config.decreaseCount");
   updateUser.update(message, decreased ? decreaseCount : incrementCount)
+}
+
+async function checkGlobalCooldown(user: User): Promise<boolean> {
+  const userRef = admin.firestore().collection("dcusers").doc(user.id);
+  const userdoc = await userRef.get();
+  if (!userdoc.data()?.cooldown) {
+    return false;
+  }
+  const now = new Date(Date.now()).getDate();
+  if (userdoc.data()?.cooldown < now) {
+    return false;
+  }
+  return true;
+}
+
+async function setCooldown(user: User) {
+  const id = user.id;
+  const endDate = new Date(Date.now() + (1000 * 60 * 60 * 6));
+  console.log(endDate);
+  const userRef = admin.firestore().collection("dcusers").doc(id);
+  // const userdoc = await userRef.get();
+  /*
+  return await userRef.set({
+    cooldown: endDate,
+  }, { merge: true }).then(() => {
+    return;
+  });
+  */
 }
 
 function hhmmss(time: number, lang: Langtypes): string {

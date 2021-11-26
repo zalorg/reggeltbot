@@ -46,7 +46,7 @@ module.exports = {
             embed.addField(lb.name, lb.reggeltcount);
           });
 
-          message.channel.send(embed);
+          message.channel.send({embeds: [embed]});
         })
         .catch((err) => {
           message.reply("API Error");
@@ -80,7 +80,7 @@ module.exports = {
               embed.addField(lb.name, lb.reggeltcount);
             });
 
-            message.channel.send(embed);
+            message.channel.send({embeds: [embed]});
           })
           .catch((err) => {
             message.reply("API Error");

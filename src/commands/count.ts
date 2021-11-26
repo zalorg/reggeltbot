@@ -59,7 +59,7 @@ module.exports = {
         );
       }
 
-      message.channel.send(upmbed);
+      message.channel.send({embeds: [upmbed]});
 
     }
   },

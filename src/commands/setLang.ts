@@ -25,7 +25,7 @@ module.exports = {
           embed.addField("Code", e);
         });
 
-        return message.channel.send(embed);
+        return message.channel.send({embeds: [embed]});
       } else {
         const ref = admin
           .firestore()
@@ -36,9 +36,7 @@ module.exports = {
         const doc = await ref.get();
 
         if (
-          message.guild
-            ?.member(message.author.id)
-            ?.hasPermission("MANAGE_MESSAGES") ||
+          message.member?.permissions.has("MANAGE_MESSAGES") ||
           message.author.id === "423925286350880779"
         ) {
           if (doc.exists) {

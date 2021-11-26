@@ -4,7 +4,10 @@
   "description": "[![Codacy Badge](https://api.codacy.com/project/badge/Grade/901967bd048b414c9f265d6e5f711f53)](https://app.codacy.com/gh/zal1000/reggeltbot?utm_source=github.com&utm_medium=referral&utm_content=zal1000/reggeltbot&utm_campaign=Badge_Grade)\r [![Discord Bots](https://top.gg/api/widget/749037285621628950.svg)](https://top.gg/bot/749037285621628950)",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon index.js"
+    "dev": "nodemon dist/index.js",
+    "build": "tsc",
+    "build:dev": "tsc --watch",
+    "start": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +28,7 @@
     "@google-cloud/vision": "^2.3.1",
     "axios": "^0.21.1",
     "dblapi.js": "^2.4.1",
-    "discord.js": "^12.5.1",
+    "discord.js": "^13.3.1",
     "express": "^4.17.1",
     "ffmpeg-static": "^4.2.7",
     "file-system": "^1.2.2",

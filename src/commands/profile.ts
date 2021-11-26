@@ -116,5 +116,5 @@ async function send(
     ba = [];
   }
 
-  message.channel.send(embed);
+  message.channel.send({embeds: [embed]});
 }

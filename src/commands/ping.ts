@@ -90,7 +90,7 @@ module.exports = {
         }
       });
 
-      message.channel.send(embed);
+      message.channel.send({embeds: [embed]});
     } else if (pingss.find((element) => element.status)) {
       pingss.forEach((ping) => {
         if (ping.status === 200) {
@@ -122,7 +122,7 @@ module.exports = {
         }
       });
 
-      message.channel.send(embed);
+      message.channel.send({embeds: [embed]});
     } else {
       pingss.forEach((ping) => {
         if (ping.status === 200) {
@@ -154,7 +154,7 @@ module.exports = {
         }
       });
 
-      message.channel.send(embed);
+      message.channel.send({embeds: [embed]});
     }
   },
 };

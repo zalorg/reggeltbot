@@ -38,7 +38,7 @@ async function start() {
     console.log(`Shard created (${shard.id})`);
   });
 
-  manager.spawn("auto");
+  manager.spawn({ amount: 'auto', delay: 5500, timeout: 30000 });
 
   app.post("/shard", async (req, res) => {
     const id = Number(req.query.id);

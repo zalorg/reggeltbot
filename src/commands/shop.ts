@@ -210,7 +210,7 @@ module.exports = {
               message.author.avatarURL({ dynamic: true }) || undefined
             )
             .setTimestamp(Date.now());
-          message.channel.send(embed);
+          message.channel.send({embeds: [embed]});
         } else {
           message.channel
             .send(`Selling emote... ${args[2]} for ${emoteSell} ${coinName}`)
@@ -302,5 +302,5 @@ async function help(
       } (Your current emote is: ${userdoc.data()?.reggeltemote})`
     );
   //console.log(embed);
-  message.channel.send(embed);
+  message.channel.send({embeds: [embed]});
 }

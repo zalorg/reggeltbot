@@ -179,7 +179,7 @@ spec:
                 configMapKeyRef:
                   key: GOOGLE_APPLICATION_CREDENTIALS
                   name: reggeltbot-beta-config-7ea9
-          image: gcr.io/zal1000/github.com/zal1000/reggeltbot
+          image: gcr.io/zal1000/reggeltbot/beta:init
           imagePullPolicy: IfNotPresent
           name: reggeltbot-1
           volumeMounts:

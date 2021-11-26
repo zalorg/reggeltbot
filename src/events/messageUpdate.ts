@@ -9,7 +9,6 @@ module.exports = {
   execute(bot: Client) {
     bot.on("messageUpdate", async (_, newMsg) => {
       if (newMsg.author!.bot) return;
-
       //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
 
       //const guild: Guildconfig = langcode.guilds[newMsg.guild!.id]
@@ -23,7 +22,7 @@ module.exports = {
       const lang = langfull.events.reggelt;
 
       if (
-        newMsg.channel.type === "text" &&
+        newMsg.channel.type === "GUILD_TEXT" &&
         newMsg.channel.name === lang.channel
       ) {
         if (!newMsg.content!.toLowerCase().includes(lang.keyWord)) {

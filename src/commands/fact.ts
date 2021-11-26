@@ -98,12 +98,6 @@ async function sendRandomFact(
   const lang = JSON.parse(fs.readFileSync(`./lang/${guildlang}.json`, "utf8"))
     .commands.fact;
 
-  if (args[0] === "say" || args[2] === "say") {
-    const string: string = await translatefact(doc.data()!.fact, langcode);
-    const usingSplit = string.split(" ");
-    tts(message, usingSplit);
-  }
-
   if (!doc.data()!.owner) {
     let upmbed = new Discord.MessageEmbed()
       .setTitle(lang.title1)
@@ -118,7 +112,7 @@ async function sendRandomFact(
       )
       .setTimestamp(Date.now());
 
-    message.channel.send(upmbed);
+    message.channel.send({embeds: [upmbed]});
   } else if (!userDoc.data()!.dcid) {
     let upmbed = new Discord.MessageEmbed()
       .setTitle(lang.title2.replace("%!AUTHOR%!", doc.data()!.author))
@@ -133,7 +127,7 @@ async function sendRandomFact(
       )
       .setTimestamp(Date.now());
 
-    message.channel.send(upmbed);
+    message.channel.send({embeds: [upmbed]});
   } else {
     const dcRef = db.collection("dcusers").doc(`${userDoc.data()!.dcid}`);
     const dcDoc = await dcRef.get();
@@ -152,7 +146,7 @@ async function sendRandomFact(
       )
       .setTimestamp(Date.now());
 
-    message.channel.send(upmbed);
+    message.channel.send({embeds: [upmbed]});
   }
 }
 
@@ -194,54 +188,4 @@ async function translatefact(text: string, langcode: string) {
     translations = Array.isArray(translations) ? translations : [translations];
     return translations[0];
   }
-}
-
-async function tts(message: Message, args: Array<string>) {
-  //if(!args) return message.reply('I cant say nothing')
-
-  const client = new textToSpeech.TextToSpeechClient();
-  const text = args.join(" ");
-
-  //const langcode = JSON.parse(fs.readFileSync('./cache/guilds.json', 'utf8'));
-  const guildconfig: Guildconfig = qdb.get(`guild.${message.guild?.id}`);
-
-  //message.reply(`${currentLang.lang}`)
-
-  const guildlang = guildconfig.lang || "en-US";
-
-  const [response] = await client.synthesizeSpeech({
-    input: { text: text },
-    voice: { languageCode: `${guildlang}`, ssmlGender: "NEUTRAL" },
-    audioConfig: { audioEncoding: "MP3" },
-  });
-
-  fs.writeFileSync(
-    `./cache/${message.author.id}.mp3`,
-    response!.audioContent!,
-    "binary"
-  );
-
-  //console.log('Audio content written to file: output.mp3');
-
-  //message.guild?.me?.voice.setMute(false)
-
-  const voiceChannel = message.member!.voice.channel;
-
-  voiceChannel!
-    .join()
-    .then((connection) => {
-      message
-        .member!.voice.channel!.join()
-        .then((VoiceConnection) => {
-          VoiceConnection.play(`./cache/${message.author.id}.mp3`).on(
-            "finish",
-            () => {
-              VoiceConnection.disconnect();
-              //message.reply('Disconnected')
-            }
-          );
-        })
-        .catch((e) => console.log(e));
-    })
-    .catch((err) => console.log(err));
 }

@@ -154,9 +154,7 @@ module.exports = {
         }
         bot
           .user!.setActivity(activities_list[num], { type: "WATCHING" })
-          .then(() => {
-            num = num + 1;
-          });
+        num = num + 1;
         // }
       }, 5000);
 
@@ -298,66 +296,6 @@ module.exports = {
           });
 
           console.log(pendig!);
-        });
-      });
-
-      const pollref = db
-        .collection("bots")
-        .doc("reggeltbot")
-        .collection("polls");
-      const pollquery = pollref.where("ended", "==", false);
-
-      var collectors: ReactionCollector[] = [];
-
-      pollquery.onSnapshot((snap) => {
-        collectors.forEach((c) => {
-          c.stop("restart");
-        });
-        if (snap.empty) return;
-
-        snap.docs.forEach(async (doc) => {
-          const channel = bot.channels.cache.get(doc.data()?.channelid);
-          if (channel?.isText()) {
-            await channel.messages.fetch();
-
-            const message = channel.messages.cache.get(doc.data()?.messageid);
-
-            console.log(message?.content);
-
-            const collector = message?.createReactionCollector(
-              (reaction, user) => user.id,
-              { dispose: true }
-            );
-
-            collectors.push(collector!);
-
-            collector?.on("remove", async (react, user) => {
-              const ref = doc.ref.collection("votes");
-              const query = ref
-                .where("id", "==", user.id)
-                .where("reaction.emojiID", "==", react.emoji.id);
-              const docs = await query.get();
-
-              docs.forEach((doc2) => {
-                doc2.ref.delete().then((d) => {
-                  console.log("doc removed");
-                });
-              });
-
-              console.log("remove");
-            });
-
-            collector?.on("collect", (reaction, user) => {
-              const ref = doc.ref.collection("votes");
-              ref.add({
-                reaction: reaction.toJSON(),
-                user: user.toJSON(),
-                id: user.id,
-                emoteid: reaction.emoji.id,
-              });
-              console.log("add");
-            });
-          }
         });
       });
     });
