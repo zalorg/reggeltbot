@@ -44,7 +44,7 @@ export default class CountCommand {
         // .setDescription(`**example** members`);
         if(emotes.exists && emotes.data()?.have) {
             let emote: string[] = [];
-            emotes.data()?.have.forEach(async (e: string) => {
+            emotes.data()?.have.forEach((e: string) => {
                 emote.push(e);
             });
             embed.addField("Emotes" ,`${emote.join("   ")}`);

@@ -19,9 +19,7 @@ export default class Bot {
     }
 
     public async start() {
-        if(!this.token) {
-            this.token = await this.fetchBotToken();
-        }
+        if(!this.token) this.token = await this.fetchBotToken();
         await this.client.login(this.token);
         console.info(`Logged in as ${this.client.user!.tag}`);
         await registerCommands(this.client.user?.id!, "738169002085449748")
