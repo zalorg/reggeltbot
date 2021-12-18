@@ -1,7 +1,7 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 
-export default class CountCommand {    
+export default class EmoteSetCommand {    
     public async run(interaction: CommandInteraction): Promise<void> {
         return await interaction.reply({
             content: 'Its working :)',

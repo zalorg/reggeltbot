@@ -1,5 +1,5 @@
 export interface UserDoc {
-    createdAt: Date;
+    createdAt: string;
     pp: string;
     username: string;
     discriminator: string;
