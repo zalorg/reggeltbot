@@ -2,9 +2,9 @@ import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 
 export default class EmoteSellCommand {    
-    public async run(interaction: CommandInteraction): Promise<void> {
+    public async run(interaction: CommandInteraction): Promise<any> {
         return await interaction.reply({
-            content: 'Its working :)',
+            content: 'The emote shop is currently disabled.',
             ephemeral: true,
         });
     }
