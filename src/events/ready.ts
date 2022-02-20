@@ -24,7 +24,9 @@ module.exports = {
     bot.on("ready", async () => {
       if (!process.env.PROD) {
         setInterval(() => {
-          sendPingToStatusPage(bot.ws.ping);
+          try {
+            sendPingToStatusPage(bot.ws.ping);
+          } catch {}
         }, 1000);
       }
 
