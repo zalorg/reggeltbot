@@ -3,6 +3,7 @@ import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import registerCommands from './register-commands';
 import InteractionManager from './commands/manager';
 import * as admin from 'firebase-admin';
+import * as fs from 'fs';
 
 export default class Bot {
     private client: Client;
@@ -22,6 +23,7 @@ export default class Bot {
         if(!this.token) this.token = await this.fetchBotToken();
         await this.client.login(this.token);
         console.info(`Logged in as ${this.client.user!.tag}`);
+        this.registerEvents();
         await registerCommands(this.client.user?.id!, "738169002085449748")
     }
 
@@ -37,6 +39,14 @@ export default class Bot {
 
     public destroy() {
         this.client.destroy();
+    }
+
+    private async registerEvents() {
+        const events = fs.readdirSync('./dist/events').filter(file => file.endsWith('.js')).map(file => file.replace('.js', ''));
+        for(const event of events) {
+            const EventInstance = require(`./events/${event}`).default;
+            new EventInstance(this.client);
+        }
     }
 
 }

@@ -6,7 +6,7 @@ export default class Manager {
     public commands: string[] = []
     constructor(client: Client) {
         this.client = client;
-		this.commands = fs.readdirSync('./dist/commands').filter(file => file.endsWith('.js')).map(file => file.replace('.js', ''));
+        this.commands = fs.readdirSync('./dist/commands').filter(file => file.endsWith('.js')).map(file => file.replace('.js', ''));
         client.on('interactionCreate', (interaction) => {
             if(interaction.isCommand()) this.onCommandInteraction(interaction);
         });
