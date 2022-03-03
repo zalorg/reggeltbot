@@ -68,8 +68,11 @@ export default class ReggeltEvent {
         .setTitle("Error")
         .setDescription("An unknown error occured. Please try again later.")
         .setColor("#ff0000");
-      return message.reply({
+      return await message.reply({
         embeds: [errorEmbed],
+      }).then(async (msg) => {
+        await msg.delete();
+        return await message.delete();
       });
     }
     console.log(user);
