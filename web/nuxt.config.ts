@@ -16,13 +16,28 @@ export default defineNuxtConfig({
       { name: 'og:description', content: 'Reggeltbot is a useless bot unless you want to waste your time sending "reggelt" in discord multiple times a day' },
     ],
   },
-  server: {
-    host: '0' // default: localhost
+  vue: {
+    compilerOptions: {
+      isCustomElement: tag => tag.startsWith('ais')
+    }
+  },
+  vite: {
+    optimizeDeps: {
+      exclude: [
+        'date-fns'
+      ],
+      include: [
+        'cookie'
+      ]
+    }
   },
   buildModules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/algolia',
   ],
+  build: {
+    transpile: ['vue-instantsearch', 'instantsearch.js/es'],
+  },
   plugins: [
     "~/plugins/flowbite.client.ts",
   ],
@@ -30,11 +45,8 @@ export default defineNuxtConfig({
     apiKey: 'd9cf85ea6e12d8cdbe9bd63e408e323f',
     applicationId: 'JX64960NFR',
     lite: true,
-    /*
-    instantSearch: {
-      theme: 'satellite'
-    },
-    */
+    instantSearch: false,
+
     /*
     crawler: {
       apiKey: '<YOUR_API_KEY>',

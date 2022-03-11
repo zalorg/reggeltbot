@@ -13,7 +13,9 @@
     "@nuxtjs/algolia": "^0.7.1",
     "@nuxtjs/tailwindcss": "^5.0.0-4",
     "flowbite": "^1.3.4",
+    "instantsearch.js": "^4.39.1",
     "node-sass": "^7.0.1",
-    "sass": "^1.49.9"
+    "sass": "^1.49.9",
+    "vue-instantsearch": "^4.3.3"
   }
 }
