@@ -17,7 +17,7 @@ jobs:
     - name: Setup GCP Service Account
       uses: google-github-actions/setup-gcloud@master
       with:
-        service_account_key: ${{ secrets.GKE_PROJECT }}
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
         export_default_credentials: true
 
     - name: Configure Docker
