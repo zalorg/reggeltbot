@@ -1,19 +1,12 @@
-// tailwind.config.js
 module.exports = {
-  mode: "jit",
-  purge: [
-    "./components/**/*.{vue,js}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
-    "./nuxt.config.{js,ts}",
+  plugins: [
+    require('flowbite/plugin')
   ],
-  //darkMode: "class", // or 'media' or 'class'
+  content: [
+    "./node_modules/flowbite/**/*.js",
+  ],
   theme: {
     extend: {},
   },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
-};
+  darkMode: 'media',
+}
