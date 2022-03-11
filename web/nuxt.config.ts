@@ -13,6 +13,7 @@ export default defineNuxtConfig({
       { name: 'og:site_name', content: 'Reggeltbot' },
       { name: 'og:title', content: 'Reggeltbot' },
       { name: 'og:image', content: '/icons/reggeltbot-icon.png' },
+      { name: 'og:description', content: 'Reggeltbot is a useless bot unless you want to waste your time sending "reggelt" in discord multiple times a day' },
     ],
   },
   server: {
