@@ -11,7 +11,8 @@ export default defineNuxtConfig({
       { name: 'theme-color', content: '#fec95c' },
       { name: 'og:type', content: 'website' },
       { name: 'og:site_name', content: 'Reggeltbot' },
-      { name: 'og:title', content: 'Reggeltbot | %s' },
+      { name: 'og:title', content: 'Reggeltbot' },
+      { name: 'og:image', content: '/icons/reggeltbot-icon.png' },
     ],
   },
   server: {
