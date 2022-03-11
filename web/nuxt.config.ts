@@ -1,6 +1,21 @@
 import { defineNuxtConfig } from "nuxt3";
 
 export default defineNuxtConfig({
+  head: {
+    title: 'Reggeltbot | %s',
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { name: 'format-detection', content: 'telephone=yes' },
+      { name: 'twitter:creator', content: '@zal1000original' },
+      { name: 'twitter:site', content: 'https://reggeltbot.com/' },
+      { name: 'theme-color', content: '#fec95c' },
+      { name: 'og:type', content: 'website' },
+      { name: 'og:site_name', content: 'Waik' },
+      { name: 'og:title', content: 'Reggeltbot | %s' },
+    ],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+  },
   server: {
     host: '0' // default: localhost
   },
