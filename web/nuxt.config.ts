@@ -26,9 +26,6 @@ export default defineNuxtConfig({
       exclude: [
         'date-fns'
       ],
-      include: [
-        'cookie'
-      ]
     }
   },
   buildModules: [
