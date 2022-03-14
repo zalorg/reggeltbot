@@ -29,10 +29,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
 
-      - name: Change dir
-        working-directory: ./web
-
       - name: Install packages
+        working-directory: ./web
         run: npm ci
 
       - name: Build
