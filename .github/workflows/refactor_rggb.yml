@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Change dir
-        run: cd web
+        working-directory: ./web
 
       - name: Install packages
         run: npm ci
