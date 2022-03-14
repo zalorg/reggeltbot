@@ -29,6 +29,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
 
+      - name: Change dir
+        run: cd web
+
       - name: Install packages
         run: npm ci
 
