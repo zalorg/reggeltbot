@@ -6,8 +6,9 @@ export default defineNuxtConfig({
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { name: 'format-detection', content: 'telephone=yes' },
+      { name: 'twitter:card', content: 'summary' },
+      { name: 'twitter:site', content: '@nuxt_js' },
       { name: 'twitter:creator', content: '@zal1000original' },
-      { name: 'twitter:site', content: 'https://reggeltbot.com/' },
       { name: 'theme-color', content: '#fec95c' },
       { name: 'og:type', content: 'website' },
       { name: 'og:site_name', content: 'Reggeltbot' },
@@ -33,7 +34,7 @@ export default defineNuxtConfig({
     '@nuxtjs/algolia',
   ],
   build: {
-    transpile: ['vue-instantsearch', 'instantsearch.js/es'],
+    //transpile: ['vue-instantsearch', 'instantsearch.js/es'],
   },
   plugins: [
     "~/plugins/flowbite.client.ts",

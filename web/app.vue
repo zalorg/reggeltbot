@@ -9,6 +9,7 @@
 
 <style scoped>
 .main {
-  min-height: 100vh;
+
+min-height: 100vh !important;
 }
 </style>

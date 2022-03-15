@@ -1,21 +1,85 @@
 <template>
   <div>
-    <client-only placeholder="Loading...">
-        <p>p</p>
-      <ais-instant-search :index-name="indexName" :search-client="algolia">
-        <ais-search-box />
-        <ais-hits />
-        <p>p2</p>
-      </ais-instant-search>
-    </client-only>
-    <div class="p-4 text-center">
-      <p class="text-black dark:text-white">leaderboard works!</p>
-      <search-bar></search-bar>
+    <div class="h-screen flex flex-col gap-4 items-center justify-center">
+      <!-- Card 1 -->
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+        :rank="1"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+        :rank="2"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+        :rank="3"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
+      <leaderboard-card
+        userAvatar="https://picsum.photos/seed/2/200/200"
+        userName="zal1000"
+        score="20"
+      />
     </div>
   </div>
 </template>
-
-<script setup>
-const indexName = "test_index";
-const algolia = useAlgolia();
-</script>
