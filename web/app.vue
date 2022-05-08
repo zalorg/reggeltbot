@@ -1,6 +1,15 @@
 <template>
-  <div>
+  <div class="bg-white dark:bg-slate-900 main">
     <NavBar />
-    <p>asd</p>
+    <div>
+      <NuxtPage />
+    </div>
   </div>
 </template>
+
+<style scoped>
+.main {
+
+min-height: 100vh !important;
+}
+</style>

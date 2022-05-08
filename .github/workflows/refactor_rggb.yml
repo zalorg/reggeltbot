@@ -1,0 +1,49 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js project to Azure Function App - rggb
+
+on:
+  push:
+    branches:
+      - refactor
+  
+
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'web' # set this to the path to your web app project, defaults to the repository root
+  NODE_VERSION: '16.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
+
+defaults:
+  run:
+    working-directory: ./web
+jobs:
+  deploy:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        node: [ 16 ]
+    steps:
+      - uses: actions/setup-node@v2
+        
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NITRO_PRESET: azure_functions
+
+      - name: 'Deploy to Azure Functions'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: 'rggb'
+          slot-name: 'Production'
+          package: web/.output/deploy.zip
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_28890C019944448F82D1EA28507DD09B }}
