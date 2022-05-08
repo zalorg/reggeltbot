@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "nuxi dev",
     "build": "nuxi build",
+    "buildfirebase": "NITRO_PRESET=firebase nuxi build",
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
@@ -12,6 +13,7 @@
   "dependencies": {
     "@nuxtjs/algolia": "^0.7.1",
     "@nuxtjs/tailwindcss": "^5.0.0-4",
+    "firebase-functions": "^3.21.0",
     "flowbite": "^1.3.4",
     "instantsearch.js": "^4.39.1",
     "node-sass": "^7.0.1",
