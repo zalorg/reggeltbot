@@ -26,7 +26,7 @@ export default class CountCommand {
         this.ammount = ammountarg || 10;
 
         await interaction.deferReply();
-        const query = this.db.collection('dcusers').where('reggeltcount', '>', 1).orderBy('reggeltcount', 'desc').limit(this.ammount);
+        const query = this.db.collection('users').where('reggeltCount', '>', 1).orderBy('reggeltCount', 'desc').limit(this.ammount);
         const snapshot = await query.get();
         const users = snapshot.docs.map(doc => doc.data());
         const embed = new MessageEmbed()
@@ -36,7 +36,7 @@ export default class CountCommand {
             .setURL(`https://reggeltbot.com/leaderboard?m=${this.ammount}`)
             .setTimestamp();
         for (let i = 0; i < users.length; i++) {
-            embed.addField(users[i].username, users[i].reggeltcount.toString());
+            embed.addField(users[i].username, users[i].reggeltCount.toString());
         }
         return await interaction.editReply({ embeds: [embed] });
     }

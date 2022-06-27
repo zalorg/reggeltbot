@@ -1,4 +1,4 @@
-import { Client, CommandInteraction } from "discord.js";
+import { Client, CommandInteraction } from 'discord.js';
 import * as fs from 'fs';
 
 export default class Manager {

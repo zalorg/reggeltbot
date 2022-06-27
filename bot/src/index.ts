@@ -1,5 +1,6 @@
 import { Client, Intents } from 'discord.js';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+import * as qdb from 'quick.db';
 import registerCommands from './register-commands';
 import InteractionManager from './commands/manager';
 import * as admin from 'firebase-admin';
@@ -28,7 +29,7 @@ export default class Bot {
     }
 
     public async fetchBotToken(): Promise<string> {
-        const secretName = "projects/512279358183/secrets/reggeltbot-test-token/versions/latest";
+        const secretName = "projects/606259039951/secrets/reggeltbot-beta-token/versions/latest";
         const [accessResponse] = await this.secretManagerClient.accessSecretVersion({
             name: secretName,
         });

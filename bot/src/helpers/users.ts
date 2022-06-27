@@ -1,6 +1,5 @@
-import { MessageEmbed, User as DcUser } from "discord.js"
+import { MessageEmbed, User as DcUser } from "discord.js";
 import { firestore } from "firebase-admin";
-import { set as setCache, get as getCache } from 'quick.db';
 
 export async function createUserProfile(user: DcUser): Promise<User> {
     const db = firestore();
@@ -18,8 +17,7 @@ export async function createUserProfile(user: DcUser): Promise<User> {
         reggeltEmote: null
     }
 
-    return await db.collection('bots/reggeltbot/users').doc(user.id).set(newUser).then(async () => {
-        setCache(`user.${user.id}`, newUser);
+    return await db.collection('users').doc(user.id).set(newUser).then(async () => {
         const embed = new MessageEmbed()
             .setTitle('Profile Created')
             .setDescription(`Your profile has been created!`)
@@ -39,12 +37,10 @@ export async function createUserProfile(user: DcUser): Promise<User> {
 
 }
 
-export async function getUserProfile(user: DcUser, force = false, createIfNew = false): Promise<User> {
+export async function getUserProfile(user: DcUser, force = false, createIfNew = true): Promise<User> {
     const db = firestore();
-    const cached = getCache(`user.${user.id}`);
-    if (cached && !force) return cached;
 
-    return await db.collection('bots/reggeltbot/users').doc(user.id).get().then(doc => {
+    return await db.collection('users').doc(user.id).get().then(doc => {
         if (!doc.exists) {
             if (createIfNew) {
                 return createUserProfile(user);
@@ -52,7 +48,6 @@ export async function getUserProfile(user: DcUser, force = false, createIfNew = 
             throw new Error('User not found!');
         } else {
             const data = doc.data() as User;
-            setCache(`user.${user.id}`, data);
             return data;
         }
     }).catch(err => {

@@ -1,14 +1,15 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import { CommandInteraction, MessageEmbed } from "discord.js";
 import { firestore } from "firebase-admin";
+import { User } from "../helpers/users";
 import { UserDoc } from "../types/user";
 export default class CountCommand {
     interaction! : CommandInteraction; 
     private db = firestore();
     public async run(interaction: CommandInteraction): Promise<void> {
         this.interaction = interaction;
-        const userref = this.db.collection('dcusers').doc(this.uid)
-        const user = await userref.get() as firestore.DocumentSnapshot<UserDoc>;
+        const userref = this.db.collection('users').doc(this.uid)
+        const user = await userref.get() as firestore.DocumentSnapshot<User>;
         if(!user.exists) return await interaction.reply({
             content: `Unknown error`,
             ephemeral: true,
@@ -20,7 +21,7 @@ export default class CountCommand {
             .setFooter(`${interaction.user.tag} • Reggeltbot profile (Beta)`, interaction.user.avatarURL({ dynamic: true }) || undefined)
             .setTimestamp(Date.now());
 
-        if(user.data() && user.data()?.reggeltcount) embed.addField('Reggeltcount', `${user.data()!.reggeltcount}`);
+        if(user.data() && user.data()?.reggeltCount) embed.addField('Reggeltcount', `${user.data()!.reggeltCount}`);
         if(user.data()?.badges && user.data()!.badges!.length > 0) {
             let ba: string[] = [];
             user.data()?.badges!.forEach(async (b: string) => {
@@ -38,7 +39,7 @@ export default class CountCommand {
               });
             embed.setDescription(`${ba.join("   ")}`);
         }
-        if(user.data()?.coins) embed.addField('Coins', `${user.data()!.coins}`);
+        if(user.data()?.reggeltCoins) embed.addField('Coins', `${user.data()!.reggeltCoins}`);
 
         const emotes = await userref.collection('inventory').doc('emotes').get() as firestore.DocumentSnapshot<{ have: string[] }>;
         // .setDescription(`**example** members`);

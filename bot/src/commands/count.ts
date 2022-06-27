@@ -11,5 +11,5 @@ export default class CountCommand {
 
 export const data = new SlashCommandBuilder()
     .setName('count')
-    .setDescription('Get the reggelt count')
+    .setDescription('Get the reggelt count (deprecated)')
     .toJSON();

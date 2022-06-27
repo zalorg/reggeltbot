@@ -1,5 +1,5 @@
 import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9'
+import { Routes } from 'discord-api-types/v9';
 import * as fs from 'fs';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
@@ -32,7 +32,7 @@ export default async function registerCommands(clientId: string, guildId?: strin
 }
 
 async function fetchBotToken(): Promise<string> {
-	const secretName = "projects/512279358183/secrets/reggeltbot-test-token/versions/latest";
+	const secretName = "projects/606259039951/secrets/reggeltbot-beta-token/versions/latest";
 	const [accessResponse] = await new SecretManagerServiceClient().accessSecretVersion({
 		name: secretName,
 	});
