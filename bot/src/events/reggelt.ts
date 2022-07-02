@@ -126,16 +126,35 @@ export default class ReggeltEvent {
     const userProfileRef = this.db.collection("users").doc(dcuser.id);
     // const userProfile = await getUserProfile(dcuser, false, true);
     const userGuildRef = userProfileRef.collection("guilds").doc(guild.id);
+    const guildRef = this.db.collection(`guilds`).doc(guild.id);
     //const userGuild = await userGuildRef.get();
-    await userGuildRef.set({
+    
+    const guildSetTime = await userGuildRef.set({
       reggeltCount: firestore.FieldValue.increment(subtract ? -1 : 1),
-    }, { merge: true });
+    }, { merge: true }).then((res) => {
+      return res.writeTime.toDate();
+    });
 
-    await userProfileRef.set({
+    const userSetTime = await userProfileRef.set({
       reggeltCount: firestore.FieldValue.increment(subtract ? -1 : 1),
       reggeltCoins: firestore.FieldValue.increment(subtract ? -1 : 1),
       lastUpdatedCache: Date.now(),
-    }, { merge: true });
+    }, { merge: true }).then((res) => {
+      return res.writeTime.toDate();
+    });
+
+    const messageDoc = await userProfileRef.collection('reggeltmessages').add({
+      message: message.cleanContent,
+      messageData: message.toJSON(),
+      guildSetTime,
+      userSetTime,
+    })
+    await guildRef.collection('reggeltmessages').doc(messageDoc.id).set({
+      message: message.cleanContent,
+      messageData: message.toJSON(),
+      guildSetTime,
+      userSetTime,
+    })
 
   }
 
